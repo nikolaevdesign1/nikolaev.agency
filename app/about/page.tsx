@@ -51,7 +51,7 @@ export default function AboutPage() {
   return (
     <>
       <section className="px-6 pb-16 pt-36 md:px-10 md:pb-20 md:pt-44">
-        <p className="font-mono text-xs uppercase tracking-wider text-foreground/50">
+        <p className="font-mono text-xs uppercase tracking-wider text-muted">
           About
         </p>
         <ScrambleText
@@ -60,28 +60,28 @@ export default function AboutPage() {
           text="A studio built for founders who care about craft."
           className="mt-6 max-w-3xl text-4xl font-medium leading-[1.05] tracking-tight sm:text-6xl md:text-7xl"
         />
-        <p className="mt-8 max-w-xl text-foreground/60">
+        <p className="mt-8 max-w-xl text-muted">
           {site.legalName} is based in {site.location}, working with
           early-stage and growth companies who need a brand and product
           presence that can actually ship.
         </p>
       </section>
 
-      <section className="grid grid-cols-2 gap-8 border-t border-foreground/10 px-6 py-16 md:grid-cols-4 md:px-10 md:py-20">
+      <section className="grid grid-cols-2 gap-8 border-y-2 border-ink-border bg-ink px-6 py-16 text-ink-foreground md:grid-cols-4 md:px-10 md:py-20">
         {stats.map((stat, i) => (
           <Reveal key={stat.label} delay={i * 80}>
             <NumberRoll
               value={stat.value}
-              className="block font-mono text-4xl text-foreground md:text-6xl"
+              className="block font-mono text-4xl text-ink-foreground md:text-6xl"
             />
-            <p className="mt-2 font-mono text-xs uppercase tracking-wider text-foreground/50">
+            <p className="mt-2 font-mono text-xs uppercase tracking-wider text-ink-foreground/50">
               {stat.label}
             </p>
           </Reveal>
         ))}
       </section>
 
-      <section className="border-t border-foreground/10 px-6 py-20 md:px-10 md:py-28">
+      <section className="px-6 py-20 md:px-10 md:py-28">
         <Reveal>
           <h2 className="font-mono text-xs uppercase tracking-wider text-accent">
             How we work
@@ -91,25 +91,23 @@ export default function AboutPage() {
         <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
           {process.map((step, i) => (
             <Reveal key={step.index} delay={i * 100}>
-              <span className="font-mono text-xs text-foreground/30">
-                {step.index}
-              </span>
+              <span className="font-mono text-xs text-muted">{step.index}</span>
               <h3 className="mt-3 text-2xl font-medium tracking-tight md:text-3xl">
                 {step.title}
               </h3>
-              <p className="mt-3 max-w-md text-foreground/60">{step.copy}</p>
+              <p className="mt-3 max-w-md text-muted">{step.copy}</p>
             </Reveal>
           ))}
         </div>
       </section>
 
-      <section className="border-t border-foreground/10 px-6 py-20 md:px-10 md:py-28">
+      <section className="border-t-2 border-border px-6 py-20 md:px-10 md:py-28">
         <Reveal>
           <h2 className="font-mono text-xs uppercase tracking-wider text-accent">
             What we believe
           </h2>
         </Reveal>
-        <ul className="mt-10 divide-y divide-border border-y border-border">
+        <ul className="mt-10 divide-y-2 divide-border border-y-2 border-border">
           {principles.map((principle, i) => (
             <Reveal key={principle} as="li" delay={i * 80}>
               <p className="py-6 text-xl font-medium tracking-tight text-foreground md:text-2xl">

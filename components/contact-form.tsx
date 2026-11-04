@@ -59,7 +59,7 @@ export function ContactForm() {
           {budgets.map((budget) => (
             <label
               key={budget}
-              className="cursor-pointer rounded-full border border-foreground/20 px-4 py-2 font-mono text-xs uppercase tracking-wider text-foreground/70 transition-colors has-checked:border-accent has-checked:text-accent"
+              className="cursor-pointer rounded-full border-2 border-border px-4 py-2 font-mono text-xs uppercase tracking-wider text-foreground/70 transition-colors has-checked:border-accent has-checked:text-accent"
             >
               <input
                 type="radio"
@@ -81,7 +81,7 @@ export function ContactForm() {
           name="message"
           required
           rows={5}
-          className="resize-none border-0 border-b border-foreground/20 bg-transparent py-2 text-xl text-foreground outline-none transition-colors placeholder:text-foreground/30 focus:border-accent"
+          className="resize-none border-0 border-b-2 border-border bg-transparent py-2 text-xl text-foreground outline-none transition-colors placeholder:text-foreground/30 focus:border-accent"
           placeholder="Tell us what you're building"
         />
       </label>
@@ -90,12 +90,12 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="inline-flex items-center gap-3 rounded-full border border-foreground/20 px-6 py-3 font-mono text-xs uppercase tracking-wider text-foreground transition-colors hover:border-accent hover:text-accent disabled:opacity-50"
+          className="inline-flex items-center gap-3 rounded-full border-2 border-border px-6 py-3 font-mono text-xs uppercase tracking-wider text-foreground transition-colors hover:border-accent hover:text-accent disabled:opacity-50"
         >
           {status === "submitting" ? "Sending…" : "Send message"}
         </button>
         {error && (
-          <span className="font-mono text-xs uppercase tracking-wider text-red-400">
+          <span className="font-mono text-xs uppercase tracking-wider text-accent-red">
             {error}
           </span>
         )}
@@ -125,7 +125,7 @@ function Field({
         type={type}
         name={name}
         required={required}
-        className="border-0 border-b border-foreground/20 bg-transparent py-2 text-xl text-foreground outline-none transition-colors placeholder:text-foreground/30 focus:border-accent"
+        className="border-0 border-b-2 border-border bg-transparent py-2 text-xl text-foreground outline-none transition-colors placeholder:text-foreground/30 focus:border-accent"
       />
     </label>
   );

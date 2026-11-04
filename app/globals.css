@@ -1,19 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0b0b0a;
-  --foreground: #f3f1ea;
-  --muted: #8a877e;
-  --accent: #d7ff3f;
-  --border: rgba(243, 241, 234, 0.12);
+  /* light — primary surface */
+  --background: #f8f6f2;
+  --foreground: #232323;
+  --muted: #5b5a56;
+  --border: rgba(35, 35, 35, 0.14);
+  --surface: #dedede;
+  --surface-mid: #cbcbcb;
+
+  /* dark — interspersed accent blocks (nav, footer, cta, hero) */
+  --ink: #0a0a0a;
+  --ink-foreground: #f3f1ea;
+  --ink-muted: #8a877e;
+  --ink-border: rgba(243, 241, 234, 0.14);
+
+  /* accents */
+  --accent: #ff9100;
+  --accent-red: #c23b21;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
-  --color-accent: var(--accent);
   --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-surface-mid: var(--surface-mid);
+
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-border: var(--ink-border);
+
+  --color-accent: var(--accent);
+  --color-accent-red: var(--accent-red);
+
   --font-sans: var(--font-display);
   --font-mono: var(--font-mono-display);
 }
@@ -34,7 +56,7 @@ body {
 
 ::selection {
   background: var(--accent);
-  color: var(--background);
+  color: var(--ink);
 }
 
 ::-webkit-scrollbar {
@@ -46,9 +68,20 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(243, 241, 234, 0.2);
+  background: rgba(35, 35, 35, 0.2);
   border: 2px solid var(--background);
   border-radius: 999px;
+}
+
+/* faint dot-grid texture used behind the services/directions section */
+.bg-dot-grid {
+  background-image: radial-gradient(var(--border) 2px, transparent 2px);
+  background-size: 32px 32px;
+}
+
+.bg-dot-grid-ink {
+  background-image: radial-gradient(var(--ink-border) 2px, transparent 2px);
+  background-size: 32px 32px;
 }
 
 @keyframes marquee {
@@ -77,10 +110,75 @@ body {
   animation: marquee-reverse 28s linear infinite;
 }
 
+/* hero glitch burst — short RGB-split jitter, triggered in bursts by JS, not looped */
+@keyframes glitch-jitter {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-6px, 2px);
+  }
+  40% {
+    transform: translate(4px, -2px);
+  }
+  60% {
+    transform: translate(-2px, 0);
+  }
+  80% {
+    transform: translate(2px, 2px);
+  }
+}
+
+@keyframes glitch-slice {
+  0%,
+  100% {
+    clip-path: inset(0 0 94% 0);
+    transform: translateX(0);
+  }
+  50% {
+    clip-path: inset(40% 0 20% 0);
+    transform: translateX(8px);
+  }
+}
+
+.glitching .glitch-layer {
+  animation: glitch-jitter 220ms steps(2, end);
+}
+
+.glitching .glitch-red,
+.glitching .glitch-cyan {
+  opacity: 1;
+}
+
+.glitch-red {
+  mix-blend-mode: screen;
+  background: var(--accent-red);
+  opacity: 0;
+  animation: glitch-slice 220ms steps(2, end);
+}
+
+.glitch-cyan {
+  mix-blend-mode: screen;
+  background: #2ad6e8;
+  opacity: 0;
+  animation: glitch-slice 220ms steps(2, end) reverse;
+}
+
+.frozen {
+  filter: saturate(0.6) contrast(1.08);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-marquee-reverse {
     animation: none;
+  }
+
+  .glitching .glitch-layer,
+  .glitch-red,
+  .glitch-cyan {
+    animation: none !important;
   }
 
   * {

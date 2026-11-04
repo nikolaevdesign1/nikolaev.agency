@@ -5,7 +5,7 @@ import { Reveal } from "@/components/reveal";
 
 export function CtaSection() {
   return (
-    <section className="border-t border-foreground/10 px-6 py-24 md:px-10 md:py-32">
+    <section className="border-t-2 border-border px-6 py-24 md:px-10 md:py-32">
       <Reveal>
         <p className="font-mono text-xs uppercase tracking-wider text-accent">
           Start a project
@@ -18,13 +18,13 @@ export function CtaSection() {
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <Link
             href="/contact"
-            className="inline-flex items-center gap-3 rounded-full border border-foreground/20 px-6 py-3 font-mono text-xs uppercase tracking-wider text-foreground transition-colors hover:border-accent hover:text-accent"
+            className="inline-flex items-center gap-3 rounded-full border-2 border-border px-6 py-3 font-mono text-xs uppercase tracking-wider text-foreground transition-colors hover:border-accent hover:text-accent"
           >
             Start a project
           </Link>
           <Link
             href={`mailto:${site.email}`}
-            className="font-mono text-xs uppercase tracking-wider text-foreground/50 transition-colors hover:text-foreground"
+            className="font-mono text-xs uppercase tracking-wider text-muted transition-colors hover:text-foreground"
           >
             {site.email}
           </Link>

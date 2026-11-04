@@ -6,7 +6,7 @@ const currentYear = new Date().getFullYear();
 
 export function Footer() {
   return (
-    <footer className="border-t border-foreground/10 px-6 py-16 md:px-10 md:py-24">
+    <footer className="border-t-2 border-ink-border bg-ink px-6 py-16 text-ink-foreground md:px-10 md:py-24">
       <div className="flex flex-col gap-16 md:flex-row md:items-end md:justify-between">
         <div>
           <ScrambleText
@@ -16,20 +16,20 @@ export function Footer() {
           />
           <Link
             href={`mailto:${site.email}`}
-            className="mt-6 inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wider text-foreground/70 transition-colors hover:text-accent"
+            className="mt-6 inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wider text-ink-foreground/70 transition-colors hover:text-accent"
           >
             {site.email}
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 gap-10 font-mono text-xs uppercase tracking-wider text-foreground/50 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-10 font-mono text-xs uppercase tracking-wider text-ink-foreground/50 sm:grid-cols-3">
           <div className="flex flex-col gap-3">
-            <span className="text-foreground/30">Sitemap</span>
+            <span className="text-ink-foreground/30">Sitemap</span>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-foreground/70 transition-colors hover:text-foreground"
+                className="text-ink-foreground/70 transition-colors hover:text-ink-foreground"
               >
                 {link.label}
               </Link>
@@ -37,14 +37,14 @@ export function Footer() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <span className="text-foreground/30">Social</span>
+            <span className="text-ink-foreground/30">Social</span>
             {site.social.map((s) => (
               <a
                 key={s.label}
                 href={s.href}
                 target="_blank"
                 rel="noreferrer"
-                className="text-foreground/70 transition-colors hover:text-foreground"
+                className="text-ink-foreground/70 transition-colors hover:text-ink-foreground"
               >
                 {s.label}
               </a>
@@ -52,15 +52,17 @@ export function Footer() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <span className="text-foreground/30">Studio</span>
-            <span className="text-foreground/70">{site.location}</span>
-            <span className="text-foreground/70">Est. {site.founded}</span>
+            <span className="text-ink-foreground/30">Studio</span>
+            <span className="text-ink-foreground/70">{site.location}</span>
+            <span className="text-ink-foreground/70">Est. {site.founded}</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-20 flex flex-col gap-2 font-mono text-[11px] uppercase tracking-wider text-foreground/30 md:flex-row md:items-center md:justify-between">
-        <span>© {currentYear} {site.legalName}. All rights reserved.</span>
+      <div className="mt-20 flex flex-col gap-2 font-mono text-[11px] uppercase tracking-wider text-ink-foreground/30 md:flex-row md:items-center md:justify-between">
+        <span>
+          © {currentYear} {site.legalName}. All rights reserved.
+        </span>
         <span>Designed &amp; built in Los Angeles</span>
       </div>
     </footer>

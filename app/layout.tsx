@@ -5,6 +5,7 @@ import { site } from "@/lib/data/site";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { PageTransition } from "@/components/page-transition";
 
 const display = Bricolage_Grotesque({
   variable: "--font-display",
@@ -47,9 +48,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col font-sans">
         <SmoothScroll>
-          <Nav />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <PageTransition>
+            <Nav />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </PageTransition>
         </SmoothScroll>
       </body>
     </html>

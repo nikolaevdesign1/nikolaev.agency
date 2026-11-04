@@ -4,7 +4,7 @@ import { Reveal } from "@/components/reveal";
 
 export function ProjectList({ projects }: { projects: Project[] }) {
   return (
-    <div className="border-t border-foreground/10">
+    <div className="border-t-2 border-border">
       {projects.map((project, index) => (
         <Reveal key={project.slug} delay={index * 60}>
           <ProjectCard project={project} index={index} />
