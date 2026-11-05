@@ -3,7 +3,7 @@ import { Reveal } from "@/components/reveal";
 
 export function ServicesGrid() {
   return (
-    <section className="bg-dot-grid relative border-y-2 border-border px-6 py-24 md:px-10 md:py-32">
+    <section className="relative border-y-2 border-border px-6 py-24 md:px-10 md:py-32">
       <Reveal>
         <p className="font-mono text-xs uppercase tracking-wider text-muted">
           Directions of work — {String(directions.length).padStart(2, "0")}
