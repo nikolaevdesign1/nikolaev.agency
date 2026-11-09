@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { LogoCube } from "@/components/logo-cube";
 import { ChatPanel } from "@/components/chat-panel";
 
 const links = [
@@ -35,6 +36,7 @@ export function Nav() {
             <span className="mt-1 text-[10px] font-normal leading-none">
               by Oleg Nikolaev
             </span>
+            <LogoCube body="#ffffff" face="#000000" className="mt-4 size-8" />
           </Link>
 
           <nav
