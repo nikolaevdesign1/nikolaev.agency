@@ -1,71 +1,54 @@
-import Link from "next/link";
-import { projects } from "@/lib/data/projects";
-import { site } from "@/lib/data/site";
-import { ScrambleText } from "@/components/scramble-text";
-import { ProjectList } from "@/components/project-list";
 import { HeroVideo } from "@/components/hero-video";
 import { ServicesGrid } from "@/components/services-grid";
-import { CtaSection } from "@/components/cta-section";
-import { Reveal } from "@/components/reveal";
+import { SectionTransition } from "@/components/section-transition";
+import { BitEdge } from "@/components/bit-edge";
+import { AmbientTextField, StudioChatButton } from "@/components/ambient-text-field";
+import { BestCases } from "@/components/best-cases";
+import { LinkButton, PillArrow, pillClass } from "@/components/button";
 
 export default function Home() {
   return (
     <>
-      <HeroVideo />
+      <HeroVideo src="/video/hero.mp4" />
 
+      <SectionTransition />
       <ServicesGrid />
 
-      <section className="px-6 py-20 md:px-10 md:py-28" id="work">
-        <Reveal>
-          <div className="flex items-end justify-between">
-            <h2 className="font-mono text-xs uppercase tracking-wider text-muted">
-              Last Works / {String(projects.length).padStart(2, "0")}
-            </h2>
-            <span className="hidden font-mono text-xs uppercase tracking-wider text-muted/60 md:block">
-              2023 — 2025
-            </span>
+      <BestCases />
+
+      <BitEdge
+        from="#f8f6f2"
+        to="#0a0a0a"
+        seed={11}
+        phrase="Best cases · brand · product · a production-ready build · direct access"
+      />
+      <section className="relative flex min-h-[120vh] flex-col overflow-hidden bg-ink px-6 py-36 text-ink-foreground md:px-10 md:py-48">
+        <AmbientTextField phrase="Small team · direct access · no account managers" />
+        <div className="relative z-[1] flex flex-1 flex-col justify-between gap-24 md:gap-32">
+          <div className="flex max-w-5xl flex-col gap-10 md:gap-14">
+            <p className="font-serif text-4xl font-medium leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+              nikolaev.agency is a small digital-first studio.
+            </p>
+            <p className="font-serif text-4xl font-medium leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+              Direct access. No account managers.
+            </p>
           </div>
-        </Reveal>
-
-        <ProjectList projects={projects} />
-
-        <Reveal className="mt-10 flex justify-end">
-          <Link
-            href="/projects"
-            className="font-mono text-xs uppercase tracking-wider text-muted underline underline-offset-4 transition-colors hover:text-foreground"
-          >
-            View all work
-          </Link>
-        </Reveal>
+          <div className="flex flex-col gap-8">
+            <p className="max-w-sm text-sm leading-relaxed text-ink-foreground/70 md:text-base">
+              by Oleg Nikolaev. Designed &amp; built in Los Angeles.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <StudioChatButton className={pillClass}>
+                Let&apos;s chat
+                <PillArrow />
+              </StudioChatButton>
+              <LinkButton href="/contact">Request a project</LinkButton>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="grid grid-cols-1 gap-12 border-y-2 border-ink-border bg-ink px-6 py-24 text-ink-foreground md:grid-cols-2 md:px-10 md:py-32">
-        <Reveal>
-          <p className="font-mono text-xs uppercase tracking-wider text-accent">
-            About the studio
-          </p>
-          <ScrambleText
-            as="h2"
-            text="Small team. Direct access. No account managers."
-            className="mt-6 max-w-lg text-3xl font-medium leading-[1.1] tracking-tight md:text-5xl"
-          />
-        </Reveal>
-        <Reveal delay={150} className="flex flex-col justify-between gap-8">
-          <p className="max-w-md text-ink-foreground/60">
-            {site.name} is a small studio based in Los Angeles. We partner
-            with founders and teams who care about craft, working end-to-end
-            from brand to a production-ready build.
-          </p>
-          <Link
-            href="/about"
-            className="inline-flex w-fit items-center gap-3 font-mono text-xs uppercase tracking-wider text-ink-foreground/70 underline underline-offset-4 transition-colors hover:text-accent"
-          >
-            More about us
-          </Link>
-        </Reveal>
-      </section>
-
-      <CtaSection />
+      <BitEdge phrase="Small team · direct access · no account managers · the work continues past the edge" />
     </>
   );
 }

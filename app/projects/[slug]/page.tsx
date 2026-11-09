@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { projects } from "@/lib/data/projects";
+import { site } from "@/lib/data/site";
 import { ScrambleText } from "@/components/scramble-text";
+import { ProjectCover } from "@/components/project-cover";
+import { CreditsOverlay } from "@/components/credits-overlay";
 
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
@@ -27,8 +30,16 @@ export default async function ProjectDetailPage({
   const project = projects.find((p) => p.slug === slug);
   if (!project) notFound();
 
+  const index = projects.findIndex((p) => p.slug === slug);
+  const credits = [
+    { role: "Design by", name: site.name, top: "10%", left: "6%" },
+    { role: "Art Direction", name: site.name, top: "18%", left: "78%" },
+    { role: "Development", name: site.name, top: "72%", left: "8%" },
+    { role: "Client", name: project.client, top: "80%", left: "70%" },
+  ];
+
   return (
-    <section className="flex min-h-screen flex-col justify-center px-6 py-36 md:px-10">
+    <section className="px-6 pb-24 pt-36 md:px-10 md:pt-44">
       <p className="font-mono text-xs uppercase tracking-wider text-muted">
         {project.category} — {project.year}
       </p>
@@ -47,6 +58,11 @@ export default async function ProjectDetailPage({
       >
         Back to projects
       </Link>
+
+      <div className="relative mt-16 overflow-hidden rounded-2xl">
+        <ProjectCover project={project} index={index} className="aspect-[16/9]" />
+        <CreditsOverlay credits={credits} />
+      </div>
     </section>
   );
 }

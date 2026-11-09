@@ -1,14 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { PillArrow, pillClass } from "@/components/button";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-const budgets = ["< $10k", "$10k – $25k", "$25k – $75k", "$75k+"];
+const reasons = [
+  "New project",
+  "Existing product",
+  "Ongoing design support",
+  "Job opportunity",
+  "Something else",
+];
+
+const fieldClass =
+  "w-full border-0 border-b border-foreground/80 bg-transparent pb-2 font-serif text-lg leading-snug text-foreground outline-none transition-colors placeholder:text-foreground/35 focus:border-foreground md:text-xl md:leading-snug";
 
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [reason, setReason] = useState<string | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -17,6 +28,7 @@ export function ContactForm() {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
+    if (reason) formData.set("reason", reason);
     const payload = Object.fromEntries(formData.entries());
 
     try {
@@ -30,6 +42,7 @@ export function ContactForm() {
 
       setStatus("success");
       form.reset();
+      setReason(null);
     } catch (err) {
       setStatus("error");
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -38,7 +51,7 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <p className="max-w-md text-2xl font-medium leading-snug tracking-tight text-foreground">
+      <p className="max-w-md font-serif text-3xl font-medium leading-snug tracking-tight text-foreground">
         Thanks — your message is in. We reply to every inquiry within two
         business days.
       </p>
@@ -46,53 +59,72 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-10">
-      <Field label="Name" name="name" required />
-      <Field label="Email" name="email" type="email" required />
-      <Field label="Company" name="company" />
-
-      <div>
-        <span className="font-mono text-xs uppercase tracking-wider text-foreground/50">
-          Budget
-        </span>
-        <div className="mt-4 flex flex-wrap gap-3">
-          {budgets.map((budget) => (
-            <label
-              key={budget}
-              className="cursor-pointer rounded-full border-2 border-border px-4 py-2 font-mono text-xs uppercase tracking-wider text-foreground/70 transition-colors has-checked:border-accent has-checked:text-accent"
-            >
-              <input
-                type="radio"
-                name="budget"
-                value={budget}
-                className="sr-only"
-              />
-              {budget}
-            </label>
-          ))}
-        </div>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-7">
+      <div className="grid gap-x-5 gap-y-6 md:grid-cols-2">
+        <Field
+          index="01"
+          label="Your name"
+          name="name"
+          placeholder="How should I address you?"
+          required
+        />
+        <Field
+          index="02"
+          label="Email"
+          name="email"
+          type="email"
+          placeholder="you@company.com"
+          required
+        />
       </div>
 
-      <label className="flex flex-col gap-4">
-        <span className="font-mono text-xs uppercase tracking-wider text-foreground/50">
-          Project details
-        </span>
+      <div>
+        <div className="flex flex-wrap gap-3">
+          {reasons.map((item) => {
+            const active = reason === item;
+            return (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setReason(active ? null : item)}
+                className={`rounded border px-4 py-1.5 font-serif text-base transition-colors ${
+                  active
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-foreground/80 text-foreground hover:border-foreground"
+                }`}
+              >
+                {item}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+          03 / What brings you here? (optional)
+        </p>
+      </div>
+
+      <label className="flex flex-col">
         <textarea
           name="message"
           required
-          rows={5}
-          className="resize-none border-0 border-b-2 border-border bg-transparent py-2 text-xl text-foreground outline-none transition-colors placeholder:text-foreground/30 focus:border-accent"
-          placeholder="Tell us what you're building"
+          rows={1}
+          placeholder="What are you working on, and where could I help?"
+          className={`${fieldClass} resize-none`}
         />
+        <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+          04 / What do you have in mind?* (a few sentences are enough. No
+          polished brief needed.)
+        </p>
       </label>
 
       <div className="flex items-center gap-6">
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="inline-flex items-center gap-3 rounded-full border-2 border-border px-6 py-3 font-mono text-xs uppercase tracking-wider text-foreground transition-colors hover:border-accent hover:text-accent disabled:opacity-50"
+          className={`${pillClass} h-[3.75rem] w-full max-w-[21rem] justify-center transition-colors hover:bg-white/90 disabled:opacity-60`}
         >
           {status === "submitting" ? "Sending…" : "Send message"}
+          <PillArrow />
         </button>
         {error && (
           <span className="font-mono text-xs uppercase tracking-wider text-accent-red">
@@ -105,28 +137,33 @@ export function ContactForm() {
 }
 
 function Field({
+  index,
   label,
   name,
   type = "text",
+  placeholder,
   required,
 }: {
+  index: string;
   label: string;
   name: string;
   type?: string;
+  placeholder: string;
   required?: boolean;
 }) {
   return (
-    <label className="flex flex-col gap-4">
-      <span className="font-mono text-xs uppercase tracking-wider text-foreground/50">
-        {label}
-        {required ? " *" : ""}
-      </span>
+    <label className="flex flex-col">
       <input
         type={type}
         name={name}
         required={required}
-        className="border-0 border-b-2 border-border bg-transparent py-2 text-xl text-foreground outline-none transition-colors placeholder:text-foreground/30 focus:border-accent"
+        placeholder={placeholder}
+        className={fieldClass}
       />
+      <p className="mt-3 font-mono text-[11px] tracking-[0.04em] text-muted">
+        {index} / {label}
+        {required ? "*" : ""}
+      </p>
     </label>
   );
 }

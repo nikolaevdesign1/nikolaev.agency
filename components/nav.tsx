@@ -9,82 +9,28 @@ const links = [
   { label: "Work", href: "/projects" },
   { label: "Agency", href: "/about" },
   { label: "Contact", href: "/contact" },
+  { label: "Media", href: "/media", distinct: true },
 ] as const;
 
-function WordmarkMark() {
-  return (
-    <span className="relative block h-px w-8 shrink-0" aria-hidden="true">
-      <svg
-        width="32"
-        height="32"
-        viewBox="0 0 64 64"
-        aria-hidden="true"
-        className="absolute left-0 top-1/2 -translate-y-1/2"
-      >
-        <g fill="currentColor">
-          {[0, 90, 180, 270].map((angle) => (
-            <g key={angle} transform={`rotate(${angle} 32 32)`}>
-              <circle cx="32" cy="8.5" r="4.7" />
-              <rect x="27.3" y="11.8" width="9.4" height="10.2" rx="4.6" />
-              <rect
-                x="21"
-                y="12.6"
-                width="7.5"
-                height="4.3"
-                rx="2.15"
-                transform="rotate(-38 28.5 14.75)"
-              />
-              <rect
-                x="35.5"
-                y="12.6"
-                width="7.5"
-                height="4.3"
-                rx="2.15"
-                transform="rotate(38 35.5 14.75)"
-              />
-              <rect
-                x="27.5"
-                y="18.4"
-                width="3.9"
-                height="9.4"
-                rx="1.95"
-                transform="rotate(-9 29.45 19.2)"
-              />
-              <rect
-                x="32.6"
-                y="18.4"
-                width="3.9"
-                height="9.4"
-                rx="1.95"
-                transform="rotate(9 34.55 19.2)"
-              />
-            </g>
-          ))}
-        </g>
-      </svg>
-    </span>
-  );
-}
+const blend = "isolate text-white mix-blend-difference";
 
 export function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const inMedia = pathname?.startsWith("/media") ?? false;
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 bg-transparent px-6 py-5 text-[#161616] md:px-10 md:py-6">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center">
+      <header className="fixed inset-x-0 top-0 z-50 isolate bg-transparent px-6 py-5 mix-blend-difference md:px-10 md:py-6">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-start">
           <Link
             href="/"
             onClick={() => setOpen(false)}
-            className="flex w-fit flex-col font-sans text-[#161616]"
+            className={`flex w-fit flex-col font-sans ${blend}`}
           >
-            <span className="flex items-center gap-2.5">
-              <span className="text-[15px] font-normal leading-none tracking-tight">
-                nikolaev.agency
-              </span>
-              <WordmarkMark />
+            <span className="text-2xl font-normal leading-none tracking-tight">
+              {inMedia ? "nikolaev.media" : "nikolaev.agency"}
             </span>
             <span className="mt-1 text-[11px] font-normal leading-none">
               by Oleg Nikolaev
@@ -92,17 +38,19 @@ export function Nav() {
           </Link>
 
           <nav
-            className="col-start-2 hidden translate-x-16 items-baseline font-sans text-2xl md:flex"
+            className="col-start-2 hidden translate-x-16 items-baseline gap-8 font-sans text-2xl leading-none md:flex"
             aria-label="Primary"
           >
-            {links.map((link, index) => (
+            {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 aria-current={pathname === link.href ? "page" : undefined}
-                className="font-normal text-[#161616] transition-colors hover:text-black"
+                className={`inline-flex items-center gap-2 font-normal ${blend}`}
               >
-                {index > 0 ? ",\u00a0" : null}
+                {"distinct" in link && link.distinct ? (
+                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent" />
+                ) : null}
                 {link.label}
               </Link>
             ))}
@@ -112,15 +60,15 @@ export function Nav() {
             <button
               type="button"
               onClick={() => setChatOpen(true)}
-              className="hidden font-sans text-2xl font-normal text-[#161616] md:block"
+              className={`hidden cursor-pointer font-sans text-2xl font-normal leading-none md:block ${blend}`}
             >
-              Let&apos;s talk
+              Let&apos;s chat
             </button>
 
             <button
               type="button"
               onClick={() => setOpen((value) => !value)}
-              className="font-sans text-base text-[#161616] md:hidden"
+              className={`font-sans text-base md:hidden ${blend}`}
               aria-expanded={open}
               aria-controls="mobile-nav"
             >
@@ -132,7 +80,7 @@ export function Nav() {
         {open && (
           <nav
             id="mobile-nav"
-            className="mt-6 flex flex-col gap-4 font-sans text-2xl text-[#161616] md:hidden"
+            className="mt-6 flex flex-col gap-4 font-sans text-2xl md:hidden"
             aria-label="Mobile"
           >
             {links.map((link) => (
@@ -141,7 +89,11 @@ export function Nav() {
                 href={link.href}
                 onClick={() => setOpen(false)}
                 aria-current={pathname === link.href ? "page" : undefined}
+                className={`inline-flex items-center gap-2 ${blend}`}
               >
+                {"distinct" in link && link.distinct ? (
+                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent" />
+                ) : null}
                 {link.label}
               </Link>
             ))}
@@ -151,9 +103,9 @@ export function Nav() {
                 setOpen(false);
                 setChatOpen(true);
               }}
-              className="text-left font-sans text-2xl text-[#161616]"
+              className={`cursor-pointer text-left font-sans text-2xl ${blend}`}
             >
-              Let&apos;s talk
+              Let&apos;s chat
             </button>
           </nav>
         )}
