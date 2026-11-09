@@ -30,16 +30,16 @@ export function MediaIndex() {
   }, [rest, category, query]);
 
   return (
-    <section className="bg-background px-6 pb-28 pt-36 text-foreground md:px-10 md:pt-44">
-      <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+    <section className="bg-background gutter pb-28 pt-36 text-foreground md:pt-44">
+      <p className="font-mono text-[11px] text-muted">
         nikolaev.media
       </p>
-      <h1 className="mt-4 max-w-2xl font-serif text-5xl font-medium leading-[1.05] tracking-tight md:text-7xl">
+      <h1 className="mt-4 max-w-2xl font-serif text-5xl font-medium leading-[1.05] md:text-7xl">
         Notes on design, AI, and running a small studio.
       </h1>
 
       <div className="mt-10 flex flex-wrap items-center gap-4 border-y border-border py-4">
-        <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em]">
+        <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
           <button
             type="button"
             onClick={() => setCategory(null)}
@@ -66,7 +66,7 @@ export function MediaIndex() {
             </button>
           ))}
         </div>
-        <label className="ml-auto flex items-center gap-2 border-b border-foreground/40 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-muted focus-within:border-foreground">
+        <label className="ml-auto flex items-center gap-2 border-b border-foreground/40 py-1 font-mono text-[11px] text-muted focus-within:border-foreground">
           <span aria-hidden="true">Search</span>
           <input
             type="search"
@@ -92,14 +92,14 @@ export function MediaIndex() {
             />
           </div>
           <div className="flex flex-col justify-center">
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+            <p className="font-mono text-[11px] text-muted">
               {featured.category} · Latest
             </p>
-            <h2 className="mt-3 font-serif text-3xl font-medium leading-tight tracking-tight text-foreground md:text-4xl">
+            <h2 className="mt-3 font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
               {featured.title}
             </h2>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">{featured.excerpt}</p>
-            <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+            <p className="mt-5 font-mono text-[11px] text-muted">
               {formatDate(featured.date)} · {featured.readMinutes} min read
             </p>
           </div>
@@ -107,17 +107,17 @@ export function MediaIndex() {
       ) : null}
 
       {filtered.length === 0 ? (
-        <p className="mt-16 font-mono text-sm uppercase tracking-wider text-muted">
+        <p className="mt-16 font-mono text-sm text-muted">
           No articles match.
         </p>
       ) : (
         <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-2 md:grid-cols-3 md:gap-x-12 md:gap-y-16">
           {filtered.map((article) => (
             <Link key={article.slug} href={`/media/${article.slug}`} className="group block">
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+              <p className="font-mono text-[10px] text-muted">
                 {article.category} · {formatDate(article.date)}
               </p>
-              <p className="mt-1.5 font-serif text-lg font-medium leading-snug tracking-tight text-foreground">
+              <p className="mt-1.5 font-serif text-lg font-medium leading-snug text-foreground">
                 {article.title}
               </p>
               <div className="mt-4 aspect-[4/3] overflow-hidden rounded-2xl">

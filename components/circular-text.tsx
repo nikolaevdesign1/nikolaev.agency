@@ -10,7 +10,7 @@ type CircularTextProps = {
 export function CircularText({ phrase, size = 220, className }: CircularTextProps) {
   const radius = size / 2 - 14;
   const circumference = 2 * Math.PI * radius;
-  const text = `${phrase.toUpperCase()} · `.repeat(3);
+  const text = `${phrase} · `.repeat(3);
   const id = `circular-text-path-${phrase.replace(/\s+/g, "-").toLowerCase()}`;
 
   return (
@@ -31,7 +31,7 @@ export function CircularText({ phrase, size = 220, className }: CircularTextProp
         fill="currentColor"
         fontFamily="var(--font-mono-display), monospace"
         fontSize={size * 0.045}
-        letterSpacing="2"
+        letterSpacing="0"
       >
         <textPath href={`#${id}`} startOffset="0" textLength={circumference}>
           {text}

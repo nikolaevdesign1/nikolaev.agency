@@ -63,7 +63,7 @@ export function ServicesGrid() {
                           key={id}
                           onMouseEnter={() => setHovered(id)}
                           onMouseLeave={() => setHovered(null)}
-                          className={`cursor-default whitespace-nowrap px-2 text-4xl font-medium leading-none tracking-tight transition-[filter,color] duration-300 sm:text-5xl md:text-7xl ${
+                          className={`cursor-default whitespace-nowrap px-2 text-4xl font-medium leading-none transition-[filter,color] duration-300 sm:text-5xl md:text-7xl ${
                             active
                               ? "text-black blur-none"
                               : "text-foreground/35 blur-[5px]"

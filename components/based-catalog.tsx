@@ -28,7 +28,7 @@ export function BasedCatalog() {
             key={category}
             type="button"
             onClick={() => setFilter(category)}
-            className={`rounded border-2 px-4 py-2 font-mono text-xs uppercase tracking-wider transition-colors ${
+            className={`rounded border-2 px-4 py-2 font-mono text-xs transition-colors ${
               filter === category
                 ? "border-accent text-accent"
                 : "border-border text-foreground/70 hover:border-foreground/40"
@@ -46,10 +46,10 @@ export function BasedCatalog() {
             <ProjectCover project={project} index={index} className="aspect-[4/3]" />
             <div className="mt-4 flex items-start justify-between gap-4">
               <div>
-                <h3 className="font-serif text-2xl font-medium tracking-tight transition-colors group-hover:text-accent">
+                <h3 className="font-serif text-2xl font-medium transition-colors group-hover:text-accent">
                   {project.title}
                 </h3>
-                <p className="mt-1 font-mono text-xs uppercase tracking-wider text-muted">
+                <p className="mt-1 font-mono text-xs text-muted">
                   {project.category} — {project.year}
                 </p>
               </div>

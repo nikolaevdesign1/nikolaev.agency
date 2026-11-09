@@ -54,7 +54,7 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <p className="max-w-md font-serif text-3xl font-medium leading-snug tracking-tight text-foreground">
+      <p className="max-w-md font-serif text-3xl font-medium leading-snug text-foreground">
         Thanks — your message is in. We reply to every inquiry within two
         business days.
       </p>
@@ -101,7 +101,7 @@ export function ContactForm() {
             );
           })}
         </div>
-        <p className="mt-3 font-mono text-[11px] tracking-[0.14em] text-muted">
+        <p className="mt-3 font-mono text-[11px] text-muted">
           03 / What brings you here? (optional)
         </p>
       </div>
@@ -118,18 +118,18 @@ export function ContactForm() {
           className={`${fieldClass} resize-none`}
         />
         <div className="mt-3 flex items-baseline justify-between gap-3">
-          <p className="font-mono text-[11px] tracking-[0.14em] text-muted">
+          <p className="font-mono text-[11px] text-muted">
             04 / What do you have in mind?* (a few sentences are enough. No
             polished brief needed.)
           </p>
-          <span className="shrink-0 font-mono text-[11px] tracking-[0.14em] text-muted">
+          <span className="shrink-0 font-mono text-[11px] text-muted">
             {message.length}/{MESSAGE_MAX}
           </span>
         </div>
       </label>
 
       <div className="flex flex-col gap-2">
-        <label className="group flex w-fit cursor-pointer items-center gap-2 border-b border-foreground/40 pb-1 font-mono text-[11px] tracking-[0.14em] text-muted transition-colors hover:border-foreground hover:text-foreground">
+        <label className="group flex w-fit cursor-pointer items-center gap-2 border-b border-foreground/40 pb-1 font-mono text-[11px] text-muted transition-colors hover:border-foreground hover:text-foreground">
           <input
             type="file"
             name="attachment"
@@ -143,7 +143,7 @@ export function ContactForm() {
           <button
             type="button"
             onClick={() => setFile(null)}
-            className="w-fit font-mono text-[11px] tracking-[0.14em] text-muted underline-offset-2 hover:text-foreground hover:underline"
+            className="w-fit font-mono text-[11px] text-muted underline-offset-2 hover:text-foreground hover:underline"
           >
             Remove attachment
           </button>
@@ -154,12 +154,12 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="w-full max-w-[21rem] rounded bg-foreground py-5 text-center font-sans text-[11px] font-medium uppercase text-background ring-1 ring-black/10 transition-opacity duration-200 hover:opacity-85 disabled:opacity-60"
+          className="w-full max-w-[21rem] rounded bg-foreground py-5 text-center font-sans text-[11px] font-medium text-background ring-1 ring-black/10 transition-opacity duration-200 hover:opacity-85 disabled:opacity-60"
         >
           {status === "submitting" ? "Sending…" : "Send message"}
         </button>
         {error && (
-          <span className="font-mono text-xs uppercase tracking-wider text-accent-red">
+          <span className="font-mono text-xs text-accent-red">
             {error}
           </span>
         )}
@@ -192,7 +192,7 @@ function Field({
         placeholder={placeholder}
         className={fieldClass}
       />
-      <p className="mt-3 font-mono text-[11px] tracking-[0.04em] text-muted">
+      <p className="mt-3 font-mono text-[11px] text-muted">
         {index} / {label}
         {required ? "*" : ""}
       </p>

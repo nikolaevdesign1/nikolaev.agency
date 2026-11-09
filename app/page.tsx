@@ -40,14 +40,14 @@ export default function Home() {
         seed={11}
         phrase="Best cases · brand · product · a production-ready build · direct access"
       />
-      <section className="relative flex flex-col overflow-hidden bg-ink px-6 py-36 text-ink-foreground md:px-10 md:py-48">
+      <section className="relative flex flex-col overflow-hidden bg-ink gutter py-36 text-ink-foreground md:py-48">
         <AmbientTextField phrase="Small team · direct access · no account managers" />
         <div className="relative z-[1] flex flex-col gap-24 md:gap-32">
           <div className="flex max-w-5xl flex-col gap-10 md:gap-14">
-            <p className="font-serif text-4xl font-medium leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+            <p className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl lg:text-7xl">
               We build AI into the work itself.
             </p>
-            <p className="font-serif text-4xl font-medium leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+            <p className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl lg:text-7xl">
               Faster builds, lighter support, reachable from anywhere.
             </p>
           </div>
@@ -55,7 +55,7 @@ export default function Home() {
           <div className="grid gap-12 border-t border-ink-border pt-12 md:grid-cols-3 md:gap-10">
             {aiPoints.map((point) => (
               <div key={point.index} className="flex flex-col gap-3">
-                <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-muted">
+                <p className="font-mono text-[11px] text-ink-muted">
                   {point.index} / {point.title}
                 </p>
                 <p className="max-w-sm text-sm leading-relaxed text-ink-foreground/80 md:text-base">

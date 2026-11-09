@@ -19,7 +19,7 @@ type StudioChatButtonProps = {
 };
 
 function unitFor(phrase: string) {
-  return `${phrase.toUpperCase()}      ·      `;
+  return `${phrase}      ·      `;
 }
 
 function buildLines(phrase: string, cols: number, rows: number) {
@@ -85,7 +85,7 @@ export function AmbientTextField({ phrase, className }: AmbientTextFieldProps) {
       if (svg) {
         const probe = document.createElementNS("http://www.w3.org/2000/svg", "text");
         probe.setAttribute("font-size", String(FONT_SIZE));
-        probe.setAttribute("letter-spacing", "0.12em");
+        probe.setAttribute("letter-spacing", "0");
         probe.setAttribute(
           "font-family",
           "var(--font-mono-display), ui-monospace, monospace",
@@ -175,7 +175,7 @@ export function AmbientTextField({ phrase, className }: AmbientTextFieldProps) {
             y={row * LINE + FONT_SIZE}
             fill="rgba(243, 241, 234, 0.16)"
             fontSize={FONT_SIZE}
-            letterSpacing="0.12em"
+            letterSpacing="0"
             fontFamily="var(--font-mono-display), ui-monospace, monospace"
           >
             {line}

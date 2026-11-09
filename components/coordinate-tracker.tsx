@@ -29,7 +29,7 @@ export function CoordinateTracker({ className }: { className?: string }) {
       aria-hidden="true"
       className={
         className ??
-        "pointer-events-none absolute left-1/3 top-1/2 font-mono text-[11px] tracking-[0.08em] text-foreground/30"
+        "pointer-events-none absolute left-1/3 top-1/2 font-mono text-[11px] text-foreground/30"
       }
     >
       X:0000 Y:0000

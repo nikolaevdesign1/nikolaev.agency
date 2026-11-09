@@ -18,7 +18,7 @@ export function Marquee({ items, className, reverse = false }: MarqueeProps) {
     >
       <div
         className={cn(
-          "flex shrink-0 items-center gap-0 whitespace-nowrap font-mono text-sm uppercase tracking-wider text-muted",
+          "flex shrink-0 items-center gap-0 whitespace-nowrap font-mono text-sm text-muted",
           reverse ? "animate-marquee-reverse" : "animate-marquee",
         )}
       >

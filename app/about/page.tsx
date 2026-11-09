@@ -368,7 +368,7 @@ function AmbientTag({
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.14em] text-[#161616]/35 transition-opacity duration-700"
+      className="pointer-events-none absolute whitespace-nowrap font-mono text-[11px] text-[#161616]/35 transition-opacity duration-700"
       style={{ left: x, top: y, opacity: faded ? 0 : 1 }}
     >
       {text.slice(0, visibleChars)}
@@ -397,7 +397,7 @@ function ServiceField() {
   return (
     <div className="relative mx-auto min-h-[920px] max-w-6xl sm:min-h-[1040px] md:min-h-[1120px]">
       <ServiceAmbience />
-      <h2 className="pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-center font-serif text-[clamp(2.5rem,6vw,5.25rem)] leading-none font-normal tracking-tight whitespace-nowrap text-foreground">
+      <h2 className="pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-center font-serif text-[clamp(2.5rem,6vw,5.25rem)] leading-none font-normal whitespace-nowrap text-foreground">
         Our services
       </h2>
       {directions.map((direction, index) => {
@@ -471,26 +471,26 @@ const faqs = [
 export default function AboutPage() {
   return (
     <>
-      <section id="company" className="scroll-mt-24 bg-white px-6 pt-36 pb-24 md:px-10 md:pt-48 md:pb-36">
+      <section id="company" className="scroll-mt-24 bg-white gutter pt-36 pb-24 md:pt-48 md:pb-36">
         <div className="grid items-start gap-6 md:grid-cols-[7.5rem_minmax(0,1fr)] md:gap-12">
-          <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase md:pt-4">
+          <p className="font-mono text-[11px] text-muted md:pt-4">
             Company
           </p>
-          <h1 className="max-w-5xl font-serif text-[clamp(2.15rem,5vw,4.6rem)] leading-[1.08] font-normal tracking-tight text-pretty text-foreground">
+          <h1 className="max-w-5xl font-serif text-[clamp(2.15rem,5vw,4.6rem)] leading-[1.08] font-normal text-pretty text-foreground">
             nikolaev.agency is a small digital-first studio. Direct access to the people doing
             the work. No account managers.
           </h1>
         </div>
       </section>
 
-      <section id="services" className="scroll-mt-24 bg-white px-6 py-16 md:px-10 md:py-24">
+      <section id="services" className="scroll-mt-24 bg-white gutter py-16 md:py-24">
         <ServiceField />
       </section>
 
-      <section id="awards" className="scroll-mt-24 bg-white px-6 py-24 md:px-10 md:py-32">
+      <section id="awards" className="scroll-mt-24 bg-white gutter py-24 md:py-32">
         <div className="mx-auto max-w-5xl">
           <div className="flex items-baseline justify-between gap-6 border-b-2 border-[#161616] pb-4">
-            <h2 className="font-serif text-4xl leading-none font-normal tracking-tight text-foreground md:text-6xl">
+            <h2 className="font-serif text-4xl leading-none font-normal text-foreground md:text-6xl">
               Awards &amp; Recognitions
             </h2>
             <span className="shrink-0 font-serif text-2xl text-foreground md:text-4xl">
@@ -511,7 +511,7 @@ export default function AboutPage() {
                       {i === 0 ? group.org : ""}
                     </span>
                     <span className="font-mono text-sm text-muted">{entry.count}</span>
-                    <span className="font-mono text-xs uppercase tracking-wider text-foreground">
+                    <span className="font-mono text-xs text-foreground">
                       {entry.label}
                     </span>
                   </div>
@@ -529,8 +529,8 @@ export default function AboutPage() {
         >
           {DIGITS}
         </pre>
-        <div className="relative flex items-center px-6 py-24 md:px-10 md:py-32">
-          <p className="max-w-md font-serif text-3xl leading-snug font-normal tracking-tight text-pretty text-foreground md:text-5xl">
+        <div className="relative flex items-center gutter py-24 md:py-32">
+          <p className="max-w-md font-serif text-3xl leading-snug font-normal text-pretty text-foreground md:text-5xl">
             A small digital-first studio. Direct access, no account managers.
           </p>
         </div>
@@ -543,17 +543,17 @@ export default function AboutPage() {
           seed={21}
           phrase="Direct access no account managers ongoing support"
         />
-        <div className="px-6 py-20 md:px-10 md:py-28">
-          <h2 className="max-w-3xl font-serif text-4xl leading-[1.05] font-normal tracking-tight md:text-6xl">
+        <div className="gutter py-20 md:py-28">
+          <h2 className="max-w-3xl font-serif text-4xl leading-[1.05] font-normal md:text-6xl">
             Direct access. Ongoing support.
           </h2>
           <ul className="mt-14 grid gap-px bg-white/15 sm:grid-cols-2">
             {supportCards.map((card) => (
-              <li key={card.index} className="bg-ink px-6 py-8 md:px-8 md:py-10">
-                <p className="font-mono text-[11px] tracking-[0.16em] text-ink-muted uppercase">
+              <li key={card.index} className="bg-ink gutter py-8 md:px-8 md:py-10">
+                <p className="font-mono text-[11px] text-ink-muted">
                   {card.index}
                 </p>
-                <h3 className="mt-6 font-serif text-3xl leading-none font-normal tracking-tight">
+                <h3 className="mt-6 font-serif text-3xl leading-none font-normal">
                   {card.title}
                 </h3>
                 <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-foreground/70">
@@ -566,8 +566,8 @@ export default function AboutPage() {
       </section>
 
       <section id="faq" className="scroll-mt-24 bg-ink text-ink-foreground">
-        <div className="px-6 py-24 md:px-10 md:py-32">
-          <h2 className="font-serif text-5xl leading-none font-normal tracking-tight md:text-7xl">
+        <div className="gutter py-24 md:py-32">
+          <h2 className="font-serif text-5xl leading-none font-normal md:text-7xl">
             Before we start
           </h2>
           <div className="mt-14 border-b border-white/20">
@@ -579,7 +579,7 @@ export default function AboutPage() {
               >
                 <summary className="flex cursor-pointer list-none items-baseline justify-between gap-6 py-6 [&::-webkit-details-marker]:hidden">
                   <span className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-8">
-                    <span className="shrink-0 font-mono text-[11px] tracking-[0.16em] text-ink-muted uppercase">
+                    <span className="shrink-0 font-mono text-[11px] text-ink-muted">
                       {item.id}
                     </span>
                     <span className="font-serif text-2xl leading-tight md:text-3xl">{item.q}</span>

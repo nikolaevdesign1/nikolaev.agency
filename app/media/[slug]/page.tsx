@@ -50,17 +50,17 @@ export default async function ArticlePage({
   const midpoint = Math.ceil(article.content.length / 2);
 
   return (
-    <article className="bg-background px-6 pb-28 pt-36 text-foreground md:px-10 md:pt-44">
-      <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+    <article className="bg-background gutter pb-28 pt-36 text-foreground md:pt-44">
+      <p className="font-mono text-[11px] text-muted">
         <Link href="/media" className="hover:text-foreground">
           Media
         </Link>{" "}
         / {article.category}
       </p>
-      <h1 className="mt-6 max-w-3xl font-serif text-4xl font-medium leading-[1.08] tracking-tight md:text-6xl">
+      <h1 className="mt-6 max-w-3xl font-serif text-4xl font-medium leading-[1.08] md:text-6xl">
         {article.title}
       </h1>
-      <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+      <p className="mt-6 font-mono text-[11px] text-muted">
         {formatDate(article.date)} · {article.readMinutes} min read
       </p>
 
@@ -81,7 +81,7 @@ export default async function ArticlePage({
         ))}
 
         <div className="mt-12 border-t border-border pt-6">
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+          <p className="font-mono text-[11px] text-muted">
             Also published on
           </p>
           <ul className="mt-3 flex flex-wrap gap-5">
@@ -91,7 +91,7 @@ export default async function ArticlePage({
                   href={social.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em] text-foreground/80 transition-colors hover:text-foreground"
+                  className="inline-flex items-center gap-2 font-mono text-[11px] text-foreground/80 transition-colors hover:text-foreground"
                 >
                   {social.label}
                   <span aria-hidden>→</span>
@@ -108,26 +108,26 @@ export default async function ArticlePage({
         href={`/media/${next.slug}`}
         className="mx-auto mt-16 flex max-w-2xl items-center justify-between gap-6 border-y border-border py-6 transition-colors hover:text-accent"
       >
-        <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+        <span className="font-mono text-[11px] text-muted">
           Next article
         </span>
-        <span className="font-serif text-2xl font-medium tracking-tight">{next.title}</span>
+        <span className="font-serif text-2xl font-medium">{next.title}</span>
         <span aria-hidden className="text-2xl">
           →
         </span>
       </Link>
 
       <div className="mx-auto mt-16 max-w-5xl">
-        <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+        <p className="font-mono text-[11px] text-muted">
           Recommended
         </p>
         <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-3">
           {recommended.map((item) => (
             <Link key={item.slug} href={`/media/${item.slug}`} className="group block">
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+              <p className="font-mono text-[10px] text-muted">
                 {item.category}
               </p>
-              <p className="mt-1.5 font-serif text-lg font-medium leading-snug tracking-tight text-foreground">
+              <p className="mt-1.5 font-serif text-lg font-medium leading-snug text-foreground">
                 {item.title}
               </p>
               <div className="mt-4 aspect-[4/3] overflow-hidden rounded-2xl">
@@ -153,7 +153,7 @@ function ArticleBlock({
 }) {
   if (block.type === "h2") {
     return (
-      <h2 className="mt-10 font-serif text-2xl font-medium tracking-tight text-foreground md:text-3xl">
+      <h2 className="mt-10 font-serif text-2xl font-medium text-foreground md:text-3xl">
         {block.text}
       </h2>
     );

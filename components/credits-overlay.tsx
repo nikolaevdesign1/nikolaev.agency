@@ -15,7 +15,7 @@ export function CreditsOverlay({ credits }: CreditsOverlayProps) {
           style={{ top: credit.top, left: credit.left }}
         >
           <p className="italic text-ink-foreground/50">{credit.role}</p>
-          <p className="uppercase tracking-wider">{credit.name}</p>
+          <p>{credit.name}</p>
         </div>
       ))}
     </div>

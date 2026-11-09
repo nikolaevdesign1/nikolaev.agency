@@ -22,7 +22,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       </div>
 
       <div className="overflow-hidden">
-        <h3 className="text-2xl font-medium tracking-tight text-foreground transition-transform duration-500 ease-out group-hover:translate-x-2 md:text-4xl">
+        <h3 className="text-2xl font-medium text-foreground transition-transform duration-500 ease-out group-hover:translate-x-2 md:text-4xl">
           {project.title}
         </h3>
         <p className="mt-1 text-sm text-muted md:hidden">
@@ -30,11 +30,11 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         </p>
       </div>
 
-      <div className="hidden font-mono text-xs uppercase tracking-wider text-muted md:block">
+      <div className="hidden font-mono text-xs text-muted md:block">
         {project.services.join(" / ")}
       </div>
 
-      <div className="hidden text-right font-mono text-xs uppercase tracking-wider text-muted md:block">
+      <div className="hidden text-right font-mono text-xs text-muted md:block">
         {project.year}
       </div>
     </Link>

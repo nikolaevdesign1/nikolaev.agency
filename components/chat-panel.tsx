@@ -131,18 +131,18 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           <div>
             <h2
               id="studio-chat-title"
-              className="font-serif text-2xl font-medium leading-none tracking-tight"
+              className="font-serif text-2xl font-medium leading-none"
             >
               Let&apos;s chat
             </h2>
-            <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-ink-muted">
+            <p className="mt-2 font-mono text-[11px] text-ink-muted">
               Answers from the site. Inquiries are drafted, not sent.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer font-mono text-xs uppercase tracking-wider text-ink-foreground"
+            className="cursor-pointer font-mono text-xs text-ink-foreground"
           >
             Close
           </button>
@@ -151,7 +151,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
         <div ref={scrollerRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-8">
           {messages.length === 0 ? (
             <div className="flex h-full flex-col justify-end pb-4">
-              <p className="max-w-md font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl">
+              <p className="max-w-md font-serif text-3xl font-medium leading-tight md:text-4xl">
                 Ask about the studio, or start a brief.
               </p>
               <div className="mt-6 flex flex-col gap-2">
@@ -229,7 +229,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
             <button
               type="submit"
               disabled={pending || !draft.trim()}
-              className="mb-1 shrink-0 rounded-[4px] bg-ink-foreground px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-ink transition-colors hover:bg-accent disabled:opacity-40"
+              className="mb-1 shrink-0 rounded-[4px] bg-ink-foreground px-3 py-2 font-mono text-[11px] text-ink transition-colors hover:bg-accent disabled:opacity-40"
             >
               Send
             </button>

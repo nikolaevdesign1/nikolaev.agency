@@ -22,23 +22,23 @@ export function Nav() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 isolate bg-transparent px-6 py-5 mix-blend-difference md:px-10 md:py-6">
+      <header className="fixed inset-x-0 top-0 z-50 isolate bg-transparent gutter py-5 mix-blend-difference md:py-6">
         <div className="grid grid-cols-[1fr_auto_1fr] items-start">
           <Link
             href="/"
             onClick={() => setOpen(false)}
             className={`flex w-fit flex-col font-sans ${blend}`}
           >
-            <span className="text-2xl font-normal leading-none tracking-tight">
+            <span className="text-xl font-normal leading-none">
               {inMedia ? "nikolaev.media" : "nikolaev.agency"}
             </span>
-            <span className="mt-1 text-[11px] font-normal leading-none">
+            <span className="mt-1 text-[10px] font-normal leading-none">
               by Oleg Nikolaev
             </span>
           </Link>
 
           <nav
-            className="col-start-2 hidden translate-x-16 items-baseline gap-8 font-sans text-2xl leading-none md:flex"
+            className="col-start-2 hidden translate-x-16 items-baseline gap-7 font-sans text-xl leading-none md:flex"
             aria-label="Primary"
           >
             {links.map((link) => (
@@ -57,7 +57,7 @@ export function Nav() {
             <button
               type="button"
               onClick={() => setChatOpen(true)}
-              className={`hidden cursor-pointer font-sans text-2xl font-normal leading-none md:block ${blend}`}
+              className={`hidden cursor-pointer font-sans text-xl font-normal leading-none transition-opacity hover:opacity-60 md:block ${blend}`}
             >
               Let&apos;s chat
             </button>

@@ -21,7 +21,7 @@ function IconButton({
   href?: string;
 }) {
   const cls =
-    "flex size-10 items-center justify-center rounded-full border border-border bg-background text-foreground transition-colors hover:bg-foreground hover:text-background";
+    "flex size-10 items-center justify-center rounded-[6px] border border-border bg-background text-foreground transition-colors hover:bg-foreground hover:text-background";
   if (href) {
     return (
       <Link href={href} target="_blank" aria-label={label} className={cls}>
@@ -100,10 +100,10 @@ export function ProjectModal({ project, index }: { project: Project; index: numb
       >
         <div className="flex items-start justify-between gap-6 px-6 pt-8 md:px-12 md:pt-10">
           <div className="min-w-0">
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+            <p className="font-mono text-[11px] text-muted">
               {project.category} · {project.year}
             </p>
-            <h1 className="mt-3 font-serif text-5xl font-semibold leading-[1.02] tracking-tight md:text-7xl">
+            <h1 className="mt-3 font-serif text-5xl font-semibold leading-[1.02] md:text-7xl">
               {project.title}
             </h1>
             <div className="mt-5 flex items-center gap-3">
@@ -146,7 +146,7 @@ export function ProjectModal({ project, index }: { project: Project; index: numb
           {tab === "info" ? (
             <div className="mt-10 grid gap-10 md:grid-cols-[2fr_1fr]">
               <p className="max-w-2xl text-lg leading-relaxed">{project.summary}</p>
-              <dl className="space-y-4 font-mono text-[11px] uppercase tracking-[0.14em]">
+              <dl className="space-y-4 font-mono text-[11px]">
                 <div>
                   <dt className="text-muted">Client</dt>
                   <dd className="mt-1">{project.client}</dd>
@@ -166,7 +166,7 @@ export function ProjectModal({ project, index }: { project: Project; index: numb
               {project.services.map((service) => (
                 <li
                   key={service}
-                  className="rounded-full border border-border px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em]"
+                  className="rounded-[6px] border border-border px-4 py-2 font-mono text-[11px]"
                 >
                   {service}
                 </li>

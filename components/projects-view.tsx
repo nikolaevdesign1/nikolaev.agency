@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { InfinityVision } from "@/components/infinity-vision";
 import { projectIsAwarded, projects } from "@/lib/data/projects";
-import { CursorFollowCta } from "@/components/cursor-follow-cta";
-import { ProjectCover } from "@/components/project-cover";
+import { ProjectTile } from "@/components/project-tile";
+import { site } from "@/lib/data/site";
 
 type Theme = "light" | "dark";
 type View = "field" | "list";
@@ -123,6 +122,7 @@ export function ProjectsView() {
   const [awardsOnly, setAwardsOnly] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<string | null>(null);
+  const [serviceFilter, setServiceFilter] = useState<string | null>(null);
   const destination = useRef<View>("field");
   const timer = useRef<number | null>(null);
 
@@ -188,15 +188,21 @@ export function ProjectsView() {
     [],
   );
 
+  const services = useMemo(
+    () => Array.from(new Set(projects.flatMap((p) => p.services))).sort(),
+    [],
+  );
+
   const visible = useMemo(
     () =>
       projects.filter((project) => {
         if (awardsOnly && !projectIsAwarded(project)) return false;
         if (categoryFilter && project.category !== categoryFilter) return false;
         if (locationFilter && project.location !== locationFilter) return false;
+        if (serviceFilter && !project.services.includes(serviceFilter)) return false;
         return true;
       }),
-    [awardsOnly, categoryFilter, locationFilter],
+    [awardsOnly, categoryFilter, locationFilter, serviceFilter],
   );
 
   const changeTheme = (next: Theme, event: React.MouseEvent<HTMLButtonElement>) => {
@@ -236,95 +242,85 @@ export function ProjectsView() {
           className="absolute inset-0 z-10 overflow-y-auto"
           aria-label="Project catalog"
         >
-          <div className="w-full px-6 pb-40 pt-28 md:px-10">
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
-              <Link href="/" className="hover:text-foreground">
-                Home
-              </Link>{" "}
-              / Work
-            </p>
-            <h1 className="mt-4 max-w-2xl font-serif text-5xl font-medium leading-[1.05] tracking-tight text-foreground md:text-7xl">
-              Projects
-            </h1>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
-              {visible.length} of {projects.length} case studies — brand, product, and motion
-              work shipped end to end.
-            </p>
+          <div className="relative w-full gutter pb-40 pt-28">
+            <div className="flex flex-col items-center text-center">
+              <p className="inline-flex items-center gap-2 self-start rounded-[4px] border border-border px-3 py-1.5 font-mono text-[11px] text-muted md:absolute md:left-[var(--gutter)] md:top-28">
+                <span aria-hidden="true" className="size-1.5 rounded-full bg-accent" />
+                {site.upcoming.count} upcoming projects in {site.upcoming.month}
+              </p>
+              <h1 className="mt-8 max-w-3xl font-serif text-5xl font-medium leading-[1.05] text-foreground md:mt-0 md:text-7xl">
+                Projects
+              </h1>
+              <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
+                {visible.length} of {projects.length} case studies: brand, product, and motion
+                work shipped end to end.
+              </p>
+            </div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 border-y border-border py-4 font-mono text-[11px] uppercase tracking-[0.14em]">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-muted">Category</span>
-                <FilterPill active={categoryFilter === null} onClick={() => setCategoryFilter(null)}>
-                  All
-                </FilterPill>
-                {categories.map((category) => (
-                  <FilterPill
-                    key={category}
-                    active={categoryFilter === category}
-                    onClick={() => setCategoryFilter(categoryFilter === category ? null : category)}
-                  >
-                    {category}
-                  </FilterPill>
-                ))}
+            <div className="mt-10 flex flex-wrap items-center gap-3 rounded-[8px] border border-border bg-background p-2 text-sm">
+              <div className="relative flex max-w-full overflow-x-auto rounded-[6px] bg-surface/60 p-1">
+                {["All", ...categories].map((category) => {
+                  const active =
+                    category === "All" ? categoryFilter === null : categoryFilter === category;
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setCategoryFilter(category === "All" ? null : category)}
+                      className={`shrink-0 rounded-[4px] px-4 py-2 transition-colors duration-300 ${
+                        active
+                          ? "bg-foreground text-background"
+                          : "text-foreground hover:bg-foreground/8"
+                      }`}
+                    >
+                      {category}
+                    </button>
+                  );
+                })}
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-muted">Location</span>
-                <FilterPill active={locationFilter === null} onClick={() => setLocationFilter(null)}>
-                  All
-                </FilterPill>
-                {locations.map((location) => (
-                  <FilterPill
-                    key={location}
-                    active={locationFilter === location}
-                    onClick={() => setLocationFilter(locationFilter === location ? null : location)}
-                  >
-                    {location}
-                  </FilterPill>
-                ))}
+              <label className="flex items-center gap-2 px-2">
+                <input
+                  type="checkbox"
+                  checked={awardsOnly}
+                  onChange={(event) => setAwardsOnly(event.target.checked)}
+                  className="size-4 accent-[var(--foreground)]"
+                />
+                Awarded
+              </label>
+              <div className="ml-auto flex flex-wrap gap-2">
+                <FilterSelect
+                  label="Location"
+                  value={locationFilter}
+                  options={locations}
+                  onChange={setLocationFilter}
+                />
+                <FilterSelect
+                  label="Services"
+                  value={serviceFilter}
+                  options={services}
+                  onChange={setServiceFilter}
+                />
               </div>
-              <button
-                type="button"
-                aria-pressed={awardsOnly}
-                onClick={() => setAwardsOnly((on) => !on)}
-                className={`rounded-[4px] border px-3 py-1.5 transition-colors ${
-                  awardsOnly
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border text-muted hover:text-foreground"
-                }`}
-              >
-                Awarded only
-              </button>
             </div>
 
             {visible.length === 0 ? (
-              <p className="mt-16 font-mono text-sm uppercase tracking-wider text-muted">
+              <p className="mt-16 text-center font-mono text-sm text-muted">
                 No projects match these filters.
               </p>
             ) : (
-              <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-2 md:grid-cols-3 md:gap-x-12 md:gap-y-16">
+              <div
+                key={`${categoryFilter}|${locationFilter}|${serviceFilter}|${awardsOnly}`}
+                className="mt-8 columns-1 gap-x-6 sm:columns-2 lg:columns-3"
+              >
                 {visible.map((project, i) => (
-                  <CursorFollowCta key={project.slug} label="View case study" className="group block">
-                    <Link href={`/projects/${project.slug}`}>
-                      <div className="flex items-baseline justify-between gap-3">
-                        <p className="font-serif text-xl font-medium tracking-tight text-foreground">
-                          {project.title}
-                        </p>
-                        {projectIsAwarded(project) ? (
-                          <span className="shrink-0 rounded-[2px] border border-foreground/45 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-foreground">
-                            Award
-                          </span>
-                        ) : null}
-                      </div>
-                      <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-                        {project.category} · {project.location}
-                      </p>
-                      <div className="relative mt-4 aspect-[4/3] overflow-hidden rounded-lg border border-border">
-                        <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.04]">
-                          <ProjectCover project={project} index={i} className="h-full border-0" />
-                        </div>
-                      </div>
-                    </Link>
-                  </CursorFollowCta>
+                  <div
+                    key={project.slug}
+                    className="mb-10 break-inside-avoid animate-[tile-in_420ms_ease-out_both]"
+                    style={{ animationDelay: `${i * 45}ms` }}
+                  >
+                    <ProjectTile project={project} index={i} />
+                  </div>
                 ))}
               </div>
             )}
@@ -338,7 +334,7 @@ export function ProjectsView() {
         data-projects-toolbar=""
         role="toolbar"
         aria-label="Projects"
-        className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
+        className="absolute bottom-10 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
       >
         <SlidingGroup activeIndex={theme === "light" ? 0 : 1} ariaLabel="Theme">
           <BarOption pressed={theme === "light"} onClick={(e) => changeTheme("light", e)}>
@@ -410,7 +406,7 @@ function BarOption({
       type="button"
       aria-pressed={pressed}
       onClick={onClick}
-      className={`relative z-10 rounded-[4px] px-4 py-4 transition-colors duration-300 ${
+      className={`relative z-10 rounded-[4px] px-3 py-2 transition-colors duration-300 ${
         pressed ? "text-background" : "text-foreground hover:bg-foreground/8"
       }`}
     >
@@ -419,27 +415,30 @@ function BarOption({
   );
 }
 
-function FilterPill({
-  active,
-  onClick,
-  children,
+function FilterSelect({
+  label,
+  value,
+  options,
+  onChange,
 }: {
-  active: boolean;
-  onClick: () => void;
-  children: string;
+  label: string;
+  value: string | null;
+  options: string[];
+  onChange: (value: string | null) => void;
 }) {
   return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={`rounded-[4px] border px-2.5 py-1 transition-colors ${
-        active
-          ? "border-foreground bg-foreground text-background"
-          : "border-border text-muted hover:text-foreground"
-      }`}
+    <select
+      aria-label={label}
+      value={value ?? ""}
+      onChange={(event) => onChange(event.target.value || null)}
+      className="rounded-[6px] bg-surface/60 px-4 py-3 text-foreground"
     >
-      {children}
-    </button>
+      <option value="">{label}</option>
+      {options.map((option) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
   );
 }

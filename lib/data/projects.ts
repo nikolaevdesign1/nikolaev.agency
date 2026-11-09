@@ -8,6 +8,8 @@ export type Project = {
   services: string[];
   summary: string;
   featured?: boolean;
+  /** Cover aspect ratio used by the tile layout. */
+  format?: "4:3" | "16:9" | "9:16";
   /** Live site, when the project is one. Enables "Visit site". */
   url?: string;
 };
@@ -15,6 +17,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "silo-dallas",
+    format: "16:9",
     title: "Silo Dallas",
     client: "Silo",
     category: "Hospitality",
@@ -27,6 +30,7 @@ export const projects: Project[] = [
   },
   {
     slug: "meridian-capital",
+    format: "9:16",
     title: "Meridian Capital",
     client: "Meridian",
     category: "Finance",
@@ -39,6 +43,7 @@ export const projects: Project[] = [
   },
   {
     slug: "fieldnote",
+    format: "4:3",
     title: "Fieldnote",
     client: "Fieldnote Labs",
     category: "Product",
@@ -51,6 +56,7 @@ export const projects: Project[] = [
   },
   {
     slug: "atlas-running",
+    format: "16:9",
     title: "Atlas Running Club",
     client: "Atlas",
     category: "Apparel",
@@ -62,6 +68,7 @@ export const projects: Project[] = [
   },
   {
     slug: "harbor-health",
+    format: "4:3",
     title: "Harbor Health",
     client: "Harbor",
     category: "Healthcare",
@@ -73,6 +80,7 @@ export const projects: Project[] = [
   },
   {
     slug: "northline",
+    format: "9:16",
     title: "Northline",
     client: "Northline Goods",
     category: "E-commerce",
@@ -84,6 +92,7 @@ export const projects: Project[] = [
   },
   {
     slug: "pulsar",
+    format: "16:9",
     title: "Pulsar",
     client: "Pulsar Labs",
     category: "Technology",
@@ -95,6 +104,7 @@ export const projects: Project[] = [
   },
   {
     slug: "open-archive",
+    format: "4:3",
     title: "Open Archive",
     client: "Open Archive",
     category: "Media",
@@ -106,6 +116,7 @@ export const projects: Project[] = [
   },
   {
     slug: "silverline-robotics",
+    format: "9:16",
     title: "Silverline Robotics",
     client: "Silverline",
     category: "Robotics",
@@ -154,4 +165,10 @@ export function projectIsAwarded(project: Project): boolean {
     ...project.services,
   ].join(" ");
   return AWARD_COPY.test(copy);
+}
+
+/** Client country flag, derived from the project location. */
+export function countryFlag(location: string) {
+  if (/remote/i.test(location)) return "🌐";
+  return "🇺🇸";
 }

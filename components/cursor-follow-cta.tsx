@@ -118,7 +118,7 @@ function ensureListen() {
 }
 
 export function CursorFollowCta({
-  label = "View case study",
+  label = "View case",
   className,
   children,
 }: CursorFollowCtaProps) {
@@ -148,7 +148,7 @@ export function CursorFollowCta({
         ref={badgeRef}
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute left-0 top-0 z-30 inline-flex items-center gap-1.5 whitespace-nowrap rounded-[4px] bg-ink px-2 py-1 font-mono text-[10px] uppercase leading-none tracking-[0.2em] text-ink-foreground",
+          "pointer-events-none absolute left-0 top-0 z-30 inline-flex items-center gap-1.5 whitespace-nowrap rounded-[4px] bg-ink px-3 py-2 font-mono text-[13px] leading-none text-ink-foreground",
           shown ? "opacity-100" : "opacity-0",
         )}
       >

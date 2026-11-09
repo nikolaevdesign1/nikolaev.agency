@@ -15,14 +15,14 @@ export function ProjectCover({ project, index, className }: ProjectCoverProps) {
   return (
     <div
       className={cn(
-        "relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border-2",
+        "relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-none",
         dark
           ? "border-ink-border bg-ink text-ink-foreground"
           : "border-border bg-surface/60 text-foreground",
         className,
       )}
     >
-      <span className="font-sans text-8xl font-medium tracking-tight opacity-20">
+      <span className="font-sans text-8xl font-medium opacity-20">
         {project.title.charAt(0)}
       </span>
       {showAccent && (

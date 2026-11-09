@@ -17,7 +17,7 @@ export function PillArrow() {
 }
 
 export const pillClass =
-  "inline-flex items-center gap-2.5 rounded bg-white px-5 py-2.5 font-sans text-[11px] font-medium uppercase text-black ring-1 ring-black/10 transition-opacity duration-200 hover:opacity-75";
+  "inline-flex items-center gap-2.5 rounded bg-white px-5 py-2.5 font-sans text-[11px] font-medium text-black ring-1 ring-black/10 transition-opacity duration-200 hover:opacity-75";
 
 type LinkButtonProps = {
   href: string;

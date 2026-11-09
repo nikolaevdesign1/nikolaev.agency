@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { projectIsAwarded, type Project } from "@/lib/data/projects";
 import { PhotoBit } from "@/components/photo-bit";
 import { CursorFollowCta } from "@/components/cursor-follow-cta";
@@ -20,6 +21,7 @@ type Cell = {
   x: number;
   y: number;
   src: string;
+  slug: string;
   title: string;
   seed: number;
   blurb: string;
@@ -27,8 +29,8 @@ type Cell = {
   award: string | null;
 };
 
-const GRID = 64;
-const NOTE_STEP = 460;
+const GRID = 96;
+const NOTE_STEP = 300;
 
 const NOTE_POOL = [
   "--STUDIO:",
@@ -43,6 +45,13 @@ const NOTE_POOL = [
   ":--PRODUCT",
   ":--MOTION",
   "--STATUS: ACCEPTING PROJECTS",
+  ":--LOS ANGELES, CA",
+  ":--EST. 2021",
+  "IDX-001 :--SELECTED WORK",
+  ":--MORE SOON",
+  ":--REPLY WITHIN 2 DAYS",
+  "--SYS: ONLINE",
+  ":--CASE STUDIES",
 ];
 
 type Note = { key: string; x: number; y: number; text: string };
@@ -107,7 +116,7 @@ function buildNotes(camX: number, camY: number, width: number, height: number) {
   for (let row = startRow; row < startRow + rows; row++) {
     for (let col = startCol; col < startCol + cols; col++) {
       const h = hash(col + 8191, row - 4093);
-      if (unit(h) > 0.42) continue;
+      if (unit(h) > 0.62) continue;
       notes.push({
         key: `${col}:${row}`,
         x: col * NOTE_STEP + unit(hash(col, row + 101)) * NOTE_STEP * 0.7,
@@ -154,6 +163,7 @@ function buildCells(
         key: `${col}:${row}`,
         x,
         y,
+        slug: project.slug,
         title: project.title,
         blurb: shortLine(project.summary),
         tags: tagsOf(project),
@@ -174,6 +184,7 @@ export function InfinityVision({
   theme: "light" | "dark";
   projects: readonly Project[];
 }) {
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const camRef = useRef({ x: 0, y: 0 });
   const targetRef = useRef({ x: 0, y: 0 });
@@ -260,7 +271,7 @@ export function InfinityVision({
     () => buildNotes(cam.x, cam.y, viewport.width, viewport.height),
     [cam.x, cam.y, viewport.width, viewport.height],
   );
-  const dotInk = theme === "dark" ? "rgba(243, 241, 234, 0.4)" : "rgba(35, 35, 35, 0.4)";
+  const dotInk = theme === "dark" ? "rgba(240, 150, 55, 0.55)" : "rgba(35, 35, 35, 0.4)";
   const noteInk = theme === "dark" ? "rgba(243, 241, 234, 0.32)" : "rgba(35, 35, 35, 0.32)";
 
   return (
@@ -294,8 +305,16 @@ export function InfinityVision({
         kickRef.current();
       }}
       onPointerUp={(event) => {
-        if (dragRef.current?.pointerId !== event.pointerId) return;
+        const drag = dragRef.current;
+        if (drag?.pointerId !== event.pointerId) return;
+        const moved = Math.hypot(event.clientX - drag.x, event.clientY - drag.y);
         dragRef.current = null;
+        if (moved < 6) {
+          const hit = document
+            .elementFromPoint(event.clientX, event.clientY)
+            ?.closest<HTMLElement>("[data-project-slug]");
+          if (hit?.dataset.projectSlug) router.push(`/projects/${hit.dataset.projectSlug}`);
+        }
         setDragging(false);
       }}
       onPointerCancel={() => {
@@ -331,52 +350,53 @@ export function InfinityVision({
         <div
           key={cell.key}
           data-project-tile=""
+          data-project-slug={cell.slug}
           className="absolute z-10"
           style={{
             width: TILE_W,
             transform: `translate3d(${cell.x - cam.x}px, ${cell.y - cam.y}px, 0)`,
           }}
         >
-          <div data-project-caption="" className="pb-3 pl-0.5" style={{ minHeight: CAPTION_H - 24 }}>
-            <div className="flex items-baseline justify-between gap-3">
-              <p
-                data-project-title=""
-                className="font-serif text-3xl font-medium leading-none tracking-tight text-foreground"
-              >
-                {cell.title}
-              </p>
-              {cell.award ? (
-                <span
-                  data-award-plaque=""
-                  className="shrink-0 rounded-[2px] border border-foreground/45 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-foreground"
+          <CursorFollowCta label="View case" className="w-full">
+            <div data-project-caption="" className="pb-3 pl-0.5">
+              <div className="flex items-baseline justify-between gap-3">
+                <p
+                  data-project-title=""
+                  className="font-serif text-3xl font-medium leading-none text-foreground"
                 >
-                  {cell.award}
-                </span>
-              ) : null}
+                  {cell.title}
+                </p>
+                {cell.award ? (
+                  <span
+                    data-award-plaque=""
+                    className="shrink-0 rounded-[2px] border border-foreground/45 px-1.5 py-0.5 font-mono text-[10px] text-foreground"
+                  >
+                    {cell.award}
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-2 line-clamp-2 text-sm leading-snug text-muted">{cell.blurb}</p>
             </div>
-            <p className="mt-2 line-clamp-2 text-sm leading-snug text-muted">{cell.blurb}</p>
-          </div>
-          <div
-            className="relative overflow-hidden rounded-md border border-border"
-            style={{ height: TILE_H }}
-          >
-            <CursorFollowCta label="View case study" className="h-full w-full">
-              <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
-            </CursorFollowCta>
             <div
-              data-project-direction=""
-              className="pointer-events-none absolute inset-x-3 bottom-3 flex flex-wrap gap-1.5"
+              className="relative overflow-hidden rounded-[6px] border border-border"
+              style={{ height: TILE_H }}
             >
-              {cell.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-white px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[#141414]"
-                >
-                  {tag}
-                </span>
-              ))}
+              <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
+              <div
+                data-project-direction=""
+                className="pointer-events-none absolute inset-x-3 bottom-3 flex flex-wrap gap-1.5"
+              >
+                {cell.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-[4px] bg-white px-2 py-1 font-mono text-[10px] leading-none text-[#141414]"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          </CursorFollowCta>
         </div>
       ))}
     </div>

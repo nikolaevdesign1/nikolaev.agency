@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { site } from "@/lib/data/site";
 import { ContactForm } from "@/components/contact-form";
 import { CoordinateTracker } from "@/components/coordinate-tracker";
+import { DotField } from "@/components/dot-field";
 import { TerminalNotes } from "@/components/terminal-notes";
 
 export const metadata: Metadata = {
@@ -28,23 +29,24 @@ const replyNotes = [
 
 export default function ContactPage() {
   return (
-    <section className="bg-dot-grid relative flex min-h-screen flex-col justify-center overflow-hidden bg-background px-6 py-24 md:px-10 md:py-28 xl:px-20">
+    <section className="bg-dot-grid relative flex min-h-screen flex-col justify-center overflow-hidden bg-background gutter py-24 md:py-28">
+      <DotField />
       <TerminalNotes
         lines={studioNotes}
-        className="pointer-events-none absolute bottom-16 left-6 hidden select-none font-mono text-[11px] leading-[1.5] text-foreground/35 md:left-10 lg:block"
+        className="pointer-events-none absolute bottom-16 left-[var(--gutter)] hidden select-none font-mono text-[11px] leading-[1.5] text-foreground/35 md:left-10 lg:block"
       />
       <TerminalNotes
         lines={replyNotes}
-        className="pointer-events-none absolute bottom-16 right-6 hidden select-none text-right font-mono text-[11px] leading-[1.5] text-foreground/35 md:right-10 lg:block"
+        className="pointer-events-none absolute bottom-16 right-[var(--gutter)] hidden select-none text-right font-mono text-[11px] leading-[1.5] text-foreground/35 md:right-10 lg:block"
       />
-      <CoordinateTracker className="pointer-events-none absolute right-10 top-28 hidden font-mono text-[11px] tracking-[0.08em] text-foreground/30 md:block" />
-      <p className="relative font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+      <CoordinateTracker className="pointer-events-none absolute right-[var(--gutter)] top-28 hidden font-mono text-[11px] text-foreground/30 md:block" />
+      <p className="relative font-mono text-[11px] text-muted">
         Contact / New conversation
       </p>
-      <h1 className="relative mt-4 max-w-4xl font-serif text-4xl font-medium leading-[1.05] tracking-tight text-foreground md:text-6xl">
+      <h1 className="relative mt-4 max-w-4xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:text-6xl">
         What do you have in mind?
       </h1>
-      <p className="relative mt-4 max-w-xl font-mono text-[11px] leading-relaxed tracking-[0.04em] text-muted">
+      <p className="relative mt-4 max-w-xl font-mono text-[11px] leading-relaxed text-muted">
         A new product, a design challenge, or a possible collaboration.
         <br />
         Tell me a little about it.

@@ -8,19 +8,19 @@ export function CtaSection() {
   return (
     <section className="border-t-2 border-border px-6 py-24 md:px-10 md:py-32">
       <Reveal>
-        <p className="font-mono text-xs uppercase tracking-wider text-accent">
+        <p className="font-mono text-xs text-accent">
           Start a project
         </p>
         <ScrambleText
           as="h2"
           text="Have something in mind? Let's talk."
-          className="mt-6 max-w-3xl text-4xl font-medium leading-[1.05] tracking-tight md:text-6xl"
+          className="mt-6 max-w-3xl text-4xl font-medium leading-[1.05] md:text-6xl"
         />
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <LinkButton href="/contact">Start a project</LinkButton>
           <Link
             href={`mailto:${site.email}`}
-            className="font-mono text-xs uppercase tracking-wider text-muted transition-colors hover:text-foreground"
+            className="font-mono text-xs text-muted transition-colors hover:text-foreground"
           >
             {site.email}
           </Link>
