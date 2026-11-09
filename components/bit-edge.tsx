@@ -160,7 +160,7 @@ function paint(
 
 export function BitEdge({
   from = "#0a0a0a",
-  to = "#f8f6f2",
+  to = "#fcfbf9",
   phrase = "SMALL TEAM DIRECT ACCESS NO ACCOUNT MANAGERS",
   seed = 4,
   className,
@@ -203,7 +203,15 @@ export function BitEdge({
   }, [from, to, phrase, seed]);
 
   return (
-    <div aria-hidden="true" className={className ?? "h-72 w-full md:h-[22rem]"}>
+    <div
+      aria-hidden="true"
+      className={className ?? "h-72 w-full md:h-[22rem]"}
+      style={
+        isDark(to)
+          ? { maskImage: "linear-gradient(to bottom, transparent, #000 18%)" }
+          : { maskImage: "linear-gradient(to bottom, #000 72%, transparent)" }
+      }
+    >
       <canvas ref={canvasRef} className="block h-full w-full" />
     </div>
   );

@@ -6,7 +6,10 @@ import { site } from "@/lib/data/site";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
-import { PageTransition } from "@/components/page-transition";
+import { CornerSocial } from "@/components/corner-social";
+import { CookieNotice } from "@/components/cookie-notice";
+import { PageReveal } from "@/components/page-transition";
+import { Preloader } from "@/components/preloader";
 
 // next@16.4.5 exports Geist_Mono, but not Libre_Caslon_Condensed
 // (only Libre_Caslon_Display and Libre_Caslon_Text). These files are the
@@ -52,6 +55,12 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description: site.description,
+  icons: {
+    icon: [
+      { url: "/icon-light.svg", type: "image/svg+xml", media: "(prefers-color-scheme: light)" },
+      { url: "/icon-dark.svg", type: "image/svg+xml", media: "(prefers-color-scheme: dark)" },
+    ],
+  },
   openGraph: {
     title: `${site.name} — Design Studio, Los Angeles`,
     description: site.description,
@@ -67,7 +76,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children, modal }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
@@ -75,11 +84,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col font-sans">
         <SmoothScroll>
-          <PageTransition>
+          <>
+            <Preloader />
             <Nav />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1">
+              <PageReveal>{children}</PageReveal>
+            </main>
             <Footer />
-          </PageTransition>
+            {modal}
+            <CornerSocial />
+            <CookieNotice />
+          </>
         </SmoothScroll>
       </body>
     </html>

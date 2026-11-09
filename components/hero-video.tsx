@@ -1,3 +1,5 @@
+import { ScrambleText } from "@/components/scramble-text";
+
 type HeroVideoProps = {
   src?: string;
   poster?: string;
@@ -22,8 +24,8 @@ export function HeroVideo({ src, poster }: HeroVideoProps) {
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 gutter pb-16 md:pb-24">
         <h1 className="font-serif text-[clamp(2.75rem,8vw,7.5rem)] leading-[0.9] text-white mix-blend-difference">
-          <span className="block">nikolaev.agency</span>
-          <span className="block">Worldwide first Ai design studio agency.</span>
+          <ScrambleText as="span" trigger="mount" delay={1900} text="nikolaev.agency" className="block" />
+          <ScrambleText as="span" trigger="mount" delay={2200} text="Worldwide first Ai design studio agency." className="block" />
         </h1>
       </div>
     </section>

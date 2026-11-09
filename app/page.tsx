@@ -3,6 +3,8 @@ import { ServicesGrid } from "@/components/services-grid";
 import { SectionTransition } from "@/components/section-transition";
 import { BitEdge } from "@/components/bit-edge";
 import { AmbientTextField, StudioChatButton } from "@/components/ambient-text-field";
+import { ScrambleText } from "@/components/scramble-text";
+import { ExpandableVideo } from "@/components/expandable-video";
 import { BestCases } from "@/components/best-cases";
 import { LinkButton, pillClass } from "@/components/button";
 
@@ -35,7 +37,7 @@ export default function Home() {
       <BestCases />
 
       <BitEdge
-        from="#f8f6f2"
+        from="#fcfbf9"
         to="#0a0a0a"
         seed={11}
         phrase="Best cases · brand · product · a production-ready build · direct access"
@@ -44,12 +46,16 @@ export default function Home() {
         <AmbientTextField phrase="Small team · direct access · no account managers" />
         <div className="relative z-[1] flex flex-col gap-24 md:gap-32">
           <div className="flex max-w-5xl flex-col gap-10 md:gap-14">
-            <p className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl lg:text-7xl">
-              We build AI into the work itself.
-            </p>
-            <p className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl lg:text-7xl">
-              Faster builds, lighter support, reachable from anywhere.
-            </p>
+            <ScrambleText
+              as="p"
+              text="We build AI into the work itself."
+              className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl lg:text-7xl"
+            />
+            <ScrambleText
+              as="p"
+              text="Faster builds, lighter support, reachable from anywhere."
+              className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl lg:text-7xl"
+            />
           </div>
 
           <div className="grid gap-12 border-t border-ink-border pt-12 md:grid-cols-3 md:gap-10">
@@ -75,18 +81,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mx-auto w-[min(20vw,320px)]">
-            <div className="aspect-video overflow-hidden rounded-xl border border-ink-border bg-black/40">
-              <video
-                src="/video/hero.mp4"
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
+          <ExpandableVideo src="/video/hero.mp4" className="mx-auto w-[min(20vw,320px)]" />
         </div>
       </section>
 

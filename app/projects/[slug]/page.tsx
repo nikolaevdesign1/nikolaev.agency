@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { projects } from "@/lib/data/projects";
@@ -17,16 +18,23 @@ export async function generateMetadata({
   return { title: project?.title ?? "Project" };
 }
 
-export default async function ProjectDetailPage({
+async function Content({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const project = projects.find((p) => p.slug === slug);
+  if (!project) notFound();
+  const index = projects.findIndex((p) => p.slug === slug);
+
+  return <ProjectModal project={project} index={index} />;
+}
+
+export default function ProjectDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
-  if (!project) notFound();
-
-  const index = projects.findIndex((p) => p.slug === slug);
-
-  return <ProjectModal project={project} index={index} />;
+  return (
+    <Suspense fallback={null}>
+      <Content params={params} />
+    </Suspense>
+  );
 }

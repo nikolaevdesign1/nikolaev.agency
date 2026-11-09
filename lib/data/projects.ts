@@ -9,7 +9,7 @@ export type Project = {
   summary: string;
   featured?: boolean;
   /** Cover aspect ratio used by the tile layout. */
-  format?: "4:3" | "16:9" | "9:16";
+  format?: "4:3" | "16:9";
   /** Live site, when the project is one. Enables "Visit site". */
   url?: string;
 };
@@ -30,7 +30,7 @@ export const projects: Project[] = [
   },
   {
     slug: "meridian-capital",
-    format: "9:16",
+    format: "4:3",
     title: "Meridian Capital",
     client: "Meridian",
     category: "Finance",
@@ -80,7 +80,7 @@ export const projects: Project[] = [
   },
   {
     slug: "northline",
-    format: "9:16",
+    format: "16:9",
     title: "Northline",
     client: "Northline Goods",
     category: "E-commerce",
@@ -116,7 +116,7 @@ export const projects: Project[] = [
   },
   {
     slug: "silverline-robotics",
-    format: "9:16",
+    format: "4:3",
     title: "Silverline Robotics",
     client: "Silverline",
     category: "Robotics",

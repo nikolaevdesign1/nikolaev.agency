@@ -82,57 +82,57 @@ export function DotField({ className = "text-foreground" }: { className?: string
               cy={dot.y + 0.5}
               r="1"
               fill="currentColor"
-              opacity="0.25"
+              opacity="0.08"
             >
               <animate
                 attributeName="r"
-                values="1;2.6;1"
+                values="1;1.5;1"
                 dur="6s"
                 begin={`${dot.delay}s`}
                 repeatCount="indefinite"
               />
               <animate
                 attributeName="opacity"
-                values="0.2;0.9;0.2"
+                values="0.08;0.32;0.08"
                 dur="6s"
                 begin={`${dot.delay}s`}
                 repeatCount="indefinite"
               />
             </circle>
           ))}
-          {field.stars.map((star, i) => {
-            return (
-              <g key={`s${i}`}>
-                <path
-                  d="M0 -6 L1.4 -1.4 L6 0 L1.4 1.4 L0 6 L-1.4 1.4 L-6 0 L-1.4 -1.4 Z"
-                  fill="currentColor"
-                  opacity="0"
-                >
-                  <animate
-                    attributeName="opacity"
-                    values="0;1;1;1;1;1;1;0"
-                    dur="7s"
-                    begin={`${star.begin}s`}
-                    repeatCount="indefinite"
-                  />
-                  <animateTransform
-                    attributeName="transform"
-                    type="translate"
-                    values={star.path.map((p) => `${p.x + 0.5} ${p.y + 0.5}`).join(";")}
-                    keyTimes={star.path.map((_, k) => (k / (star.path.length - 1)).toFixed(3)).join(";")}
-                    calcMode="spline"
-                    keySplines={star.path
-                      .slice(1)
-                      .map(() => "0.5 0 0.2 1")
-                      .join(";")}
-                    dur="7s"
-                    begin={`${star.begin}s`}
-                    repeatCount="indefinite"
-                  />
-                </path>
-              </g>
-            );
-          })}
+          {field.stars.map((star, i) =>
+            [
+              { r: 1.5, lag: 0, peak: 0.4 },
+              { r: 1.1, lag: 0.14, peak: 0.22 },
+              { r: 0.8, lag: 0.28, peak: 0.12 },
+            ].map((part, k) => (
+              <circle key={`s${i}-${k}`} r={part.r} fill="currentColor" opacity="0">
+                <animate
+                  attributeName="opacity"
+                  values={`0;${part.peak};${part.peak};${part.peak};${part.peak};${part.peak};${part.peak};0`}
+                  dur="7s"
+                  begin={`${star.begin + part.lag}s`}
+                  repeatCount="indefinite"
+                />
+                <animateTransform
+                  attributeName="transform"
+                  type="translate"
+                  values={star.path.map((p) => `${p.x + 0.5} ${p.y + 0.5}`).join(";")}
+                  keyTimes={star.path
+                    .map((_, n) => (n / (star.path.length - 1)).toFixed(3))
+                    .join(";")}
+                  calcMode="spline"
+                  keySplines={star.path
+                    .slice(1)
+                    .map(() => "0.5 0 0.2 1")
+                    .join(";")}
+                  dur="7s"
+                  begin={`${star.begin + part.lag}s`}
+                  repeatCount="indefinite"
+                />
+              </circle>
+            )),
+          )}
         </svg>
       ) : null}
     </div>

@@ -3,136 +3,109 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-type QueueItem = {
-  to: string;
-  start: number;
-  end: number;
-  char?: string;
-};
-
-function buildQueue(text: string): QueueItem[] {
-  return text.split("").map((to) => {
-    const start = Math.floor(Math.random() * 20);
-    const end = start + Math.floor(Math.random() * 20) + 10;
-    return { to, start, end };
-  });
-}
-
-function nextChar(current: string | undefined, target: string): string {
-  if (target === " ") return " ";
-  if (current && Math.random() >= 0.3) return current;
-  return CHARS[Math.floor(Math.random() * CHARS.length)];
-}
-
-function renderFrame(queue: QueueItem[], frame: number) {
-  let output = "";
-  let complete = 0;
-  for (const item of queue) {
-    if (frame >= item.end) {
-      complete++;
-      output += item.to;
-    } else if (frame >= item.start) {
-      item.char = nextChar(item.char, item.to);
-      output += item.char;
-    }
-  }
-  return { output, done: complete === queue.length };
-}
+const DIGITS = "0123456789";
+const START = 20; // ms before the first character
+const STEP = 20; // ms between character starts
+const DURATION = 200; // ms each character spends cycling digits
 
 type ScrambleTextProps = {
   text: string;
   as?: "h1" | "h2" | "h3" | "p" | "span" | "div";
   className?: string;
-  trigger?: "mount" | "hover" | "inview";
-  /** ms before the scramble starts (mount/inview triggers only) */
+  trigger?: "mount" | "inview";
+  /** ms before the effect starts */
   delay?: number;
-  /** ms between animation steps — lower is faster */
-  frameRate?: number;
 };
 
+/**
+ * Characters appear one by one. Each flickers through digits for a fraction
+ * of a second and settles on the real letter. Hidden characters keep their
+ * space, so the layout never moves.
+ */
 export function ScrambleText({
   text,
   as = "span",
   className,
   trigger = "inview",
   delay = 0,
-  frameRate = 28,
 }: ScrambleTextProps) {
   const Tag = as;
   const ref = useRef<HTMLElement>(null);
-  const [display, setDisplay] = useState(text);
-  const timeoutRef = useRef<number | null>(null);
-  const hasRun = useRef(false);
+  const [display, setDisplay] = useState<{ ch: string; visible: boolean }[]>(() =>
+    text.split("").map((ch) => ({ ch, visible: true })),
+  );
+  const frameRef = useRef(0);
+  const ranRef = useRef(false);
 
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    };
-  }, []);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const chars = text.split("");
 
-  function play() {
-    const start = () => {
-      const queue = buildQueue(text);
-      let frame = 0;
+    const run = () => {
+      if (ranRef.current) return;
+      ranRef.current = true;
+      if (reduce) return;
+      const begin = performance.now() + delay;
+      setDisplay(chars.map((ch) => ({ ch, visible: ch === " " })));
 
-      const tick = () => {
-        const { output, done } = renderFrame(queue, frame);
-        setDisplay(output);
-        if (done) return;
-        frame++;
-        timeoutRef.current = window.setTimeout(tick, frameRate);
+      const tick = (now: number) => {
+        const t = now - begin;
+        let finished = true;
+        const next = chars.map((ch, i) => {
+          if (ch === " ") return { ch, visible: true };
+          const from = START + i * STEP;
+          if (t < from) {
+            finished = false;
+            return { ch, visible: false };
+          }
+          if (t < from + DURATION) {
+            finished = false;
+            return { ch: DIGITS[Math.floor(Math.random() * 10)] ?? "0", visible: true };
+          }
+          return { ch, visible: true };
+        });
+        setDisplay(next);
+        if (!finished) frameRef.current = requestAnimationFrame(tick);
       };
-
-      tick();
+      frameRef.current = requestAnimationFrame(tick);
     };
 
-    if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    if (delay > 0) {
-      timeoutRef.current = window.setTimeout(start, delay);
-    } else {
-      start();
-    }
-  }
-
-  useEffect(() => {
     if (trigger === "mount") {
-      play();
-      return;
+      run();
+      return () => {
+        cancelAnimationFrame(frameRef.current);
+        ranRef.current = false;
+      };
     }
 
-    if (trigger === "inview") {
-      const node = ref.current;
-      if (!node) return;
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting && !hasRun.current) {
-              hasRun.current = true;
-              play();
-              observer.disconnect();
-            }
-          });
-        },
-        { threshold: 0.4 },
-      );
-      observer.observe(node);
-      return () => observer.disconnect();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text, trigger]);
-
-  const handlers = trigger === "hover" ? { onMouseEnter: () => play() } : {};
+    const node = ref.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          run();
+        }
+      },
+      { threshold: 0.2 },
+    );
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frameRef.current);
+      ranRef.current = false;
+    };
+  }, [text, trigger, delay]);
 
   return (
-    <Tag
-      ref={ref as never}
-      className={cn("inline-block", className)}
-      aria-label={text}
-      {...handlers}
-    >
-      <span aria-hidden="true">{display}</span>
+    <Tag ref={ref as never} className={cn(className)} aria-label={text}>
+      <span aria-hidden="true">
+        {display.map((item, i) => (
+          <span key={i} style={item.visible ? undefined : { visibility: "hidden" }}>
+            {item.ch}
+          </span>
+        ))}
+      </span>
     </Tag>
   );
 }

@@ -1,15 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { DigitalWave } from "@/components/digital-wave";
 
-export function PageTransition({ children }: { children: React.ReactNode }) {
+/** Fades the page content in on each navigation. */
+export function PageReveal({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <>
-      <DigitalWave key={pathname} />
+    <div key={pathname} className="page-in">
       {children}
-    </>
+    </div>
   );
 }

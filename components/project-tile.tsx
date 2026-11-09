@@ -8,7 +8,6 @@ import { ProjectCover } from "@/components/project-cover";
 const RATIO = {
   "4:3": "aspect-[4/3]",
   "16:9": "aspect-video",
-  "9:16": "aspect-[9/16]",
 } as const;
 
 export function ProjectTile({
@@ -32,7 +31,7 @@ export function ProjectTile({
             <ProjectCover
               project={project}
               index={index}
-              className="h-full rounded-none border-0"
+              className="aspect-auto h-full w-full rounded-none border-0"
             />
           </div>
           <span className="absolute right-3 top-3 rounded-[4px] bg-white px-2 py-1 text-sm leading-none">

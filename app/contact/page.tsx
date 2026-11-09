@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { site } from "@/lib/data/site";
 import { ContactForm } from "@/components/contact-form";
 import { CoordinateTracker } from "@/components/coordinate-tracker";
+import { ScrambleText } from "@/components/scramble-text";
 import { DotField } from "@/components/dot-field";
 import { TerminalNotes } from "@/components/terminal-notes";
 
@@ -44,7 +45,7 @@ export default function ContactPage() {
         Contact / New conversation
       </p>
       <h1 className="relative mt-4 max-w-4xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:text-6xl">
-        What do you have in mind?
+        <ScrambleText as="span" trigger="mount" delay={300} text="What do you have in mind?" />
       </h1>
       <p className="relative mt-4 max-w-xl font-mono text-[11px] leading-relaxed text-muted">
         A new product, a design challenge, or a possible collaboration.

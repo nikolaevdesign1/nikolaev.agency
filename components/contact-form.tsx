@@ -129,32 +129,48 @@ export function ContactForm() {
       </label>
 
       <div className="flex flex-col gap-2">
-        <label className="group flex w-fit cursor-pointer items-center gap-2 border-b border-foreground/40 pb-1 font-mono text-[11px] text-muted transition-colors hover:border-foreground hover:text-foreground">
-          <input
-            type="file"
-            name="attachment"
-            className="sr-only"
-            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-          />
-          <span aria-hidden>+</span>
-          {file ? file.name : "Attach a file (optional)"}
-        </label>
-        {file && (
-          <button
-            type="button"
-            onClick={() => setFile(null)}
-            className="w-fit font-mono text-[11px] text-muted underline-offset-2 hover:text-foreground hover:underline"
-          >
-            Remove attachment
-          </button>
+        {file ? (
+          <div className="flex w-fit max-w-full items-center gap-3 rounded-[6px] border border-foreground bg-foreground/5 px-3 py-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M21 11.5 12.5 20a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3" />
+            </svg>
+            <span className="min-w-0 truncate text-sm text-foreground">{file.name}</span>
+            <span className="shrink-0 font-mono text-[11px] text-muted">
+              {file.size > 1048576
+                ? `${(file.size / 1048576).toFixed(1)} MB`
+                : `${Math.max(1, Math.round(file.size / 1024))} KB`}
+            </span>
+            <button
+              type="button"
+              aria-label="Remove attachment"
+              onClick={() => setFile(null)}
+              className="flex size-6 shrink-0 items-center justify-center rounded-[4px] border border-border transition-colors hover:bg-foreground hover:text-background"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" />
+              </svg>
+            </button>
+          </div>
+        ) : (
+          <label htmlFor="attachment" className="flex w-fit cursor-pointer items-center gap-2 rounded-[6px] border border-border px-3 py-2 text-sm text-foreground transition-colors hover:border-foreground">
+            <span aria-hidden>+</span>
+            Attach a file (optional)
+          </label>
         )}
+        <input
+          type="file"
+          id="attachment"
+          name="attachment"
+          className="sr-only"
+          onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+        />
       </div>
 
       <div className="flex items-center gap-6">
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="w-full max-w-[21rem] rounded bg-foreground py-5 text-center font-sans text-[11px] font-medium text-background ring-1 ring-black/10 transition-opacity duration-200 hover:opacity-85 disabled:opacity-60"
+          className="w-fit rounded-[6px] bg-foreground px-8 py-3 text-center font-sans text-[12px] font-medium text-background ring-1 ring-black/10 transition-opacity duration-200 hover:opacity-85 disabled:opacity-60"
         >
           {status === "submitting" ? "Sending…" : "Send message"}
         </button>

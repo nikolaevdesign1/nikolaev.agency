@@ -46,7 +46,7 @@ export function Footer() {
           <p className="max-w-xs font-mono text-[10px] leading-relaxed text-muted lg:col-span-5 lg:pt-6">
             The reply comes from the person doing the work.
           </p>
-          <div className="lg:col-span-4 lg:justify-self-end">
+          <div className="lg:col-span-3 lg:col-start-10">
             <p className="font-mono text-[10px] text-muted">Contact</p>
             <Image
               src="/avatar.webp"
@@ -71,7 +71,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 lg:mt-16">
-          <h2 className="font-serif text-[clamp(3.4rem,8.6vw,8.25rem)] font-normal leading-[0.9] text-foreground">
+          <h2 className="font-serif text-[clamp(2.2rem,5.2vw,5rem)] font-normal leading-[0.9] text-foreground">
             <span className="block">Do you have any questions?</span>
             <span className="block">
               <a href={`mailto:${site.email}`} className="relative inline-block">

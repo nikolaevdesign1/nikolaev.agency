@@ -173,9 +173,11 @@ export function AmbientTextField({ phrase, className }: AmbientTextFieldProps) {
             key={row}
             x="0"
             y={row * LINE + FONT_SIZE}
-            fill="rgba(243, 241, 234, 0.16)"
+            fill="rgba(243, 241, 234, 0.07)"
             fontSize={FONT_SIZE}
             letterSpacing="0"
+            textLength={size.width ? size.width + 4 : undefined}
+            lengthAdjust="spacing"
             fontFamily="var(--font-mono-display), ui-monospace, monospace"
           >
             {line}

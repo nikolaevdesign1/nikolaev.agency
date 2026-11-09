@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { InfinityVision } from "@/components/infinity-vision";
 import { projectIsAwarded, projects } from "@/lib/data/projects";
 import { ProjectTile } from "@/components/project-tile";
+import { ScrambleText } from "@/components/scramble-text";
 import { site } from "@/lib/data/site";
 
 type Theme = "light" | "dark";
@@ -208,17 +209,48 @@ export function ProjectsView() {
   const changeTheme = (next: Theme, event: React.MouseEvent<HTMLButtonElement>) => {
     if (next === theme) return;
     const rect = event.currentTarget.getBoundingClientRect();
-    const root = document.documentElement;
-    root.style.setProperty("--theme-toggle-x", `${rect.left + rect.width / 2}px`);
-    root.style.setProperty("--theme-toggle-y", `${rect.top + rect.height / 2}px`);
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
 
     const apply = () => setTheme(next);
-    const doc = document as Document & { startViewTransition?: (cb: () => void) => void };
-    if (doc.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      doc.startViewTransition(apply);
-    } else {
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => { ready: Promise<void> };
+    };
+    if (!doc.startViewTransition || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       apply();
+      return;
     }
+
+    const transition = doc.startViewTransition(apply);
+    transition.ready
+      .then(() => {
+        // Ragged front: a polygon around the click whose radius jitters per vertex and per frame.
+        const maxR = Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy)) * 1.25;
+        const points = 90;
+        const frames = 18;
+        const seed = Math.random() * 1000;
+        const keyframes = Array.from({ length: frames + 1 }, (_, f) => {
+          const t = f / frames;
+          const eased = 1 - Math.pow(1 - t, 2.2);
+          const poly = Array.from({ length: points }, (_, i) => {
+            const angle = (i / points) * Math.PI * 2;
+            const lobes = Math.sin(angle * 3 + seed) * 0.1 + Math.sin(angle * 7 - seed * 1.3) * 0.07;
+            const spike = Math.sin(i * 12.9898 + seed + f * 0.7) * 43758.5453;
+            const jag = (spike - Math.floor(spike) - 0.5) * 0.22;
+            const lag = Math.sin(angle * 5 + seed * 2) * 0.12;
+            const radius = Math.max(0, eased * (1 + lobes + jag) + lag * (1 - t) * eased) * maxR;
+            return `${(cx + Math.cos(angle) * radius).toFixed(1)}px ${(cy + Math.sin(angle) * radius).toFixed(1)}px`;
+          });
+          return { clipPath: `polygon(${poly.join(",")})`, offset: t };
+        });
+        document.documentElement.animate(keyframes, {
+          duration: 1000,
+          easing: "linear",
+          fill: "forwards",
+          pseudoElement: "::view-transition-new(root)",
+        });
+      })
+      .catch(() => {});
   };
 
   return (
@@ -249,7 +281,7 @@ export function ProjectsView() {
                 {site.upcoming.count} upcoming projects in {site.upcoming.month}
               </p>
               <h1 className="mt-8 max-w-3xl font-serif text-5xl font-medium leading-[1.05] text-foreground md:mt-0 md:text-7xl">
-                Projects
+                <ScrambleText as="span" trigger="mount" text="Projects" />
               </h1>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
                 {visible.length} of {projects.length} case studies: brand, product, and motion
@@ -311,7 +343,7 @@ export function ProjectsView() {
             ) : (
               <div
                 key={`${categoryFilter}|${locationFilter}|${serviceFilter}|${awardsOnly}`}
-                className="mt-8 columns-1 gap-x-6 sm:columns-2 lg:columns-3"
+                className="mt-8 columns-1 gap-x-4 sm:columns-2 lg:columns-3"
               >
                 {visible.map((project, i) => (
                   <div

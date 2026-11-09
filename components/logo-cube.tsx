@@ -1,0 +1,36 @@
+type LogoCubeProps = {
+  className?: string;
+  body?: string;
+  face?: string;
+};
+
+/** Rounded hexagon cube with a bold "n" cut into its right face. */
+export function LogoCube({
+  className,
+  body = "currentColor",
+  face = "var(--background)",
+}: LogoCubeProps) {
+  return (
+    <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
+      <path
+        d="M50 8 L86 29 V71 L50 92 L14 71 V29 Z"
+        fill={body}
+        stroke={body}
+        strokeWidth="9"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M54 60 L82 44 V70 L54 86 Z"
+        fill={face}
+        stroke={face}
+        strokeWidth="3"
+        strokeLinejoin="round"
+      />
+      <path
+        transform="translate(59.5 59) matrix(1 -0.577 0 1 0 0) scale(0.9)"
+        d="M0 20 V3 H5.2 V5.8 C6.8 3.8 8.8 2.8 11.4 2.8 C15.6 2.8 17.8 5.4 17.8 9.8 V20 H12.4 V11.4 C12.4 9.6 11.6 8.6 9.9 8.6 C7.2 8.6 5.2 10.2 5.2 12.8 V20 Z"
+        fill={body}
+      />
+    </svg>
+  );
+}

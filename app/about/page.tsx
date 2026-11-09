@@ -598,7 +598,7 @@ export default function AboutPage() {
         </div>
         <BitEdge
           from="#0a0a0a"
-          to="#f8f6f2"
+          to="#fcfbf9"
           seed={8}
           phrase="Before we start a small digital-first studio"
         />

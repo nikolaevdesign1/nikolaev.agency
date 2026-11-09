@@ -47,26 +47,35 @@ const stroke = {
   strokeLinejoin: "round" as const,
 };
 
-export function ProjectModal({ project, index }: { project: Project; index: number }) {
+export function ProjectModal({
+  project,
+  index,
+  intercepted = false,
+}: {
+  project: Project;
+  index: number;
+  intercepted?: boolean;
+}) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("info");
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const close = () => router.push("/projects");
+  const close = () => (intercepted ? router.back() : router.push("/projects"));
 
   useEffect(() => {
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") router.push("/projects");
+      if (event.key === "Escape") close();
     };
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = previous;
       window.removeEventListener("keydown", onKey);
     };
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, intercepted]);
 
   const share = async () => {
     try {
@@ -89,16 +98,16 @@ export function ProjectModal({ project, index }: { project: Project; index: numb
       role="dialog"
       aria-modal="true"
       aria-label={project.title}
-      className="fixed inset-0 z-50 bg-foreground/55 p-3 md:p-6"
+      className="fixed inset-0 z-50 pt-10"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) close();
       }}
     >
       <div
         data-lenis-prevent
-        className="relative mx-auto h-full w-full max-w-[1500px] overflow-y-auto rounded-xl border border-border bg-background"
+        className="relative h-full w-full animate-[modal-in_520ms_cubic-bezier(0.22,1,0.36,1)_both] overflow-y-auto rounded-t-[12px] border border-b-0 border-border bg-background"
       >
-        <div className="flex items-start justify-between gap-6 px-6 pt-8 md:px-12 md:pt-10">
+        <div className="flex items-start justify-between gap-6 gutter pt-8 md:pt-10">
           <div className="min-w-0">
             <p className="font-mono text-[11px] text-muted">
               {project.category} · {project.year}
@@ -138,7 +147,7 @@ export function ProjectModal({ project, index }: { project: Project; index: numb
           </div>
         </div>
 
-        <div className="px-6 pb-32 pt-8 md:px-12">
+        <div className="gutter pb-32 pt-8">
           <div className="overflow-hidden rounded-lg border border-border">
             <ProjectCover project={project} index={index} className="aspect-[16/9] rounded-none border-0" />
           </div>
