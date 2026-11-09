@@ -2,7 +2,7 @@
 
 :root {
   /* light — primary surface */
-  --background: #f8f6f2;
+  --background: #fcfbf9;
   --foreground: #232323;
   --muted: #5b5a56;
   --border: rgba(35, 35, 35, 0.14);
@@ -43,6 +43,11 @@
 
 * {
   border-color: var(--border);
+}
+
+button:not(:disabled),
+[role="button"]:not(:disabled) {
+  cursor: pointer;
 }
 
 html {
@@ -122,13 +127,13 @@ h6 {
 
 /* faint dot-grid texture used behind the services/directions section */
 .bg-dot-grid {
-  background-image: radial-gradient(var(--border) 2px, transparent 2px);
-  background-size: 32px 32px;
+  background-image: radial-gradient(rgba(35, 35, 35, 0.4) 1px, transparent 1px);
+  background-size: 64px 64px;
 }
 
 .bg-dot-grid-ink {
-  background-image: radial-gradient(var(--ink-border) 2px, transparent 2px);
-  background-size: 32px 32px;
+  background-image: radial-gradient(rgba(243, 241, 234, 0.4) 1px, transparent 1px);
+  background-size: 64px 64px;
 }
 
 @keyframes marquee {
@@ -233,4 +238,8 @@ h6 {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+* {
+  outline: none;
 }

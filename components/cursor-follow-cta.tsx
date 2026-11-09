@@ -117,21 +117,6 @@ function ensureListen() {
   });
 }
 
-function CaseArrow() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true" className="shrink-0">
-      <path
-        d="M2.5 11.5 11.5 2.5M11.5 2.5H7M11.5 2.5V7"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-        strokeLinecap="butt"
-        strokeLinejoin="miter"
-      />
-    </svg>
-  );
-}
-
 export function CursorFollowCta({
   label = "View case study",
   className,
@@ -163,12 +148,11 @@ export function CursorFollowCta({
         ref={badgeRef}
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute left-0 top-0 z-30 inline-flex items-center gap-1.5 whitespace-nowrap rounded-[4px] bg-background px-2 py-1 font-mono text-[10px] uppercase leading-none tracking-[0.2em] text-foreground",
+          "pointer-events-none absolute left-0 top-0 z-30 inline-flex items-center gap-1.5 whitespace-nowrap rounded-[4px] bg-ink px-2 py-1 font-mono text-[10px] uppercase leading-none tracking-[0.2em] text-ink-foreground",
           shown ? "opacity-100" : "opacity-0",
         )}
       >
         {label}
-        <CaseArrow />
       </span>
     </div>
   );

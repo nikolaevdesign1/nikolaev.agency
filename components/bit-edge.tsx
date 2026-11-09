@@ -108,8 +108,10 @@ function paint(
       const wave =
         Math.sin(col * 0.09 + seed) * 2.2 +
         Math.sin(col * 0.31 + seed * 1.4) * 1.3;
-      const jitter = (hash(col * 13 + seed * 97) - 0.5) * 5;
-      const row = Math.round(gridRows * 0.4 + wave + jitter);
+      const jitter = (hash(col * 13 + seed * 97) - 0.5) * 9;
+      const spike = hash(col * 41 + seed * 5) > 0.86 ? (hash(col * 3 + seed) - 0.5) * 22 : 0;
+      const drift = Math.sin(col * 0.021 + seed * 2.3) * 7;
+      const row = Math.round(gridRows * 0.4 + wave + jitter + spike + drift);
       return Math.max(2, Math.min(gridRows - 3, row));
     });
 
@@ -128,7 +130,8 @@ function paint(
         const x = col * step;
         const y = row * step;
         const inDark = darkOnTop ? row <= skyline[col] : row >= skyline[col];
-        const slot = hash(col * 17 + row * 53 + seed);
+        const clump = hash(Math.floor(col / 5) * 31 + Math.floor(row / 4) * 67 + seed);
+        const slot = (hash(col * 17 + row * 53 + seed) + clump) / 2;
         const localInked = 1 - (1 - inked) * (inDark ? presence : 1);
         const painted = !inDark || slot < localInked;
         const darkColor = darkOnTop ? from : to;
@@ -151,8 +154,7 @@ function paint(
   }
 
   if (toDark) {
-    const scrolled = Math.min(1, progress / 0.46);
-    paintSquares(false, 0.16 + scrolled * 0.26, 0.28);
+    paintSquares(false, 0.04 + progress * 0.96, 0.62);
   }
 }
 

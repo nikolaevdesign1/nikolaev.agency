@@ -8,6 +8,8 @@ export type Project = {
   services: string[];
   summary: string;
   featured?: boolean;
+  /** Live site, when the project is one. Enables "Visit site". */
+  url?: string;
 };
 
 export const projects: Project[] = [

@@ -111,28 +111,22 @@ export function MediaIndex() {
           No articles match.
         </p>
       ) : (
-        <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2 md:grid-cols-3">
+        <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-2 md:grid-cols-3 md:gap-x-12 md:gap-y-16">
           {filtered.map((article) => (
-            <Link
-              key={article.slug}
-              href={`/media/${article.slug}`}
-              className="group block h-full bg-background"
-            >
-              <div className="aspect-[4/3] overflow-hidden">
+            <Link key={article.slug} href={`/media/${article.slug}`} className="group block">
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+                {article.category} · {formatDate(article.date)}
+              </p>
+              <p className="mt-1.5 font-serif text-lg font-medium leading-snug tracking-tight text-foreground">
+                {article.title}
+              </p>
+              <div className="mt-4 aspect-[4/3] overflow-hidden rounded-2xl">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={article.cover}
                   alt=""
                   className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                 />
-              </div>
-              <div className="px-5 py-4">
-                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-                  {article.category} · {formatDate(article.date)}
-                </p>
-                <p className="mt-1.5 font-serif text-lg font-medium leading-snug tracking-tight text-foreground">
-                  {article.title}
-                </p>
               </div>
             </Link>
           ))}

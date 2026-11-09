@@ -5,8 +5,8 @@ import { projectIsAwarded, type Project } from "@/lib/data/projects";
 import { PhotoBit } from "@/components/photo-bit";
 import { CursorFollowCta } from "@/components/cursor-follow-cta";
 
-const TILE_W = 420;
-const TILE_H = 315;
+const TILE_W = 480;
+const TILE_H = 340;
 const CAPTION_H = 118;
 const MIN_GAP_X = 520;
 const MIN_GAP_Y = 460;
@@ -23,14 +23,29 @@ type Cell = {
   title: string;
   seed: number;
   blurb: string;
-  direction: string;
+  tags: string[];
   award: string | null;
 };
 
-const GRID = 48;
-const BIT_STEP = 156;
+const GRID = 64;
+const NOTE_STEP = 460;
 
-type Bit = { key: string; x: number; y: number; glyph: "0" | "1" };
+const NOTE_POOL = [
+  "--STUDIO:",
+  ":--DIRECT ACCESS",
+  ":--NO ACCOUNT MANAGERS",
+  ":--SMALL BY DESIGN",
+  "RPL-LOG :--INDEX:",
+  ":--READ WITHIN A DAY",
+  ":--REPLY FROM THE STUDIO",
+  "WRK-LOG :--INDEX:",
+  ":--BRAND",
+  ":--PRODUCT",
+  ":--MOTION",
+  "--STATUS: ACCEPTING PROJECTS",
+];
+
+type Note = { key: string; x: number; y: number; text: string };
 
 function hash(x: number, y: number) {
   let n = Math.imul(x, 374761393) + Math.imul(y, 668265263);
@@ -56,9 +71,9 @@ function shortLine(summary: string) {
   return `${clean.slice(0, 89).trimEnd()}…`;
 }
 
-function directionOf(project: Project) {
+function tagsOf(project: Project) {
   const services = project.services.filter((service) => service.trim().length > 0);
-  return [project.category, ...services].join(" · ");
+  return [project.category, ...services];
 }
 
 function awardPlaque(project: Project) {
@@ -82,27 +97,27 @@ function awardPlaque(project: Project) {
   return "Award";
 }
 
-function buildBits(camX: number, camY: number, width: number, height: number) {
-  const startCol = Math.floor(camX / BIT_STEP) - 1;
-  const startRow = Math.floor(camY / BIT_STEP) - 1;
-  const cols = Math.ceil(width / BIT_STEP) + 3;
-  const rows = Math.ceil(height / BIT_STEP) + 3;
-  const bits: Bit[] = [];
+function buildNotes(camX: number, camY: number, width: number, height: number) {
+  const startCol = Math.floor(camX / NOTE_STEP) - 1;
+  const startRow = Math.floor(camY / NOTE_STEP) - 1;
+  const cols = Math.ceil(width / NOTE_STEP) + 3;
+  const rows = Math.ceil(height / NOTE_STEP) + 3;
+  const notes: Note[] = [];
 
   for (let row = startRow; row < startRow + rows; row++) {
     for (let col = startCol; col < startCol + cols; col++) {
       const h = hash(col + 8191, row - 4093);
-      if (unit(h) > 0.34) continue;
-      bits.push({
+      if (unit(h) > 0.42) continue;
+      notes.push({
         key: `${col}:${row}`,
-        x: col * BIT_STEP + unit(hash(col, row + 101)) * BIT_STEP * 0.78,
-        y: row * BIT_STEP + unit(hash(col + 53, row)) * BIT_STEP * 0.78,
-        glyph: (h & 1) === 0 ? "0" : "1",
+        x: col * NOTE_STEP + unit(hash(col, row + 101)) * NOTE_STEP * 0.7,
+        y: row * NOTE_STEP + unit(hash(col + 53, row)) * NOTE_STEP * 0.7,
+        text: NOTE_POOL[h % NOTE_POOL.length] ?? NOTE_POOL[0],
       });
     }
   }
 
-  return bits;
+  return notes;
 }
 
 function place(col: number, row: number) {
@@ -141,7 +156,7 @@ function buildCells(
         y,
         title: project.title,
         blurb: shortLine(project.summary),
-        direction: directionOf(project),
+        tags: tagsOf(project),
         award: awardPlaque(project),
         seed: h,
         src: `https://picsum.photos/seed/${project.slug}-${variant}/1280/960`,
@@ -241,12 +256,12 @@ export function InfinityVision({
     () => buildCells(cam.x, cam.y, viewport.width, viewport.height, projects),
     [cam.x, cam.y, viewport.width, viewport.height, projects],
   );
-  const bits = useMemo(
-    () => buildBits(cam.x, cam.y, viewport.width, viewport.height),
+  const notes = useMemo(
+    () => buildNotes(cam.x, cam.y, viewport.width, viewport.height),
     [cam.x, cam.y, viewport.width, viewport.height],
   );
-  const gridInk = theme === "dark" ? "rgba(243, 241, 234, 0.05)" : "rgba(35, 35, 35, 0.045)";
-  const digitInk = theme === "dark" ? "rgba(243, 241, 234, 0.72)" : "rgba(35, 35, 35, 0.62)";
+  const dotInk = theme === "dark" ? "rgba(243, 241, 234, 0.4)" : "rgba(35, 35, 35, 0.4)";
+  const noteInk = theme === "dark" ? "rgba(243, 241, 234, 0.32)" : "rgba(35, 35, 35, 0.32)";
 
   return (
     <div
@@ -293,23 +308,23 @@ export function InfinityVision({
           data-field-grid=""
           className="absolute inset-0"
           style={{
-            backgroundImage: `linear-gradient(to right, ${gridInk} 0.5px, transparent 0.5px), linear-gradient(to bottom, ${gridInk} 0.5px, transparent 0.5px)`,
+            backgroundImage: `radial-gradient(${dotInk} 1px, transparent 1px)`,
             backgroundSize: `${GRID}px ${GRID}px`,
             backgroundPosition: `${-mod(cam.x, GRID)}px ${-mod(cam.y, GRID)}px`,
           }}
         />
-        {bits.map((bit) => (
-          <span
-            key={bit.key}
-            data-field-digit=""
-            className="absolute font-mono text-[12px] leading-none"
+        {notes.map((note) => (
+          <pre
+            key={note.key}
+            data-field-note=""
+            className="absolute m-0 font-mono text-[11px] leading-[1.4] select-none"
             style={{
-              color: digitInk,
-              transform: `translate3d(${bit.x - cam.x}px, ${bit.y - cam.y}px, 0)`,
+              color: noteInk,
+              transform: `translate3d(${note.x - cam.x}px, ${note.y - cam.y}px, 0)`,
             }}
           >
-            {bit.glyph}
-          </span>
+            {note.text}
+          </pre>
         ))}
       </div>
       {cells.map((cell) => (
@@ -322,17 +337,7 @@ export function InfinityVision({
             transform: `translate3d(${cell.x - cam.x}px, ${cell.y - cam.y}px, 0)`,
           }}
         >
-          <div className="overflow-hidden rounded-2xl" style={{ height: TILE_H }}>
-            <CursorFollowCta label="View case study" className="h-full w-full">
-              <PhotoBit
-                src={cell.src}
-                title={cell.title}
-                seed={cell.seed}
-                theme={theme}
-              />
-            </CursorFollowCta>
-          </div>
-          <div data-project-caption="" className="px-1 pt-3" style={{ minHeight: CAPTION_H }}>
+          <div data-project-caption="" className="pb-3 pl-0.5" style={{ minHeight: CAPTION_H - 24 }}>
             <div className="flex items-baseline justify-between gap-3">
               <p
                 data-project-title=""
@@ -350,12 +355,27 @@ export function InfinityVision({
               ) : null}
             </div>
             <p className="mt-2 line-clamp-2 text-sm leading-snug text-muted">{cell.blurb}</p>
-            <p
+          </div>
+          <div
+            className="relative overflow-hidden rounded-md border border-border"
+            style={{ height: TILE_H }}
+          >
+            <CursorFollowCta label="View case study" className="h-full w-full">
+              <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
+            </CursorFollowCta>
+            <div
               data-project-direction=""
-              className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-foreground/75"
+              className="pointer-events-none absolute inset-x-3 bottom-3 flex flex-wrap gap-1.5"
             >
-              {cell.direction}
-            </p>
+              {cell.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-white px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[#141414]"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       ))}

@@ -9,10 +9,23 @@ type ContactPayload = {
 };
 
 export async function POST(request: Request) {
+  const contentType = request.headers.get("content-type") ?? "";
   let body: ContactPayload;
+  let attachment: File | null = null;
 
   try {
-    body = await request.json();
+    if (contentType.includes("multipart/form-data")) {
+      const form = await request.formData();
+      body = {
+        name: form.get("name")?.toString(),
+        email: form.get("email")?.toString(),
+        message: form.get("message")?.toString(),
+      };
+      const file = form.get("attachment");
+      if (file instanceof File && file.size > 0) attachment = file;
+    } else {
+      body = await request.json();
+    }
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
@@ -33,7 +46,7 @@ export async function POST(request: Request) {
 
   // Delivery isn't wired up yet — wire an email provider (e.g. Resend) here
   // and point it at hello@nikolaev.agency, or persist to a CRM/table instead.
-  console.log("New contact inquiry", body);
+  console.log("New contact inquiry", body, attachment ? { attachment: attachment.name } : {});
 
   return NextResponse.json({ ok: true });
 }

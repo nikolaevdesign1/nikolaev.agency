@@ -17,7 +17,7 @@ export function PillArrow() {
 }
 
 export const pillClass =
-  "inline-flex items-center gap-2.5 rounded bg-white px-5 py-2.5 font-sans text-[11px] font-medium uppercase text-black ring-1 ring-black/10";
+  "inline-flex items-center gap-2.5 rounded bg-white px-5 py-2.5 font-sans text-[11px] font-medium uppercase text-black ring-1 ring-black/10 transition-opacity duration-200 hover:opacity-75";
 
 type LinkButtonProps = {
   href: string;
@@ -30,7 +30,6 @@ export function LinkButton({ href, className, children }: LinkButtonProps) {
   return (
     <Link href={href} className={cn(pillClass, className)}>
       {children}
-      <PillArrow />
     </Link>
   );
 }
@@ -43,7 +42,6 @@ export function Button({ className, children, ...rest }: ButtonProps) {
   return (
     <button className={cn(pillClass, className)} {...rest}>
       {children}
-      <PillArrow />
     </button>
   );
 }

@@ -9,7 +9,7 @@ const links = [
   { label: "Work", href: "/projects" },
   { label: "Agency", href: "/about" },
   { label: "Contact", href: "/contact" },
-  { label: "Media", href: "/media", distinct: true },
+  { label: "Media", href: "/media" },
 ] as const;
 
 const blend = "isolate text-white mix-blend-difference";
@@ -46,11 +46,8 @@ export function Nav() {
                 key={link.href}
                 href={link.href}
                 aria-current={pathname === link.href ? "page" : undefined}
-                className={`inline-flex items-center gap-2 font-normal ${blend}`}
+                className={`font-normal ${blend}`}
               >
-                {"distinct" in link && link.distinct ? (
-                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent" />
-                ) : null}
                 {link.label}
               </Link>
             ))}
@@ -89,11 +86,8 @@ export function Nav() {
                 href={link.href}
                 onClick={() => setOpen(false)}
                 aria-current={pathname === link.href ? "page" : undefined}
-                className={`inline-flex items-center gap-2 ${blend}`}
+                className={blend}
               >
-                {"distinct" in link && link.distinct ? (
-                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent" />
-                ) : null}
                 {link.label}
               </Link>
             ))}

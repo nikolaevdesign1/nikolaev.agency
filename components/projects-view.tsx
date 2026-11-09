@@ -127,6 +127,14 @@ export function ProjectsView() {
   const timer = useRef<number | null>(null);
 
   useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
+
+  useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const finishNow = () => {
       if (!motion.matches) return;
@@ -228,7 +236,7 @@ export function ProjectsView() {
           className="absolute inset-0 z-10 overflow-y-auto"
           aria-label="Project catalog"
         >
-          <div className="mx-auto w-full max-w-6xl px-6 pb-28 pt-28 md:px-10">
+          <div className="w-full px-6 pb-40 pt-28 md:px-10">
             <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
               <Link href="/" className="hover:text-foreground">
                 Home
@@ -293,25 +301,10 @@ export function ProjectsView() {
                 No projects match these filters.
               </p>
             ) : (
-              <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-border sm:grid-cols-2 md:grid-cols-3">
+              <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-2 md:grid-cols-3 md:gap-x-12 md:gap-y-16">
                 {visible.map((project, i) => (
-                  <Link
-                    key={project.slug}
-                    href={`/projects/${project.slug}`}
-                    className="group block h-full bg-background"
-                  >
-                    <CursorFollowCta label="View case study" className="block">
-                      <div className="relative aspect-[4/3] overflow-hidden">
-                        <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.04]">
-                          <ProjectCover
-                            project={project}
-                            index={i}
-                            className="h-full rounded-none border-0"
-                          />
-                        </div>
-                      </div>
-                    </CursorFollowCta>
-                    <div className="px-5 py-4">
+                  <CursorFollowCta key={project.slug} label="View case study" className="group block">
+                    <Link href={`/projects/${project.slug}`}>
                       <div className="flex items-baseline justify-between gap-3">
                         <p className="font-serif text-xl font-medium tracking-tight text-foreground">
                           {project.title}
@@ -325,8 +318,13 @@ export function ProjectsView() {
                       <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
                         {project.category} · {project.location}
                       </p>
-                    </div>
-                  </Link>
+                      <div className="relative mt-4 aspect-[4/3] overflow-hidden rounded-lg border border-border">
+                        <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.04]">
+                          <ProjectCover project={project} index={i} className="h-full border-0" />
+                        </div>
+                      </div>
+                    </Link>
+                  </CursorFollowCta>
                 ))}
               </div>
             )}
@@ -340,46 +338,60 @@ export function ProjectsView() {
         data-projects-toolbar=""
         role="toolbar"
         aria-label="Projects"
-        className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-[8px] border border-border bg-background p-2 font-mono text-[20px] uppercase tracking-[0.16em] text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
+        className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
       >
-        <div role="group" aria-label="Theme" className="flex items-center">
+        <SlidingGroup activeIndex={theme === "light" ? 0 : 1} ariaLabel="Theme">
           <BarOption pressed={theme === "light"} onClick={(e) => changeTheme("light", e)}>
             Light
           </BarOption>
           <BarOption pressed={theme === "dark"} onClick={(e) => changeTheme("dark", e)}>
             Dark
           </BarOption>
-        </div>
-        <span aria-hidden="true" className="mx-2 h-16 w-[2px] bg-border" />
-        <div role="group" aria-label="Layout" className="flex items-center">
+        </SlidingGroup>
+        <span aria-hidden="true" className="mx-1 h-6 w-px bg-border" />
+        <SlidingGroup activeIndex={view === "field" ? 0 : 1} ariaLabel="Layout">
           <BarOption pressed={view === "field"} onClick={() => selectView("field")}>
             Field
           </BarOption>
           <BarOption pressed={view === "list"} onClick={() => selectView("list")}>
             List
           </BarOption>
-        </div>
-        <span aria-hidden="true" className="mx-2 h-16 w-[2px] bg-border" />
-        <button
-          type="button"
-          aria-pressed={awardsOnly}
-          aria-label="Awarded projects only"
-          onClick={() => setAwardsOnly((on) => !on)}
-          className={`grid h-28 w-28 place-items-center rounded-[8px] ${
-            awardsOnly ? "bg-foreground text-background" : "text-foreground hover:bg-foreground/8"
-          }`}
-        >
-          <svg width="56" height="56" viewBox="0 0 14 14" aria-hidden="true">
-            <path
-              d="M2.5 7.2 5.4 10.2 11.5 3.8"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="square"
-            />
-          </svg>
-        </button>
+        </SlidingGroup>
       </div>
+    </div>
+  );
+}
+
+function SlidingGroup({
+  activeIndex,
+  ariaLabel,
+  children,
+}: {
+  activeIndex: number;
+  ariaLabel: string;
+  children: React.ReactNode;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [rect, setRect] = useState<{ x: number; width: number } | null>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const active = container.querySelectorAll("button")[activeIndex] as HTMLElement | undefined;
+    if (!active) return;
+    setRect({ x: active.offsetLeft, width: active.offsetWidth });
+  }, [activeIndex]);
+
+  return (
+    <div ref={containerRef} role="group" aria-label={ariaLabel} className="relative flex items-center">
+      {rect && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-y-0 z-0 rounded-[4px] bg-foreground transition-all duration-300 ease-out"
+          style={{ left: rect.x, width: rect.width }}
+        />
+      )}
+      {children}
     </div>
   );
 }
@@ -398,8 +410,8 @@ function BarOption({
       type="button"
       aria-pressed={pressed}
       onClick={onClick}
-      className={`rounded-[8px] px-10 py-6 ${
-        pressed ? "bg-foreground text-background" : "text-foreground hover:bg-foreground/8"
+      className={`relative z-10 rounded-[4px] px-4 py-4 transition-colors duration-300 ${
+        pressed ? "text-background" : "text-foreground hover:bg-foreground/8"
       }`}
     >
       {children}
