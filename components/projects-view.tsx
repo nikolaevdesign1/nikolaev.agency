@@ -338,12 +338,12 @@ export function ProjectsView() {
             ) : (
               <div
                 key={`${categoryFilter}|${locationFilter}|${serviceFilter}|${awardsOnly}`}
-                className="mt-8 columns-1 gap-x-4 sm:columns-2 lg:columns-3"
+                className="mt-8 grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
               >
                 {visible.map((project, i) => (
                   <div
                     key={project.slug}
-                    className="mb-10 break-inside-avoid animate-[tile-in_420ms_ease-out_both]"
+                    className="animate-[tile-in_420ms_ease-out_both]"
                     style={{ animationDelay: `${i * 45}ms` }}
                   >
                     <ProjectTile project={project} index={i} />

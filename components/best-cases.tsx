@@ -12,9 +12,9 @@ export function BestCases() {
       <p className="font-mono text-[11px] text-muted">
         Selected work
       </p>
-      <div className="mt-6 columns-1 gap-x-4 sm:columns-2 lg:columns-3">
+      <div className="mt-6 grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
         {cases.map((project, i) => (
-          <Reveal key={project.slug} delay={i * 40} className="mb-10 break-inside-avoid">
+          <Reveal key={project.slug} delay={i * 40}>
             <ProjectTile project={project} index={i} />
           </Reveal>
         ))}
