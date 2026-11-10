@@ -279,10 +279,14 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
         >
           <div className="relative w-full gutter pb-40 pt-36">
             <div className="relative mt-8 flex flex-col items-center text-center md:mt-10">
-              <p className="self-start rounded-[4px] border border-border px-3 py-1.5 font-mono text-[11px] text-muted md:absolute md:right-0 md:top-2 md:self-auto">
+              <button
+                type="button"
+                onClick={() => document.getElementById("upcoming")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                className="rounded-[4px] bg-foreground px-3.5 py-2 font-mono text-[12px] leading-none text-background transition-opacity duration-300 hover:opacity-80"
+              >
                 {site.upcoming.count} upcoming projects in {site.upcoming.month}
-              </p>
-              <h1 className="mt-8 max-w-3xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:mt-0 md:text-6xl">
+              </button>
+              <h1 className="mt-6 max-w-3xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:text-6xl">
                 <ScrambleText as="span" trigger="mount" text="Featured Projects" />
               </h1>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">

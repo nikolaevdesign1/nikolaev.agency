@@ -32,7 +32,7 @@ export function UpcomingPlaque() {
   }
 
   return (
-    <div className="flex aspect-[4/3] flex-col justify-between rounded-[6px] bg-surface/60 p-6 md:p-8">
+    <div id="upcoming" className="flex aspect-[4/3] flex-col justify-between rounded-[6px] bg-surface/60 p-6 md:p-8">
       <p className="font-mono text-[11px] text-muted">Next</p>
       <div>
         <p className="font-serif text-4xl font-medium leading-none text-foreground md:text-5xl">
