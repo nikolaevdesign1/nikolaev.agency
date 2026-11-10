@@ -39,6 +39,16 @@ function slerp(a: Vec, b: Vec, t: number): Vec {
 }
 
 /** Draggable dot globe: studio hub in Los Angeles, projects tied to it with threads. */
+/** Puts the hover card next to the cursor, kept inside the globe's box. */
+function placeCard(el: HTMLElement | null, wrap: HTMLElement | null, x: number, y: number) {
+  if (!el || !wrap) return;
+  const maxX = wrap.clientWidth - el.offsetWidth - 8;
+  const maxY = wrap.clientHeight - el.offsetHeight - 8;
+  const left = Math.min(Math.max(8, x + 16), Math.max(8, maxX));
+  const top = Math.min(Math.max(8, y + 16), Math.max(8, maxY));
+  el.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+}
+
 export function GlobeNetwork({
   className,
   projects,
@@ -49,6 +59,8 @@ export function GlobeNetwork({
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [card, setCard] = useState<Card | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const cursor = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -143,6 +155,8 @@ export function GlobeNetwork({
         const rect = canvas.getBoundingClientRect();
         const mx = e.clientX - rect.left;
         const my = e.clientY - rect.top;
+        cursor.current = { x: mx, y: my };
+        placeCard(cardRef.current, wrap, mx, my);
         let best: (typeof screen)[number] | null = null;
         let bestD = 40;
         const current = activeCity;
@@ -366,14 +380,13 @@ export function GlobeNetwork({
       />
       {card ? (
         <div
-          className="pointer-events-none absolute z-10 w-56 rounded-[10px] p-[4px]"
-          style={{
-            left: Math.min(Math.max(8, card.x + 16), (wrapRef.current?.clientWidth ?? 600) - 232),
-            top: Math.max(8, card.y - 70),
-            background: "repeating-conic-gradient(#0a0a0a 0% 25%, #3b3b3b 0% 50%) 0 0 / 4px 4px",
+          ref={(el) => {
+            cardRef.current = el;
+            placeCard(el, wrapRef.current, cursor.current.x, cursor.current.y);
           }}
+          className="pointer-events-none absolute left-0 top-0 z-10 w-56"
         >
-          <div className="rounded-[7px] bg-[#161616] px-4 py-3.5 font-mono text-[12px] leading-none text-white">
+          <div className="rounded-[8px] bg-[#161616] px-4 py-3.5 font-mono text-[12px] leading-none text-white">
             <p className="text-[13px]">{card.city}</p>
             <p className="mt-2 text-white/45">
               {card.count} {card.count === 1 ? "project" : "projects"}
