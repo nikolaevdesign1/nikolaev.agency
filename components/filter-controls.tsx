@@ -24,7 +24,7 @@ export function ScrollStrip({ children }: { children: React.ReactNode }) {
   return (
     <div
       ref={ref}
-      className="min-w-0 max-w-full overflow-x-auto rounded-[6px] bg-surface/60 p-1"
+      className="min-w-0 max-w-full overflow-x-auto rounded-[6px] bg-surface/30 p-1"
       style={fade ? { maskImage: "linear-gradient(to right, #000 calc(100% - 28px), transparent)" } : undefined}
     >
       <div className="flex w-max">{children}</div>
@@ -120,7 +120,7 @@ export function FilterSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="flex min-w-[150px] items-center justify-between gap-4 rounded-[6px] bg-surface/60 px-3 py-2 text-[13px] text-foreground transition-colors duration-200 hover:bg-foreground/10"
+        className="flex min-w-[150px] items-center justify-between gap-4 rounded-[6px] bg-surface/30 px-3 py-2 text-[13px] text-foreground transition-colors duration-200 hover:bg-foreground/10"
       >
         <span className={value ? "" : "text-foreground/80"}>{value ?? label}</span>
         <svg
