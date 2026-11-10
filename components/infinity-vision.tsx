@@ -9,10 +9,10 @@ import { CursorFollowCta } from "@/components/cursor-follow-cta";
 const TILE_W = 480;
 const TILE_H = 360;
 const CAPTION_H = 118;
-const MIN_GAP_X = 520;
-const MIN_GAP_Y = 460;
-const JITTER_X = 70;
-const JITTER_Y = 70;
+const MIN_GAP_X = 150;
+const MIN_GAP_Y = 110;
+const JITTER_X = 60;
+const JITTER_Y = 60;
 const CELL_W = TILE_W + MIN_GAP_X + JITTER_X;
 const CELL_H = TILE_H + CAPTION_H + MIN_GAP_Y + JITTER_Y;
 
@@ -115,7 +115,8 @@ function buildNotes(camX: number, camY: number, width: number, height: number) {
 function place(col: number, row: number) {
   const jx = unit(hash(col, row));
   const jy = unit(hash(col + 17, row + 29));
-  const rowShift = unit(hash(row, 0x51f7)) * CELL_W;
+  // brick layout: every other row sits half a cell over, so neighbours are predictable
+  const rowShift = (mod(row, 2) === 1 ? 0.5 : 0) * CELL_W;
   return {
     x: col * CELL_W + rowShift + jx * JITTER_X,
     y: row * CELL_H + jy * JITTER_Y,
@@ -139,7 +140,8 @@ function buildCells(
   for (let row = startRow; row < startRow + rows; row++) {
     for (let col = startCol; col < startCol + cols; col++) {
       const h = hash(col, row);
-      const project = projectList[h % projectList.length];
+      // walk the list so close neighbours never show the same project
+      const project = projectList[mod(col + row * 3, projectList.length)];
       const variant = h % 97;
       const { x, y } = place(col, row);
       cells.push({
