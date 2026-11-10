@@ -186,14 +186,6 @@ export function InfinityVision({
   const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, []);
-
-  useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
 
