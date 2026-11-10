@@ -31,7 +31,7 @@ export function ProjectTile({
                 {project.award}
               </span>
             ) : null}
-            <span className="rounded-[4px] bg-white px-2 py-1 text-sm leading-none">
+            <span className="text-lg leading-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.35)]">
               {countryFlag(project.location)}
             </span>
           </div>
