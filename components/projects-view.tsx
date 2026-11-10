@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { InfinityVision } from "@/components/infinity-vision";
 import { projectIsAwarded, type Project } from "@/lib/data/projects";
+import { UpcomingPlaque } from "@/components/upcoming-plaque";
 import { ProjectTile } from "@/components/project-tile";
 import { ScrambleText } from "@/components/scramble-text";
 import { site } from "@/lib/data/site";
@@ -352,24 +353,7 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
                     />
                   </div>
                 ))}
-                {visible.length === projects.length && visible.length % 2 !== 0 ? (
-                  <div
-                    className="flex min-h-[220px] flex-col justify-between rounded-[6px] bg-surface/60 p-6"
-                  >
-                    <p className="font-mono text-[11px] text-muted">Next</p>
-                    <div>
-                      <p className="font-serif text-4xl font-medium leading-none text-foreground md:text-5xl">
-                        {site.upcoming.count} projects
-                      </p>
-                      <p className="mt-2 font-serif text-4xl font-medium leading-none text-muted md:text-5xl">
-                        coming soon
-                      </p>
-                      <p className="mt-4 font-mono text-[11px] text-muted">
-                        {site.upcoming.month}
-                      </p>
-                    </div>
-                  </div>
-                ) : null}
+                {visible.length === projects.length ? <UpcomingPlaque /> : null}
               </div>
             )}
           </div>
