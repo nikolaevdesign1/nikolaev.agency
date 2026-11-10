@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { projectIsAwarded, type Project } from "@/lib/data/projects";
 import { PhotoBit } from "@/components/photo-bit";
 import { HoverPlate } from "@/components/hover-plate";
-import { Tilt } from "@/components/tilt";
 
 const TILE_W = 480;
 const TILE_H = 360;
@@ -345,7 +344,6 @@ export function InfinityVision({
         >
           <div className="group relative w-full">
             <div data-project-caption="" className="pb-3 pl-0.5">
-              <p className="mb-1.5 font-mono text-[10px] text-muted">{cell.number}</p>
               <div className="flex items-baseline justify-between gap-3">
                 <p
                   data-project-title=""
@@ -368,10 +366,9 @@ export function InfinityVision({
               className="relative overflow-hidden rounded-[6px]"
               style={{ height: TILE_H }}
             >
-              <Tilt className="absolute inset-0">
+              <div className="absolute inset-0">
                 <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
-              </Tilt>
-              <HoverPlate project={cell.project} />
+              </div>
               <div
                 data-project-direction=""
                 className="pointer-events-none absolute inset-x-3 bottom-3 flex flex-wrap gap-1.5"
@@ -386,6 +383,7 @@ export function InfinityVision({
                 ))}
               </div>
             </div>
+            <HoverPlate project={cell.project} />
           </div>
         </div>
       ))}

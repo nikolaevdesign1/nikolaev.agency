@@ -12,14 +12,13 @@ export function BestCases({ projects }: { projects: Project[] }) {
       <p className="font-mono text-[11px] text-muted">
         Selected work
       </p>
-      <div className="mt-6 grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2">
         {cases.map((project, i) => (
-          <div key={project.slug} data-scroll data-scroll-speed={[0.04, 0.09, 0.02][i % 3]}>
+          <div key={project.slug} data-scroll data-scroll-speed={[0.04, 0.09][i % 2]}>
             <Reveal delay={i * 40}>
               <ProjectTile
                 project={project}
                 index={i}
-                number={String(projects.findIndex((p) => p.slug === project.slug) + 1).padStart(2, "0")}
               />
             </Reveal>
           </div>

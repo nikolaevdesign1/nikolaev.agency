@@ -1,7 +1,44 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import { projectIsAwarded, type Project } from "@/lib/data/projects";
 
-/** Dark info plate with a dithered edge; shown by a `group` parent on hover. */
+/**
+ * Dark info plate that follows the cursor while it is over the parent `group`
+ * (the nearest `relative` ancestor). It may leave the tile, but stays in the viewport.
+ */
 export function HoverPlate({ project }: { project: Pick<Project, "year" | "services" | "credits" | "award"> }) {
+  const plateRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const plate = plateRef.current;
+    const host = plate?.parentElement;
+    if (!plate || !host) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
+    const show = (on: boolean) => {
+      plate.style.opacity = on ? "1" : "0";
+    };
+    const move = (event: PointerEvent) => {
+      const rect = host.getBoundingClientRect();
+      const pad = 8;
+      const w = plate.offsetWidth;
+      const h = plate.offsetHeight;
+      const x = Math.min(Math.max(pad, event.clientX + 16), window.innerWidth - w - pad) - rect.left;
+      const y = Math.min(Math.max(pad, event.clientY + 16), window.innerHeight - h - pad) - rect.top;
+      plate.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      show(true);
+    };
+    const leave = () => show(false);
+
+    host.addEventListener("pointermove", move);
+    host.addEventListener("pointerleave", leave);
+    return () => {
+      host.removeEventListener("pointermove", move);
+      host.removeEventListener("pointerleave", leave);
+    };
+  }, []);
+
   const rows: { label: string; value: string }[] = [
     { label: "Year", value: project.year },
     project.credits?.length
@@ -14,14 +51,11 @@ export function HoverPlate({ project }: { project: Pick<Project, "year" | "servi
 
   return (
     <div
+      ref={plateRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-4 bottom-[4.5rem] z-20 translate-y-2 rounded-[10px] p-[4px] opacity-0 transition-[opacity,transform] duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100"
-      style={{
-        background:
-          "repeating-conic-gradient(#0a0a0a 0% 25%, #3b3b3b 0% 50%) 0 0 / 4px 4px",
-      }}
+      className="pointer-events-none absolute left-0 top-0 z-30 w-[min(300px,80vw)] opacity-0 transition-opacity duration-200"
     >
-      <dl className="flex flex-col gap-2.5 rounded-[7px] bg-[#161616] px-4 py-3.5 font-mono text-[12px] leading-none text-white">
+      <dl className="flex flex-col gap-2.5 rounded-[8px] bg-[#161616] px-4 py-3.5 font-mono text-[12px] leading-none text-white">
         {rows.map((row) => (
           <div key={row.label} className="flex items-baseline justify-between gap-6">
             <dt className="shrink-0 text-white/45">{row.label}</dt>

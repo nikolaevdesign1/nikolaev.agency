@@ -338,7 +338,7 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
             ) : (
               <div
                 key={`${categoryFilter}|${locationFilter}|${serviceFilter}|${awardsOnly}`}
-                className="mt-8 grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+                className="mt-8 grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2"
               >
                 {visible.map((project, i) => (
                   <div
@@ -349,15 +349,12 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
                     <ProjectTile
                       project={project}
                       index={i}
-                      number={String(projects.findIndex((p) => p.slug === project.slug) + 1).padStart(2, "0")}
                     />
                   </div>
                 ))}
-                {visible.length === projects.length && visible.length % 3 !== 0 ? (
+                {visible.length === projects.length && visible.length % 2 !== 0 ? (
                   <div
-                    className={`flex min-h-[220px] flex-col justify-between rounded-[6px] bg-surface/60 p-6 ${
-                      visible.length % 3 === 1 ? "lg:col-span-2" : "lg:col-span-1"
-                    }`}
+                    className="flex min-h-[220px] flex-col justify-between rounded-[6px] bg-surface/60 p-6"
                   >
                     <p className="font-mono text-[11px] text-muted">Next</p>
                     <div>
