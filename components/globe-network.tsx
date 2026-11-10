@@ -127,6 +127,7 @@ export function GlobeNetwork({
     let lastY = 0;
     let visible = true;
     let hovered = false;
+    let activeCity: string | null = null;
     const screen: { x: number; y: number; z: number; city: string; titles: string[] }[] = [];
     const hubTitles = projects.map((p) => p.title);
 
@@ -143,16 +144,19 @@ export function GlobeNetwork({
         const mx = e.clientX - rect.left;
         const my = e.clientY - rect.top;
         let best: (typeof screen)[number] | null = null;
-        let bestD = 16;
+        let bestD = 40;
+        const current = activeCity;
         for (const s of screen) {
           if (s.z <= 0.02) continue;
-          const d = Math.hypot(s.x - mx, s.y - my);
+          // sticky: the point already under the cursor keeps a wider zone
+          const d = Math.hypot(s.x - mx, s.y - my) - (s.city === current ? 14 : 0);
           if (d < bestD) {
             bestD = d;
             best = s;
           }
         }
         hovered = Boolean(best);
+        activeCity = best ? best.city : null;
         canvas.style.cursor = best ? "pointer" : "grab";
         setCard((prev) =>
           best
@@ -187,6 +191,7 @@ export function GlobeNetwork({
     canvas.addEventListener("pointermove", onMove);
     const onLeave = () => {
       hovered = false;
+      activeCity = null;
       setCard(null);
     };
     canvas.addEventListener("pointerleave", onLeave);

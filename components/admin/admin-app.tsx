@@ -1,5 +1,6 @@
 "use client";
 
+import { cities } from "@/lib/data/cities";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Media, Project, ProjectBlock } from "@/lib/data/projects";
 import { MediaField, emptyMedia } from "@/components/admin/media-field";
@@ -360,13 +361,26 @@ export function AdminApp() {
                 />
               </div>
               <div className="rounded-[8px] border border-border p-3 md:col-span-2">
-                <p className="font-mono text-[11px] text-muted">Globe point (city, latitude, longitude)</p>
+                <p className="font-mono text-[11px] text-muted">Globe point: pick a city from the list, coordinates fill in. Others: enter lat and lon by hand</p>
+                <datalist id="globe-cities">
+                  {cities.map((c) => (
+                    <option key={c.city} value={c.city} />
+                  ))}
+                </datalist>
                 <div className="mt-2 grid grid-cols-3 gap-2">
                   <input
                     className={input}
                     placeholder="City"
                     value={current.place?.city ?? ""}
-                    onChange={(e) => patch({ place: { city: e.target.value, lat: current.place?.lat ?? 0, lon: current.place?.lon ?? 0 } })}
+                    list="globe-cities"
+                    onChange={(e) => {
+                      const hit = cities.find((c) => c.city.toLowerCase() === e.target.value.toLowerCase());
+                      patch({
+                        place: hit
+                          ? { city: hit.city, lat: hit.lat, lon: hit.lon }
+                          : { city: e.target.value, lat: current.place?.lat ?? 0, lon: current.place?.lon ?? 0 },
+                      });
+                    }}
                   />
                   <input
                     className={input}
