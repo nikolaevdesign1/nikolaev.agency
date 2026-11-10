@@ -8,6 +8,7 @@ import { ExpandableVideo } from "@/components/expandable-video";
 import { BestCases } from "@/components/best-cases";
 import { GlobeNetwork } from "@/components/globe-network";
 import { TypeOnScroll } from "@/components/type-on-scroll";
+import { ScrollScale } from "@/components/scroll-scale";
 import { GlobeSticky } from "@/components/globe-sticky";
 import { LinkButton, pillClass } from "@/components/button";
 
@@ -100,11 +101,6 @@ export default async function Home() {
                   </li>
                 ))}
               </ol>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <StudioChatButton className={pillClass}>Let&apos;s chat</StudioChatButton>
-                <LinkButton href="/contact">Request a project</LinkButton>
-              </div>
             </div>
 
             <GlobeSticky>
@@ -112,7 +108,14 @@ export default async function Home() {
             </GlobeSticky>
           </div>
 
-          <ExpandableVideo src="/video/hero.mp4" className="mx-auto w-[min(88vw,640px)]" />
+          <div className="mt-16 flex flex-wrap items-center justify-center gap-3 md:mt-24">
+            <StudioChatButton className={pillClass}>Let&apos;s chat</StudioChatButton>
+            <LinkButton href="/contact">Request a project</LinkButton>
+          </div>
+
+          <ScrollScale>
+            <ExpandableVideo src="/video/hero.mp4" className="mx-auto w-[min(88vw,640px)]" />
+          </ScrollScale>
         </div>
       </section>
 
