@@ -30,21 +30,21 @@ const replyNotes = [
 
 export default function ContactPage() {
   return (
-    <section className="bg-dot-grid relative flex min-h-screen flex-col justify-center overflow-hidden bg-background gutter pb-24 pt-44 md:pb-28 md:pt-48">
+    <section className="bg-dot-grid relative flex min-h-screen flex-col justify-center overflow-hidden bg-background gutter pb-10 pt-36 md:pb-10 md:pt-40">
       <DotField />
       <TerminalNotes
         lines={studioNotes}
-        className="pointer-events-none absolute bottom-16 left-[var(--gutter)] hidden select-none font-mono text-[11px] leading-[1.5] text-foreground/35 md:left-10 lg:block"
+        className="pointer-events-none absolute bottom-4 left-[var(--gutter)] hidden select-none font-mono text-[11px] leading-[1.5] text-foreground/35 md:left-10 [@media(min-height:980px)]:lg:block"
       />
       <TerminalNotes
         lines={replyNotes}
-        className="pointer-events-none absolute bottom-16 right-[var(--gutter)] hidden select-none text-right font-mono text-[11px] leading-[1.5] text-foreground/35 md:right-10 lg:block"
+        className="pointer-events-none absolute bottom-12 right-[var(--gutter)] hidden select-none text-right font-mono text-[11px] leading-[1.5] text-foreground/35 md:right-10 [@media(min-height:980px)]:lg:block"
       />
       <CoordinateTracker className="pointer-events-none absolute right-[var(--gutter)] top-28 hidden font-mono text-[11px] text-foreground/30 md:block" />
       <p className="relative font-mono text-[11px] text-muted">
         Contact / New conversation
       </p>
-      <h1 className="relative mt-4 max-w-4xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:text-6xl">
+      <h1 className="relative mt-4 max-w-4xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:text-5xl">
         <ScrambleText as="span" trigger="mount" delay={300} text="What do you have in mind?" />
       </h1>
       <p className="relative mt-4 max-w-xl font-mono text-[11px] leading-relaxed text-muted">
@@ -53,7 +53,7 @@ export default function ContactPage() {
         Tell me a little about it.
       </p>
 
-      <div className="relative mt-8 max-w-7xl">
+      <div className="relative mt-6 max-w-7xl">
         <ContactForm />
       </div>
     </section>

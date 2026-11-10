@@ -1,35 +1,38 @@
 "use client";
 
 import { useEffect } from "react";
-import Lenis from "lenis";
-import gsap from "gsap";
+import { usePathname } from "next/navigation";
+import "locomotive-scroll/dist/locomotive-scroll.css";
 
+/**
+ * Locomotive Scroll (v5): inertial smooth scrolling plus `data-scroll-speed` parallax.
+ * It is rebuilt on each route so it sees the new page's `[data-scroll]` elements.
+ */
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (prefersReducedMotion) return;
+  const pathname = usePathname();
 
-    const lenis = new Lenis({
-      duration: 1.1,
-      easing: (t: number) => Math.min(1, 1 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let instance: { destroy: () => void } | null = null;
+    let cancelled = false;
+
+    void import("locomotive-scroll").then(({ default: LocomotiveScroll }) => {
+      if (cancelled) return;
+      instance = new LocomotiveScroll({
+        lenisOptions: {
+          lerp: 0.075,
+          smoothWheel: true,
+          wheelMultiplier: 0.95,
+        },
+      });
     });
 
-    function raf(time: number) {
-      // gsap's ticker reports elapsed time in seconds; Lenis expects ms.
-      lenis.raf(time * 1000);
-    }
-
-    gsap.ticker.add(raf);
-    gsap.ticker.lagSmoothing(0);
-
     return () => {
-      gsap.ticker.remove(raf);
-      lenis.destroy();
+      cancelled = true;
+      instance?.destroy();
     };
-  }, []);
+  }, [pathname]);
 
   return <>{children}</>;
 }

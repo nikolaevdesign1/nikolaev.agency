@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { LogoCube } from "@/components/logo-cube";
+import { WaterOrb } from "@/components/water-orb";
 import { site } from "@/lib/data/site";
 
 type ChatPanelProps = {
@@ -55,50 +56,12 @@ function Orb({ active }: { active: boolean }) {
   return (
     <div
       aria-hidden="true"
-      className={`relative size-32 shrink-0 overflow-hidden rounded-full transition-transform duration-700 md:size-40 ${
+      className={`relative size-32 shrink-0 transition-transform duration-700 md:size-40 ${
         active ? "scale-110" : "scale-100"
       }`}
-      style={{
-        background: "radial-gradient(circle at 50% 50%, #2a2118, #0f0c09)",
-        boxShadow:
-          "0 0 70px rgba(240,150,55,0.28), inset 0 0 30px rgba(255,255,255,0.08)",
-      }}
     >
-      <div
-        className="absolute left-1/4 top-1/4 size-3/4 rounded-full mix-blend-screen"
-        style={{
-          background: "radial-gradient(circle, #f09637, rgba(240,150,55,0) 70%)",
-          filter: "blur(10px)",
-          animation: "orb-blob-a 7s ease-in-out infinite",
-        }}
-      />
-      <div
-        className="absolute left-0 top-1/3 size-4/5 rounded-full mix-blend-screen"
-        style={{
-          background: "radial-gradient(circle, #dcb2f0, rgba(220,178,240,0) 70%)",
-          filter: "blur(12px)",
-          animation: "orb-blob-b 9s ease-in-out infinite",
-        }}
-      />
-      <div
-        className="absolute left-1/3 top-0 size-3/4 rounded-full mix-blend-screen"
-        style={{
-          background: "radial-gradient(circle, #c3eec5, rgba(195,238,197,0) 70%)",
-          filter: "blur(12px)",
-          animation: "orb-blob-c 11s ease-in-out infinite",
-        }}
-      />
-      <div
-        className="absolute -inset-[10%] opacity-60 mix-blend-overlay"
-        style={{
-          background:
-            "conic-gradient(from 0deg, transparent, rgba(255,255,255,0.5), transparent 40%, rgba(255,255,255,0.35), transparent 75%)",
-          filter: "blur(8px)",
-          animation: "orb-spin 10s linear infinite",
-        }}
-      />
-      <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_22%,rgba(255,255,255,0.55),transparent_42%)]" />
-      <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_70%_90%,rgba(10,10,10,0.5),transparent_55%)]" />
+      <div className="absolute -inset-5 rounded-full bg-[radial-gradient(circle,rgba(240,150,55,0.2),rgba(240,150,55,0)_68%)]" />
+      <WaterOrb className="relative size-full" active={active} />
     </div>
   );
 }
@@ -380,7 +343,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
       }`}
       onWheel={(event) => event.stopPropagation()}
     >
-      <aside className="hidden w-[280px] shrink-0 flex-col border-r border-ink-border md:flex">
+      <aside className="absolute inset-y-0 left-0 z-10 hidden w-[280px] flex-col border-r border-ink-border bg-ink md:flex">
         <div className="px-[var(--gutter)] pb-4 pt-5">
           <LogoCube body="#f3f1ea" face="#0a0a0a" className="size-8" />
         </div>
@@ -436,7 +399,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
         </div>
       </aside>
 
-      <section className="relative flex min-w-0 flex-1 flex-col">
+      <section className="relative flex min-w-0 flex-1 flex-col md:pl-[280px] min-[1180px]:pl-0">
         <div className="flex items-start justify-between px-[var(--gutter)] pt-5">
           <LogoCube body="#f3f1ea" face="#0a0a0a" className="size-8 md:invisible" />
           <button
@@ -450,7 +413,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
 
         <div ref={scrollerRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[var(--gutter)]">
           {messages.length === 0 ? (
-            <div className="mx-auto flex min-h-full max-w-3xl flex-col items-center justify-center gap-7 pb-6 text-center">
+            <div className="mx-auto flex min-h-full max-w-3xl flex-col items-center justify-center gap-7 pb-6 pt-12 text-center">
               <Orb active={pending} />
               <div>
                 <p className="font-serif text-2xl text-ink-muted md:text-3xl">Hi there,</p>
@@ -603,9 +566,9 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
                     key={item.title}
                     type="button"
                     onClick={() => send(item.title)}
-                    className="group flex flex-col gap-3 rounded-[10px] border border-ink-border p-4 text-left transition-colors hover:border-ink-foreground/40 hover:bg-ink-foreground/5"
+                    className="group flex flex-col gap-3 rounded-[10px] border border-ink-foreground/25 p-4 text-left transition-colors hover:border-ink-foreground/55 hover:bg-ink-foreground/5"
                   >
-                    <span className="flex size-8 items-center justify-center rounded-[6px] border border-ink-border text-ink-foreground/80 transition-colors group-hover:text-ink-foreground">
+                    <span className="flex size-8 items-center justify-center rounded-[6px] border border-ink-foreground/30 text-ink-foreground/80 transition-colors group-hover:border-ink-foreground/60 group-hover:text-ink-foreground">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                         {item.icon}
                       </svg>

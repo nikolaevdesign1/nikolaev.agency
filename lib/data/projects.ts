@@ -14,6 +14,8 @@ export type Project = {
   video?: string;
   /** Behance case study. */
   behance?: string;
+  /** People credited on the project; shown on hover and on the project page. */
+  credits?: string[];
   /** Award text shown as a plaque, e.g. "Awarded by Behance UI". */
   award?: string;
   /** Live site, when the project is one. Enables "Visit site". */
@@ -97,6 +99,7 @@ export const projects: Project[] = [
     year: "2025",
     services: ["Mobile App", "UI/UX"],
     summary: "Mobile app design for Shuttle.pro.",
+    featured: true,
     cover: "/projects/shuttlepro.webp",
     behance: "https://www.behance.net/gallery/221603205/Shuttlepro-Mobile-App-Design",
   },

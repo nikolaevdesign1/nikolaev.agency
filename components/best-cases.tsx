@@ -14,9 +14,11 @@ export function BestCases() {
       </p>
       <div className="mt-6 grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
         {cases.map((project, i) => (
-          <Reveal key={project.slug} delay={i * 40}>
-            <ProjectTile project={project} index={i} />
-          </Reveal>
+          <div key={project.slug} data-scroll data-scroll-speed={[0.04, 0.09, 0.02][i % 3]}>
+            <Reveal delay={i * 40}>
+              <ProjectTile project={project} index={i} />
+            </Reveal>
+          </div>
         ))}
       </div>
     </section>

@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { projectIsAwarded, type Project } from "@/lib/data/projects";
+import { projectIsAwarded, projects as allProjects, type Project } from "@/lib/data/projects";
 import { PhotoBit } from "@/components/photo-bit";
-import { CursorFollowCta } from "@/components/cursor-follow-cta";
+import { HoverPlate } from "@/components/hover-plate";
+import { Tilt } from "@/components/tilt";
 
 const TILE_W = 480;
 const TILE_H = 360;
@@ -27,6 +28,8 @@ type Cell = {
   blurb: string;
   tags: string[];
   award: string | null;
+  project: Project;
+  number: string;
 };
 
 const GRID = 96;
@@ -153,6 +156,8 @@ function buildCells(
         blurb: shortLine(project.summary),
         tags: tagsOf(project),
         award: awardPlaque(project),
+        project,
+        number: String(allProjects.findIndex((p) => p.slug === project.slug) + 1).padStart(2, "0"),
         seed: h,
         src: project.cover ?? `https://picsum.photos/seed/${project.slug}-${variant}/1280/960`,
       });
@@ -335,8 +340,9 @@ export function InfinityVision({
             transform: `translate3d(${cell.x - cam.x}px, ${cell.y - cam.y}px, 0)`,
           }}
         >
-          <CursorFollowCta label="View case" className="w-full">
+          <div className="group relative w-full">
             <div data-project-caption="" className="pb-3 pl-0.5">
+              <p className="mb-1.5 font-mono text-[10px] text-muted">{cell.number}</p>
               <div className="flex items-baseline justify-between gap-3">
                 <p
                   data-project-title=""
@@ -359,7 +365,10 @@ export function InfinityVision({
               className="relative overflow-hidden rounded-[6px]"
               style={{ height: TILE_H }}
             >
-              <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
+              <Tilt className="absolute inset-0">
+                <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
+              </Tilt>
+              <HoverPlate project={cell.project} />
               <div
                 data-project-direction=""
                 className="pointer-events-none absolute inset-x-3 bottom-3 flex flex-wrap gap-1.5"
@@ -374,7 +383,7 @@ export function InfinityVision({
                 ))}
               </div>
             </div>
-          </CursorFollowCta>
+          </div>
         </div>
       ))}
     </div>

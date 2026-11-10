@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { countryFlag, type Project } from "@/lib/data/projects";
-import { CursorFollowCta } from "@/components/cursor-follow-cta";
+import { countryFlag, projects, type Project } from "@/lib/data/projects";
+import { HoverPlate } from "@/components/hover-plate";
 import { ProjectCover } from "@/components/project-cover";
+import { Tilt } from "@/components/tilt";
 
 export function ProjectTile({
   project,
@@ -15,19 +16,20 @@ export function ProjectTile({
   className?: string;
 }) {
   const tags = Array.from(new Set([project.category, ...project.services]));
+  const number = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStart(2, "0");
 
   return (
-    <CursorFollowCta label="View case" className={`group block ${className ?? ""}`}>
+    <div className={`group relative block ${className ?? ""}`}>
       <Link href={`/projects/${project.slug}`} draggable={false} className="block">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-[6px] border border-border">
-          <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.03]">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-[6px]">
+          <Tilt className="absolute inset-0">
             <ProjectCover
               project={project}
               index={index}
               className="aspect-auto h-full w-full rounded-none border-0"
             />
-          </div>
-          <div className="absolute right-3 top-3 flex items-center gap-1.5">
+          </Tilt>
+          <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5">
             {project.award ? (
               <span className="rounded-[4px] bg-white px-2 py-1 font-mono text-[10px] leading-none text-[#141414]">
                 {project.award}
@@ -37,7 +39,8 @@ export function ProjectTile({
               {countryFlag(project.location)}
             </span>
           </div>
-          <div className="absolute inset-x-3 bottom-3 flex flex-wrap gap-1.5">
+          <HoverPlate project={project} />
+          <div className="absolute inset-x-3 bottom-3 z-10 flex flex-wrap gap-1.5">
             {tags.map((tag) => (
               <span
                 key={tag}
@@ -49,10 +52,13 @@ export function ProjectTile({
           </div>
         </div>
         <div className="mt-3 flex items-baseline justify-between gap-3">
-          <p className="font-serif text-xl font-medium text-foreground">{project.title}</p>
+          <p className="flex items-baseline gap-3 font-serif text-xl font-medium text-foreground">
+            <span className="font-mono text-[10px] font-normal text-muted">{number}</span>
+            {project.title}
+          </p>
           <p className="font-mono text-[10px] text-muted">{project.year}</p>
         </div>
       </Link>
-    </CursorFollowCta>
+    </div>
   );
 }

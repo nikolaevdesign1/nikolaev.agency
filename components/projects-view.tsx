@@ -7,7 +7,7 @@ import { ProjectTile } from "@/components/project-tile";
 import { ScrambleText } from "@/components/scramble-text";
 import { site } from "@/lib/data/site";
 import Link from "next/link";
-import { FilterCheckbox, FilterSelect } from "@/components/filter-controls";
+import { FilterCheckbox, FilterSelect, ScrollStrip } from "@/components/filter-controls";
 
 type Theme = "light" | "dark";
 type View = "field" | "list";
@@ -291,29 +291,28 @@ export function ProjectsView() {
             </div>
 
             <div className="mt-10 flex flex-nowrap items-center gap-3 text-[13px]">
-              <div className="relative min-w-0 flex-1 overflow-x-auto rounded-[6px] bg-surface/60 p-1 [mask-image:linear-gradient(to_right,#000_calc(100%-28px),transparent)]">
-                <div className="flex w-max pr-6">
-                  {["All", ...categories].map((category) => {
-                    const active =
-                      category === "All" ? categoryFilter === null : categoryFilter === category;
-                    return (
-                      <button
-                        key={category}
-                        type="button"
-                        aria-pressed={active}
-                        onClick={() => setCategoryFilter(category === "All" ? null : category)}
-                        className={`shrink-0 rounded-[4px] px-3 py-1.5 transition-colors duration-300 ${
-                          active
-                            ? "bg-foreground text-background"
-                            : "text-foreground hover:bg-foreground/8"
-                        }`}
-                      >
-                        {category}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              <ScrollStrip>
+                {["All", ...categories].map((category) => {
+                  const active =
+                    category === "All" ? categoryFilter === null : categoryFilter === category;
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setCategoryFilter(category === "All" ? null : category)}
+                      className={`shrink-0 rounded-[4px] px-3 py-1.5 transition-colors duration-300 ${
+                        active
+                          ? "bg-foreground text-background"
+                          : "text-foreground hover:bg-foreground/8"
+                      }`}
+                    >
+                      {category}
+                    </button>
+                  );
+                })}
+              </ScrollStrip>
+              <div className="ml-auto flex shrink-0 items-center gap-3">
               <FilterCheckbox checked={awardsOnly} onChange={setAwardsOnly}>
                 Awarded
               </FilterCheckbox>
@@ -329,6 +328,7 @@ export function ProjectsView() {
                 options={services}
                 onChange={setServiceFilter}
               />
+              </div>
             </div>
 
             {visible.length === 0 ? (
@@ -349,6 +349,26 @@ export function ProjectsView() {
                     <ProjectTile project={project} index={i} />
                   </div>
                 ))}
+                {visible.length === projects.length && visible.length % 3 !== 0 ? (
+                  <div
+                    className={`flex min-h-[220px] flex-col justify-between rounded-[6px] bg-surface/60 p-6 ${
+                      visible.length % 3 === 1 ? "lg:col-span-2" : "lg:col-span-1"
+                    }`}
+                  >
+                    <p className="font-mono text-[11px] text-muted">Next</p>
+                    <div>
+                      <p className="font-serif text-4xl font-medium leading-none text-foreground md:text-5xl">
+                        {site.upcoming.count} projects
+                      </p>
+                      <p className="mt-2 font-serif text-4xl font-medium leading-none text-muted md:text-5xl">
+                        coming soon
+                      </p>
+                      <p className="mt-4 font-mono text-[11px] text-muted">
+                        {site.upcoming.month}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             )}
           </div>

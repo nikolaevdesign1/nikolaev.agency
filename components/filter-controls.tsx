@@ -2,6 +2,36 @@
 
 import { useEffect, useRef, useState } from "react";
 
+/** Segmented strip that hugs its buttons; fades its right edge only when it overflows. */
+export function ScrollStrip({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [fade, setFade] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => setFade(el.scrollWidth - el.clientWidth - el.scrollLeft > 2);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    el.addEventListener("scroll", update, { passive: true });
+    return () => {
+      observer.disconnect();
+      el.removeEventListener("scroll", update);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className="min-w-0 max-w-full overflow-x-auto rounded-[6px] bg-surface/60 p-1"
+      style={fade ? { maskImage: "linear-gradient(to right, #000 calc(100% - 28px), transparent)" } : undefined}
+    >
+      <div className="flex w-max">{children}</div>
+    </div>
+  );
+}
+
 export function FilterCheckbox({
   checked,
   onChange,

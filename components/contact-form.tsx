@@ -62,7 +62,7 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-7">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <div className="grid gap-x-5 gap-y-6 md:grid-cols-2">
         <Field
           index="01"
@@ -130,7 +130,7 @@ export function ContactForm() {
 
       <div className="flex flex-col gap-2">
         {file ? (
-          <div className="flex w-fit max-w-full items-center gap-3 rounded-[6px] border border-foreground bg-foreground/5 px-3 py-2">
+          <div className="flex w-fit max-w-full items-center gap-3 rounded-[6px] bg-foreground/[0.07] px-3 py-2">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M21 11.5 12.5 20a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3" />
             </svg>
@@ -144,10 +144,10 @@ export function ContactForm() {
               type="button"
               aria-label="Remove attachment"
               onClick={() => setFile(null)}
-              className="flex size-6 shrink-0 items-center justify-center rounded-[4px] border border-border transition-colors hover:bg-foreground hover:text-background"
+              className="flex size-6 shrink-0 items-center justify-center rounded-[4px] text-muted transition-colors hover:bg-foreground hover:text-background"
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                <path d="M6 6l12 12M18 6 6 18" />
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12M9 7V4h6v3" />
               </svg>
             </button>
           </div>

@@ -21,7 +21,7 @@ export function ProjectCover({ project, index, className }: ProjectCoverProps) {
             loop
             playsInline
             draggable={false}
-            className="pointer-events-none h-full w-full select-none object-cover"
+            className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover"
           />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
@@ -31,7 +31,7 @@ export function ProjectCover({ project, index, className }: ProjectCoverProps) {
             draggable={false}
             loading="lazy"
             decoding="async"
-            className="pointer-events-none h-full w-full select-none object-cover"
+            className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover"
           />
         )}
       </div>

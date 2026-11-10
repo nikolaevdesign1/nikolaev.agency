@@ -143,7 +143,7 @@ export function ServicesGrid() {
         ref={cardRef}
         aria-hidden="true"
         style={{ width: CARD_W, backgroundColor: active?.tint ?? "#dde9ae" }}
-        className={`pointer-events-none fixed left-0 top-0 z-30 rounded-[8px] border border-black/10 p-5 text-[#141414] shadow-[0_18px_40px_rgba(0,0,0,0.14)] transition-opacity duration-200 ${
+        className={`pointer-events-none fixed left-0 top-0 z-30 rounded-[8px] p-5 text-[#141414] shadow-[0_18px_40px_rgba(0,0,0,0.14)] transition-opacity duration-200 ${
           active ? "opacity-100" : "opacity-0"
         }`}
       >

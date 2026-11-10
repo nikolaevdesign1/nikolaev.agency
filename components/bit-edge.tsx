@@ -154,9 +154,106 @@ function paint(
   }
 
   if (toDark) {
-    // 30% fewer dark cells and glyphs on the light side of this seam
-    paintSquares(false, (0.04 + progress * 0.96) * 0.7, 0.62 * 0.7);
+    paintRise(ctx, width, height, from, to, glyphs, seed, progress, font);
   }
+}
+
+/**
+ * Light page rising into a dark ground. The edge is built from 4-cell blocks with
+ * small steps, a thin dithered band sits right under it, letters sit on a regular
+ * row grid and fade away from the edge, and a travelling wave brightens them.
+ */
+function paintRise(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  from: string,
+  to: string,
+  glyphs: string,
+  seed: number,
+  progress: number,
+  font: string,
+) {
+  const step = 10;
+  const blockW = 4;
+  const cols = Math.ceil(width / step);
+  const rows = Math.ceil(height / step);
+
+  const blocks = Math.ceil(cols / blockW);
+  const base: number[] = [];
+  for (let b = 0; b < blocks; b++) {
+    const wave = Math.sin(b * 0.33 + seed) * 2 + Math.sin(b * 0.1 + seed * 1.7) * 3;
+    const jitter = (hash(b * 13 + seed * 97) - 0.5) * 3;
+    let row = Math.round(rows * 0.42 + wave + jitter);
+    if (b > 0) row = Math.max(base[b - 1] - 2, Math.min(base[b - 1] + 2, row));
+    base.push(row);
+  }
+
+  const rise = 1 - progress;
+  ctx.fillStyle = from;
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.font = `500 8px ${font}`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  const glyphAt = (col: number, row: number) => {
+    const ch = glyphs[Math.floor(hash(col * 9 + row * 3 + seed) * glyphs.length)] ?? "";
+    return ch === " " ? "" : ch.toUpperCase();
+  };
+
+  for (let col = 0; col < cols; col++) {
+    const lift = Math.round(rise * rows * (0.55 + 0.45 * Math.sin(col * 0.05 + seed)));
+    const edge = base[Math.floor(col / blockW)] + lift;
+    const x = col * step;
+    const travel = 0.5 + 0.5 * Math.sin(col * 0.09 - progress * 14 + seed);
+
+    // dark ground
+    ctx.fillStyle = to;
+    ctx.fillRect(x, edge * step, step + 0.5, height - edge * step + 2);
+
+    // letters above the edge, sparse and fading upward
+    for (let d = 1; d <= 14; d++) {
+      const row = edge - d;
+      if (row < 0 || row % 2 !== 0) continue;
+      const odds = 0.3 * (1 - d / 15);
+      if (hash(col * 31 + row * 17 + seed) > odds) continue;
+      const ch = glyphAt(col, row);
+      if (!ch) continue;
+      ctx.fillStyle = `rgba(22,22,22,${(0.25 + 0.5 * (1 - d / 14)).toFixed(2)})`;
+      ctx.fillText(ch, x + step / 2, row * step + step / 2 + 0.5);
+    }
+
+    // dithered band right under the edge: light runs with dark letters
+    for (let d = 0; d < 3; d++) {
+      const row = edge + d;
+      const run = Math.floor(col / 3);
+      if (hash(run * 41 + row * 7 + seed) > 0.42 - d * 0.14) continue;
+      ctx.fillStyle = from;
+      ctx.fillRect(x, row * step, step, step);
+      const ch = glyphAt(col, row);
+      if (ch) {
+        ctx.fillStyle = "#161616";
+        ctx.fillText(ch, x + step / 2, row * step + step / 2 + 0.5);
+      }
+    }
+
+    // letters inside the ground, on even rows, fading with depth
+    for (let row = edge + 3; row < rows; row += 2) {
+      const depth = (row - edge) / Math.max(1, rows * 0.55);
+      const odds = 0.34 * Math.max(0, 1 - depth);
+      if (odds <= 0 || hash(col * 29 + row * 11 + seed) > odds) continue;
+      const ch = glyphAt(col, row);
+      if (!ch) continue;
+      const alpha = (0.16 + 0.42 * travel) * Math.max(0, 1 - depth * 0.9);
+      ctx.fillStyle = `rgba(232,229,220,${alpha.toFixed(2)})`;
+      ctx.fillText(ch, x + step / 2, row * step + step / 2 + 0.5);
+    }
+  }
+
+  // make sure the last row is solid so no hairline shows against the section below
+  ctx.fillStyle = to;
+  ctx.fillRect(0, height - 2, width, 2);
 }
 
 export function BitEdge({
@@ -206,7 +303,7 @@ export function BitEdge({
   return (
     <div
       aria-hidden="true"
-      className={className ?? "h-72 w-full md:h-[22rem]"}
+      className={className ?? "-mb-px h-72 w-full md:h-[22rem]"}
       style={
         isDark(to)
           ? { maskImage: "linear-gradient(to bottom, transparent, #000 18%)" }

@@ -20,7 +20,7 @@ export function Footer() {
 
   return (
     <footer
-      className="bg-dot-grid relative overflow-hidden bg-background text-foreground"
+      className="bg-dot-grid relative mt-24 overflow-hidden bg-background text-foreground md:mt-36"
     >
       <DotField />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">

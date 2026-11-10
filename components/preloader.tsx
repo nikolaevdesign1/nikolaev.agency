@@ -7,7 +7,7 @@ import { LogoCube } from "@/components/logo-cube";
 const CELL = 16;
 const DIGITS = "0123456789";
 const MIN_MS = 1800;
-const MIN_MS_NAV = 900;
+const MIN_MS_NAV = 1800;
 const EXIT_MS = 1100;
 
 function hash(n: number) {
@@ -85,7 +85,7 @@ export function Preloader() {
       if (!state.loaded && elapsed > 6000) state.loaded = true;
       // progress: eases toward 90% while loading, completes once the page is loaded
       if (!state.exitAt) {
-        const target = state.loaded && elapsed > minMs ? 100 : Math.min(90, elapsed / (repeat ? 10 : 22));
+        const target = state.loaded && elapsed > minMs ? 100 : Math.min(90, elapsed / 22);
         state.progress += (target - state.progress) * 0.08;
         if (state.loaded && elapsed > minMs && state.progress > 99.4) {
           state.progress = 100;
@@ -170,7 +170,7 @@ export function Preloader() {
         <LogoCube
           body="#f3f1ea"
           face="#0a0a0a"
-          className="mt-5 size-8 animate-[orb-pulse_1.6s_ease-in-out_infinite]"
+          className="mt-4 size-8"
         />
       </div>
       <div className="absolute bottom-4 right-[var(--gutter)] font-mono text-[11px] tabular-nums">

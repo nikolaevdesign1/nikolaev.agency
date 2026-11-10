@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GLOBE_HUB, globeNodes } from "@/lib/data/globe";
 import { LAND_B64, LAND_H, LAND_W } from "@/lib/data/land-mask";
+import { projects } from "@/lib/data/projects";
+
+type Card = { x: number; y: number; city: string; count: number; titles: string[] };
 
 type Vec = [number, number, number];
 
@@ -39,6 +42,7 @@ function slerp(a: Vec, b: Vec, t: number): Vec {
 export function GlobeNetwork({ className }: { className?: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [card, setCard] = useState<Card | null>(null);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -106,6 +110,9 @@ export function GlobeNetwork({ className }: { className?: string }) {
     let lastX = 0;
     let lastY = 0;
     let visible = true;
+    let hovered = false;
+    const screen: { x: number; y: number; z: number; city: string; titles: string[] }[] = [];
+    const hubTitles = projects.map((p) => p.title);
 
     const onDown = (e: PointerEvent) => {
       dragging = true;
@@ -115,7 +122,33 @@ export function GlobeNetwork({ className }: { className?: string }) {
       canvas.style.cursor = "grabbing";
     };
     const onMove = (e: PointerEvent) => {
-      if (!dragging) return;
+      if (!dragging) {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        let best: (typeof screen)[number] | null = null;
+        let bestD = 16;
+        for (const s of screen) {
+          if (s.z <= 0.02) continue;
+          const d = Math.hypot(s.x - mx, s.y - my);
+          if (d < bestD) {
+            bestD = d;
+            best = s;
+          }
+        }
+        hovered = Boolean(best);
+        canvas.style.cursor = best ? "pointer" : "grab";
+        setCard((prev) =>
+          best
+            ? prev && prev.city === best.city
+              ? prev
+              : { x: best.x, y: best.y, city: best.city, count: best.titles.length, titles: best.titles }
+            : prev
+              ? null
+              : prev,
+        );
+        return;
+      }
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
       lastX = e.clientX;
@@ -136,6 +169,11 @@ export function GlobeNetwork({ className }: { className?: string }) {
     };
     canvas.addEventListener("pointerdown", onDown);
     canvas.addEventListener("pointermove", onMove);
+    const onLeave = () => {
+      hovered = false;
+      setCard(null);
+    };
+    canvas.addEventListener("pointerleave", onLeave);
     canvas.addEventListener("pointerup", onUp);
     canvas.addEventListener("pointercancel", onUp);
 
@@ -159,7 +197,10 @@ export function GlobeNetwork({ className }: { className?: string }) {
       if (!visible || size < 2) return;
       const t = (now - start) / 1000;
 
-      if (!dragging) {
+      if (hovered) {
+        velYaw = 0;
+        velPitch = 0;
+      } else if (!dragging) {
         yaw += velYaw;
         pitch = Math.max(-1.1, Math.min(1.1, pitch + velPitch));
         velYaw *= 0.94;
@@ -180,9 +221,9 @@ export function GlobeNetwork({ className }: { className?: string }) {
       ctx.clearRect(0, 0, size, size);
 
       // soft sphere body
-      const body = ctx.createRadialGradient(c - R * 0.3, c - R * 0.3, R * 0.1, c, c, R);
-      body.addColorStop(0, "rgba(243,241,234,0.07)");
-      body.addColorStop(1, "rgba(243,241,234,0.015)");
+      const body = ctx.createRadialGradient(c - R * 0.3, c - R * 0.3, R * 0.05, c, c, R);
+      body.addColorStop(0, "#26241f");
+      body.addColorStop(1, "#0f0e0c");
       ctx.beginPath();
       ctx.arc(c, c, R, 0, Math.PI * 2);
       ctx.fillStyle = body;
@@ -235,8 +276,16 @@ export function GlobeNetwork({ className }: { className?: string }) {
       }
 
       // project markers
-      for (const { v } of nodes) {
+      screen.length = 0;
+      for (const { v, node } of nodes) {
         const [x, y, z] = project(v, cy, sy, cp, sp);
+        screen.push({
+          x: c + x * R,
+          y: c - y * R,
+          z,
+          city: node.city,
+          titles: projects.filter((p) => p.slug === node.slug).map((p) => p.title),
+        });
         if (z <= 0.02) continue;
         const px = c + x * R;
         const py = c - y * R;
@@ -252,6 +301,7 @@ export function GlobeNetwork({ className }: { className?: string }) {
 
       // hub
       const [hx, hy, hz] = project(hub, cy, sy, cp, sp);
+      screen.push({ x: c + hx * R, y: c - hy * R, z: hz, city: GLOBE_HUB.label, titles: hubTitles });
       if (hz > 0.02) {
         const px = c + hx * R;
         const py = c - hy * R;
@@ -280,17 +330,45 @@ export function GlobeNetwork({ className }: { className?: string }) {
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerup", onUp);
+      canvas.removeEventListener("pointerleave", onLeave);
       canvas.removeEventListener("pointercancel", onUp);
     };
   }, []);
 
   return (
-    <div ref={wrapRef} className={className}>
+    <div ref={wrapRef} className={`relative ${className ?? ""}`}>
       <canvas
         ref={canvasRef}
         aria-label="Globe with the studio in Los Angeles and projects connected to it. Drag to rotate."
         className="block cursor-grab touch-pan-y select-none"
       />
+      {card ? (
+        <div
+          className="pointer-events-none absolute z-10 w-56 rounded-[10px] p-[4px]"
+          style={{
+            left: Math.min(Math.max(8, card.x + 16), (wrapRef.current?.clientWidth ?? 600) - 232),
+            top: Math.max(8, card.y - 70),
+            background: "repeating-conic-gradient(#0a0a0a 0% 25%, #3b3b3b 0% 50%) 0 0 / 4px 4px",
+          }}
+        >
+          <div className="rounded-[7px] bg-[#161616] px-4 py-3.5 font-mono text-[12px] leading-none text-white">
+            <p className="text-[13px]">{card.city}</p>
+            <p className="mt-2 text-white/45">
+              {card.count} {card.count === 1 ? "project" : "projects"}
+            </p>
+            <ul className="mt-3 flex flex-col gap-1.5">
+              {card.titles.slice(0, 4).map((title) => (
+                <li key={title} className="truncate">
+                  {title}
+                </li>
+              ))}
+              {card.titles.length > 4 ? (
+                <li className="text-white/45">+{card.titles.length - 4}</li>
+              ) : null}
+            </ul>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

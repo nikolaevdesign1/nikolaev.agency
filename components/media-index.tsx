@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { CursorFollowCta } from "@/components/cursor-follow-cta";
+import { ScrollStrip } from "@/components/filter-controls";
 import Link from "next/link";
 import { articleCategories, latestArticle, otherArticles } from "@/lib/data/media";
 
@@ -40,29 +42,27 @@ export function MediaIndex() {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 text-[13px] md:flex-row md:items-center">
-          <div className="relative min-w-0 flex-1 overflow-x-auto rounded-[6px] bg-surface/60 p-1">
-            <div className="flex w-max">
-              {["All", ...categories].map((c) => {
-                const activeTag = c === "All" ? category === null : category === c;
-                return (
-                  <button
-                    key={c}
-                    type="button"
-                    aria-pressed={activeTag}
-                    onClick={() => setCategory(c === "All" ? null : category === c ? null : c)}
-                    className={`shrink-0 rounded-[4px] px-3 py-1.5 transition-colors duration-300 ${
-                      activeTag
-                        ? "bg-foreground text-background"
-                        : "text-foreground hover:bg-foreground/8"
-                    }`}
-                  >
-                    {c}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          <label className="flex shrink-0 items-center gap-2 rounded-[6px] border border-border bg-background px-3 py-2 transition-colors focus-within:border-foreground/50 md:w-72">
+          <ScrollStrip>
+            {["All", ...categories].map((c) => {
+              const activeTag = c === "All" ? category === null : category === c;
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  aria-pressed={activeTag}
+                  onClick={() => setCategory(c === "All" ? null : category === c ? null : c)}
+                  className={`shrink-0 rounded-[4px] px-3 py-1.5 transition-colors duration-300 ${
+                    activeTag
+                      ? "bg-foreground text-background"
+                      : "text-foreground hover:bg-foreground/8"
+                  }`}
+                >
+                  {c}
+                </button>
+              );
+            })}
+          </ScrollStrip>
+          <label className="flex shrink-0 items-center gap-2 rounded-[6px] border border-border bg-background px-3 py-2 md:ml-auto transition-colors focus-within:border-foreground/50 md:w-72">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="shrink-0 text-muted">
               <circle cx="11" cy="11" r="6.5" />
               <path d="m20 20-4.2-4.2" />
@@ -91,10 +91,8 @@ export function MediaIndex() {
         </div>
 
         {!category && !query ? (
-          <Link
-            href={`/media/${featured.slug}`}
-            className="group mt-8 block border-b border-border pb-10"
-          >
+          <CursorFollowCta label="More" className="mt-8 block pb-10">
+          <Link href={`/media/${featured.slug}`} className="group block">
             <div className="aspect-[2/1] w-full overflow-hidden rounded-[6px]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -117,6 +115,7 @@ export function MediaIndex() {
               </p>
             </div>
           </Link>
+          </CursorFollowCta>
         ) : null}
 
       {filtered.length === 0 ? (
@@ -126,11 +125,12 @@ export function MediaIndex() {
       ) : (
         <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-2 md:grid-cols-3 md:gap-x-12 md:gap-y-16">
           {filtered.map((article) => (
-            <Link key={article.slug} href={`/media/${article.slug}`} className="group block">
+            <CursorFollowCta key={article.slug} label="More" className="block">
+            <Link href={`/media/${article.slug}`} className="group block">
               <p className="font-mono text-[10px] text-muted">
                 {article.category} · {formatDate(article.date)}
               </p>
-              <p className="mt-1.5 font-serif text-lg font-medium leading-snug text-foreground">
+              <p className="mt-1.5 line-clamp-2 h-[3.1rem] font-serif text-lg font-medium leading-snug text-foreground">
                 {article.title}
               </p>
               <div className="mt-4 aspect-[4/3] overflow-hidden rounded-[6px]">
@@ -142,6 +142,7 @@ export function MediaIndex() {
                 />
               </div>
             </Link>
+            </CursorFollowCta>
           ))}
         </div>
       )}
