@@ -9,6 +9,35 @@ type ProjectCoverProps = {
 };
 
 export function ProjectCover({ project, index, className }: ProjectCoverProps) {
+  if (project.video || project.cover) {
+    return (
+      <div className={cn("relative aspect-[4/3] overflow-hidden rounded-none bg-surface", className)}>
+        {project.video ? (
+          <video
+            src={project.video}
+            poster={project.cover}
+            autoPlay
+            muted
+            loop
+            playsInline
+            draggable={false}
+            className="pointer-events-none h-full w-full select-none object-cover"
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={project.cover}
+            alt={project.title}
+            draggable={false}
+            loading="lazy"
+            decoding="async"
+            className="pointer-events-none h-full w-full select-none object-cover"
+          />
+        )}
+      </div>
+    );
+  }
+
   const dark = index % 2 === 0;
   const showAccent = index % 4 === 3;
 

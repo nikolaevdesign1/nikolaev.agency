@@ -6,6 +6,7 @@ import { AmbientTextField, StudioChatButton } from "@/components/ambient-text-fi
 import { ScrambleText } from "@/components/scramble-text";
 import { ExpandableVideo } from "@/components/expandable-video";
 import { BestCases } from "@/components/best-cases";
+import { GlobeNetwork } from "@/components/globe-network";
 import { LinkButton, pillClass } from "@/components/button";
 
 const aiPoints = [
@@ -45,17 +46,20 @@ export default function Home() {
       <section className="relative flex flex-col overflow-hidden bg-ink gutter py-36 text-ink-foreground md:py-48">
         <AmbientTextField phrase="Small team · direct access · no account managers" />
         <div className="relative z-[1] flex flex-col gap-24 md:gap-32">
-          <div className="flex max-w-5xl flex-col gap-10 md:gap-14">
-            <ScrambleText
-              as="p"
-              text="We build AI into the work itself."
-              className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl lg:text-7xl"
-            />
-            <ScrambleText
-              as="p"
-              text="Faster builds, lighter support, reachable from anywhere."
-              className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl lg:text-7xl"
-            />
+          <div className="grid items-center gap-14 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
+            <div className="flex flex-col gap-10 md:gap-14">
+              <ScrambleText
+                as="p"
+                text="We build AI into the work itself."
+                className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl"
+              />
+              <ScrambleText
+                as="p"
+                text="Faster builds, lighter support, reachable from anywhere."
+                className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl"
+              />
+            </div>
+            <GlobeNetwork className="mx-auto w-full max-w-[680px]" />
           </div>
 
           <div className="grid gap-12 border-t border-ink-border pt-12 md:grid-cols-3 md:gap-10">
@@ -81,7 +85,7 @@ export default function Home() {
             </div>
           </div>
 
-          <ExpandableVideo src="/video/hero.mp4" className="mx-auto w-[min(20vw,320px)]" />
+          <ExpandableVideo src="/video/hero.mp4" className="mx-auto w-[min(88vw,640px)]" />
         </div>
       </section>
 

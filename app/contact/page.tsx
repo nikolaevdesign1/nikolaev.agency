@@ -30,7 +30,7 @@ const replyNotes = [
 
 export default function ContactPage() {
   return (
-    <section className="bg-dot-grid relative flex min-h-screen flex-col justify-center overflow-hidden bg-background gutter py-24 md:py-28">
+    <section className="bg-dot-grid relative flex min-h-screen flex-col justify-center overflow-hidden bg-background gutter pb-24 pt-44 md:pb-28 md:pt-48">
       <DotField />
       <TerminalNotes
         lines={studioNotes}

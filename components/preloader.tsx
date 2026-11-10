@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { LogoCube } from "@/components/logo-cube";
 
 const CELL = 16;
 const DIGITS = "0123456789";
 const MIN_MS = 1800;
+const MIN_MS_NAV = 900;
 const EXIT_MS = 1100;
 
 function hash(n: number) {
@@ -19,9 +21,30 @@ export function Preloader() {
   const [percent, setPercent] = useState(0);
   const [gone, setGone] = useState(false);
   const [started, setStarted] = useState(false);
+  const [run, setRun] = useState(0);
   const stateRef = useRef({ loaded: false, exitAt: 0, progress: 0 });
+  const pathname = usePathname();
+  const lastTop = useRef<string | null>(null);
+
+  // Run again on every route change (a popup over /projects is not a new page).
+  useEffect(() => {
+    const top = "/" + (pathname.split("/")[1] ?? "");
+    if (lastTop.current === null) {
+      lastTop.current = top;
+      return;
+    }
+    if (lastTop.current === top) return;
+    lastTop.current = top;
+    stateRef.current = { loaded: true, exitAt: 0, progress: 0 };
+    setPercent(0);
+    setStarted(false);
+    setGone(false);
+    setRun((value) => value + 1);
+  }, [pathname]);
 
   useEffect(() => {
+    const repeat = run > 0;
+    const minMs = repeat ? MIN_MS_NAV : MIN_MS;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -30,13 +53,12 @@ export function Preloader() {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const start = performance.now();
     const state = stateRef.current;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.documentElement.setAttribute("data-preloading", "");
 
     const onLoad = () => {
       state.loaded = true;
     };
-    if (document.readyState === "complete") state.loaded = true;
+    if (repeat || document.readyState === "complete") state.loaded = true;
     else window.addEventListener("load", onLoad, { once: true });
 
     let width = 0;
@@ -63,9 +85,9 @@ export function Preloader() {
       if (!state.loaded && elapsed > 6000) state.loaded = true;
       // progress: eases toward 90% while loading, completes once the page is loaded
       if (!state.exitAt) {
-        const target = state.loaded && elapsed > MIN_MS ? 100 : Math.min(90, elapsed / 22);
+        const target = state.loaded && elapsed > minMs ? 100 : Math.min(90, elapsed / (repeat ? 10 : 22));
         state.progress += (target - state.progress) * 0.08;
-        if (state.loaded && elapsed > MIN_MS && state.progress > 99.4) {
+        if (state.loaded && elapsed > minMs && state.progress > 99.4) {
           state.progress = 100;
           state.exitAt = now;
         }
@@ -126,12 +148,12 @@ export function Preloader() {
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", resize);
       window.removeEventListener("load", onLoad);
-      document.body.style.overflow = previousOverflow;
+      document.documentElement.removeAttribute("data-preloading");
     };
-  }, []);
+  }, [run]);
 
   useEffect(() => {
-    if (gone) document.body.style.overflow = "";
+    if (gone) document.documentElement.removeAttribute("data-preloading");
   }, [gone]);
 
   if (gone) return null;

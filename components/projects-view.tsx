@@ -6,6 +6,8 @@ import { projectIsAwarded, projects } from "@/lib/data/projects";
 import { ProjectTile } from "@/components/project-tile";
 import { ScrambleText } from "@/components/scramble-text";
 import { site } from "@/lib/data/site";
+import Link from "next/link";
+import { FilterCheckbox, FilterSelect } from "@/components/filter-controls";
 
 type Theme = "light" | "dark";
 type View = "field" | "list";
@@ -274,14 +276,13 @@ export function ProjectsView() {
           className="absolute inset-0 z-10 overflow-y-auto"
           aria-label="Project catalog"
         >
-          <div className="relative w-full gutter pb-40 pt-28">
-            <div className="flex flex-col items-center text-center">
-              <p className="inline-flex items-center gap-2 self-start rounded-[4px] border border-border px-3 py-1.5 font-mono text-[11px] text-muted md:absolute md:left-[var(--gutter)] md:top-28">
-                <span aria-hidden="true" className="size-1.5 rounded-full bg-accent" />
+          <div className="relative w-full gutter pb-40 pt-36">
+            <div className="relative mt-8 flex flex-col items-center text-center md:mt-10">
+              <p className="self-start rounded-[4px] border border-border px-3 py-1.5 font-mono text-[11px] text-muted md:absolute md:right-0 md:top-2 md:self-auto">
                 {site.upcoming.count} upcoming projects in {site.upcoming.month}
               </p>
-              <h1 className="mt-8 max-w-3xl font-serif text-5xl font-medium leading-[1.05] text-foreground md:mt-0 md:text-7xl">
-                <ScrambleText as="span" trigger="mount" text="Projects" />
+              <h1 className="mt-8 max-w-3xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:mt-0 md:text-6xl">
+                <ScrambleText as="span" trigger="mount" text="Featured Projects" />
               </h1>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
                 {visible.length} of {projects.length} case studies: brand, product, and motion
@@ -289,51 +290,45 @@ export function ProjectsView() {
               </p>
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-3 rounded-[8px] border border-border bg-background p-2 text-sm">
-              <div className="relative flex max-w-full overflow-x-auto rounded-[6px] bg-surface/60 p-1">
-                {["All", ...categories].map((category) => {
-                  const active =
-                    category === "All" ? categoryFilter === null : categoryFilter === category;
-                  return (
-                    <button
-                      key={category}
-                      type="button"
-                      aria-pressed={active}
-                      onClick={() => setCategoryFilter(category === "All" ? null : category)}
-                      className={`shrink-0 rounded-[4px] px-4 py-2 transition-colors duration-300 ${
-                        active
-                          ? "bg-foreground text-background"
-                          : "text-foreground hover:bg-foreground/8"
-                      }`}
-                    >
-                      {category}
-                    </button>
-                  );
-                })}
+            <div className="mt-10 flex flex-nowrap items-center gap-3 text-[13px]">
+              <div className="relative min-w-0 flex-1 overflow-x-auto rounded-[6px] bg-surface/60 p-1 [mask-image:linear-gradient(to_right,#000_calc(100%-28px),transparent)]">
+                <div className="flex w-max pr-6">
+                  {["All", ...categories].map((category) => {
+                    const active =
+                      category === "All" ? categoryFilter === null : categoryFilter === category;
+                    return (
+                      <button
+                        key={category}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => setCategoryFilter(category === "All" ? null : category)}
+                        className={`shrink-0 rounded-[4px] px-3 py-1.5 transition-colors duration-300 ${
+                          active
+                            ? "bg-foreground text-background"
+                            : "text-foreground hover:bg-foreground/8"
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <label className="flex items-center gap-2 px-2">
-                <input
-                  type="checkbox"
-                  checked={awardsOnly}
-                  onChange={(event) => setAwardsOnly(event.target.checked)}
-                  className="size-4 accent-[var(--foreground)]"
-                />
+              <FilterCheckbox checked={awardsOnly} onChange={setAwardsOnly}>
                 Awarded
-              </label>
-              <div className="ml-auto flex flex-wrap gap-2">
-                <FilterSelect
-                  label="Location"
-                  value={locationFilter}
-                  options={locations}
-                  onChange={setLocationFilter}
-                />
-                <FilterSelect
-                  label="Services"
-                  value={serviceFilter}
-                  options={services}
-                  onChange={setServiceFilter}
-                />
-              </div>
+              </FilterCheckbox>
+              <FilterSelect
+                label="Location"
+                value={locationFilter}
+                options={locations}
+                onChange={setLocationFilter}
+              />
+              <FilterSelect
+                label="Services"
+                value={serviceFilter}
+                options={services}
+                onChange={setServiceFilter}
+              />
             </div>
 
             {visible.length === 0 ? (
@@ -366,7 +361,7 @@ export function ProjectsView() {
         data-projects-toolbar=""
         role="toolbar"
         aria-label="Projects"
-        className="absolute bottom-10 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
+        className="absolute bottom-14 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
       >
         <SlidingGroup activeIndex={theme === "light" ? 0 : 1} ariaLabel="Theme">
           <BarOption pressed={theme === "light"} onClick={(e) => changeTheme("light", e)}>
@@ -385,6 +380,13 @@ export function ProjectsView() {
             List
           </BarOption>
         </SlidingGroup>
+        <span aria-hidden="true" className="mx-1 h-6 w-px bg-border" />
+        <Link
+          href="/contact"
+          className="rounded-[4px] bg-foreground px-4 py-2 text-background transition-opacity duration-300 hover:opacity-80"
+        >
+          Order design
+        </Link>
       </div>
     </div>
   );
@@ -444,33 +446,5 @@ function BarOption({
     >
       {children}
     </button>
-  );
-}
-
-function FilterSelect({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  value: string | null;
-  options: string[];
-  onChange: (value: string | null) => void;
-}) {
-  return (
-    <select
-      aria-label={label}
-      value={value ?? ""}
-      onChange={(event) => onChange(event.target.value || null)}
-      className="rounded-[6px] bg-surface/60 px-4 py-3 text-foreground"
-    >
-      <option value="">{label}</option>
-      {options.map((option) => (
-        <option key={option} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
   );
 }

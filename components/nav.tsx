@@ -36,7 +36,7 @@ export function Nav() {
             <span className="mt-1 text-[10px] font-normal leading-none">
               by Oleg Nikolaev
             </span>
-            <LogoCube body="#ffffff" face="#000000" className="mt-4 size-8" />
+            <LogoCube body="#ffffff" face="#000000" className="mt-3 size-7 md:mt-4 md:size-8" />
           </Link>
 
           <nav

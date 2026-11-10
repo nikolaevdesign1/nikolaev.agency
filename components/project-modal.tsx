@@ -66,12 +66,14 @@ export function ProjectModal({
   useEffect(() => {
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.setAttribute("data-layer-open", "");
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
     };
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = previous;
+      document.documentElement.removeAttribute("data-layer-open");
       window.removeEventListener("keydown", onKey);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,7 +100,7 @@ export function ProjectModal({
       role="dialog"
       aria-modal="true"
       aria-label={project.title}
-      className="fixed inset-0 z-50 pt-10"
+      className="fixed inset-0 z-[60] bg-black/60 pt-10"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) close();
       }}
@@ -109,8 +111,15 @@ export function ProjectModal({
       >
         <div className="flex items-start justify-between gap-6 gutter pt-8 md:pt-10">
           <div className="min-w-0">
-            <p className="font-mono text-[11px] text-muted">
-              {project.category} · {project.year}
+            <p className="flex flex-wrap items-center gap-2 font-mono text-[11px] text-muted">
+              <span>
+                {project.category} · {project.year}
+              </span>
+              {project.award ? (
+                <span className="rounded-[4px] border border-border px-2 py-1 text-foreground">
+                  {project.award}
+                </span>
+              ) : null}
             </p>
             <h1 className="mt-3 font-serif text-5xl font-semibold leading-[1.02] md:text-7xl">
               {project.title}
@@ -148,8 +157,8 @@ export function ProjectModal({
         </div>
 
         <div className="gutter pb-32 pt-8">
-          <div className="overflow-hidden rounded-lg border border-border">
-            <ProjectCover project={project} index={index} className="aspect-[16/9] rounded-none border-0" />
+          <div className="mx-auto max-w-[1100px] overflow-hidden rounded-[6px]">
+            <ProjectCover project={project} index={index} className="aspect-[4/3] rounded-none border-0" />
           </div>
 
           {tab === "info" ? (
@@ -206,6 +215,15 @@ export function ProjectModal({
                 </button>
               ))}
             </div>
+            {project.behance ? (
+              <Link
+                href={project.behance}
+                target="_blank"
+                className="rounded-md border border-border px-4 py-2 text-sm transition-colors hover:bg-foreground hover:text-background"
+              >
+                Behance
+              </Link>
+            ) : null}
             {project.url ? (
               <Link
                 href={project.url}

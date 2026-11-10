@@ -8,163 +8,151 @@ export type Project = {
   services: string[];
   summary: string;
   featured?: boolean;
-  /** Cover aspect ratio used by the tile layout. */
-  format?: "4:3" | "16:9";
+  /** Cover image (local file in /public/projects). */
+  cover?: string;
+  /** Cover video; takes priority over the image. */
+  video?: string;
+  /** Behance case study. */
+  behance?: string;
+  /** Award text shown as a plaque, e.g. "Awarded by Behance UI". */
+  award?: string;
   /** Live site, when the project is one. Enables "Visit site". */
   url?: string;
 };
 
 export const projects: Project[] = [
   {
-    slug: "silo-dallas",
-    format: "16:9",
-    title: "Silo Dallas",
-    client: "Silo",
-    category: "Hospitality",
-    location: "Dallas, TX",
-    year: "2025",
-    services: ["Website", "Art Direction", "Motion"],
-    summary:
-      "A nightlife venue brand and responsive site built around event energy — bold type, high-contrast imagery, and a ticketing flow that never gets in the way.",
+    slug: "atelier-40",
+    title: "Atelier №40",
+    client: "Atelier №40",
+    category: "Media",
+    location: "Remote",
+    year: "2026",
+    services: ["Website", "Art Direction"],
+    summary: "Fashion digital journal. Design of the site and the reading experience.",
     featured: true,
+    cover: "/projects/atelier-40.webp",
+    behance: "https://www.behance.net/gallery/243665037/Atelier-40-Fashion-digital-journal",
   },
   {
-    slug: "meridian-capital",
-    format: "4:3",
-    title: "Meridian Capital",
-    client: "Meridian",
-    category: "Finance",
-    location: "New York, NY",
-    year: "2025",
-    services: ["Brand Identity", "Website", "Design System"],
-    summary:
-      "A quiet, confident identity for a private investment firm — restrained type, long-form data tables, and a site built to earn trust in seconds.",
+    slug: "pynai",
+    title: "pyn.ai",
+    client: "pyn.ai",
+    category: "Technology",
+    location: "Remote",
+    year: "2026",
+    services: ["App Design", "UI/UX", "AI Integration"],
+    summary: "App design for pyn.ai: interface, flows, and visual system.",
     featured: true,
+    cover: "/projects/pynai.webp",
+    behance: "https://www.behance.net/gallery/252995061/pynai-App-design",
   },
   {
-    slug: "fieldnote",
-    format: "4:3",
-    title: "Fieldnote",
-    client: "Fieldnote Labs",
+    slug: "litt",
+    title: "LITT",
+    client: "LITT",
+    category: "E-commerce",
+    location: "Remote",
+    year: "2026",
+    services: ["E-commerce", "UI/UX", "Website"],
+    summary: "E-commerce design for LITT: storefront, catalog, and checkout.",
+    featured: true,
+    cover: "/projects/litt.webp",
+    behance: "https://www.behance.net/gallery/254571553/LITT-ecommerce",
+  },
+  {
+    slug: "tud",
+    title: "TUD",
+    client: "TUD",
+    category: "E-commerce",
+    location: "Remote",
+    year: "2025",
+    services: ["E-commerce", "UI/UX", "Website"],
+    summary: "E-commerce design for TUD: storefront and purchase flow.",
+    featured: true,
+    cover: "/projects/tud.webp",
+    behance: "https://www.behance.net/gallery/221900447/TUD-e-commerce-Design",
+  },
+  {
+    slug: "chris-williams-art-gallery",
+    title: "Chris Williams Art Gallery",
+    client: "Chris Williams",
+    category: "Art",
+    location: "Remote",
+    year: "2026",
+    services: ["Website", "UI/UX", "Art Direction"],
+    summary: "Website for an art gallery: the collection, the artists, and the visit.",
+    featured: true,
+    cover: "/projects/chris-williams.webp",
+    behance: "https://www.behance.net/gallery/257145321/Chris-Williams-Art-Gallery",
+  },
+  {
+    slug: "shuttle-pro",
+    title: "Shuttle.pro",
+    client: "Shuttle.pro",
     category: "Product",
     location: "Remote",
-    year: "2024",
-    services: ["Product UI", "Design System", "Front-end"],
-    summary:
-      "An agent-native workflow tool for field teams. We designed and built the full product surface, from onboarding to the dashboards teams live in daily.",
-    featured: true,
-  },
-  {
-    slug: "atlas-running",
-    format: "16:9",
-    title: "Atlas Running Club",
-    client: "Atlas",
-    category: "Apparel",
-    location: "Los Angeles, CA",
-    year: "2024",
-    services: ["Brand Identity", "Packaging", "Website"],
-    summary:
-      "Identity and e-commerce build for an LA-born running club turned apparel label — built to move at the pace of its community.",
-  },
-  {
-    slug: "harbor-health",
-    format: "4:3",
-    title: "Harbor Health",
-    client: "Harbor",
-    category: "Healthcare",
-    location: "Boston, MA",
-    year: "2023",
-    services: ["Website", "Content System"],
-    summary:
-      "A content-heavy marketing site for a healthcare network, rebuilt for clarity, speed, and a CMS their team actually wants to use.",
-  },
-  {
-    slug: "northline",
-    format: "16:9",
-    title: "Northline",
-    client: "Northline Goods",
-    category: "E-commerce",
-    location: "Chicago, IL",
-    year: "2023",
-    services: ["Website", "Art Direction"],
-    summary:
-      "A direct-to-consumer storefront built around product photography and a checkout flow engineered to convert.",
-  },
-  {
-    slug: "pulsar",
-    format: "16:9",
-    title: "Pulsar",
-    client: "Pulsar Labs",
-    category: "Technology",
-    location: "San Francisco, CA",
     year: "2025",
-    services: ["AI Integration", "Design System", "Front-end"],
-    summary:
-      "An agent-native analytics product rebuilt around how teams actually read data — dashboards that explain themselves before a single filter is touched.",
+    services: ["Mobile App", "UI/UX"],
+    summary: "Mobile app design for Shuttle.pro.",
+    cover: "/projects/shuttlepro.webp",
+    behance: "https://www.behance.net/gallery/221603205/Shuttlepro-Mobile-App-Design",
   },
   {
-    slug: "open-archive",
-    format: "4:3",
-    title: "Open Archive",
-    client: "Open Archive",
-    category: "Media",
-    location: "Austin, TX",
-    year: "2024",
-    services: ["Website", "Content Architecture", "Brand Identity"],
-    summary:
-      "A documentation-first archive for digital case studies, structured so a growing library never needs a redesign to stay legible.",
+    slug: "structura",
+    title: "Structura",
+    client: "Structura",
+    category: "Agency",
+    location: "Remote",
+    year: "2025",
+    services: ["Website", "Front-end"],
+    summary: "Website for the Structura agency: designed in Figma, built in HTML/CSS, JavaScript, and PHP.",
+    cover: "/projects/structura.webp",
+    behance: "https://www.behance.net/gallery/220813551/Structura-agency-Website",
   },
   {
-    slug: "silverline-robotics",
-    format: "4:3",
-    title: "Silverline Robotics",
-    client: "Silverline",
-    category: "Robotics",
-    location: "Seattle, WA",
-    year: "2023",
-    services: ["Brand Identity", "Website", "Motion"],
-    summary:
-      "Identity and site for a robotics manufacturer — industrial precision translated into type, grid, and a product configurator that feels just as engineered.",
+    slug: "alnima",
+    title: "Alnima",
+    client: "Alnima",
+    category: "E-commerce",
+    location: "Remote",
+    year: "2025",
+    services: ["E-commerce", "UI/UX"],
+    summary: "E-commerce design for Alnima.",
+    cover: "/projects/alnima.webp",
+    behance: "https://www.behance.net/gallery/220837707/Alnima-E-commerce-Design",
+  },
+  {
+    slug: "alnima-io",
+    title: "Alnima.io",
+    client: "Alnima.io",
+    category: "Product",
+    location: "Remote",
+    year: "2025",
+    services: ["Mobile App", "UI/UX"],
+    summary: "Mobile app design for Alnima.io.",
+    cover: "/projects/alnimaio.webp",
+    behance: "https://www.behance.net/gallery/221627387/Alnimaio-Mobile-app-Design",
+  },
+  {
+    slug: "froki",
+    title: "Froki",
+    client: "Froki",
+    category: "Product",
+    location: "Remote",
+    year: "2026",
+    services: ["UI/UX"],
+    summary: "Design for Froki.",
+    cover: "/projects/froki.webp",
+    behance: "https://www.behance.net/gallery/248712857/Froki",
   },
 ];
 
 export const featuredProjects = projects.filter((p) => p.featured);
 
-const AWARD_COPY = /\b(awards?|awwwards|prizes?|winners?)\b/i;
-
-function awardValue(value: unknown): boolean {
-  if (value === true) return true;
-  if (typeof value === "string") return value.trim().length > 0;
-  if (Array.isArray(value)) return value.some(awardValue);
-  return false;
-}
-
-/** Awarded when the record has a real award, prize, or winner flag, or the copy already says so. */
+/** Awarded when the record carries an award text. */
 export function projectIsAwarded(project: Project): boolean {
-  const record = project as Project & {
-    award?: unknown;
-    awards?: unknown;
-    prize?: unknown;
-    prizes?: unknown;
-    winner?: unknown;
-  };
-  if (
-    awardValue(record.award) ||
-    awardValue(record.awards) ||
-    awardValue(record.prize) ||
-    awardValue(record.prizes) ||
-    awardValue(record.winner)
-  ) {
-    return true;
-  }
-  const copy = [
-    project.title,
-    project.client,
-    project.category,
-    project.summary,
-    ...project.services,
-  ].join(" ");
-  return AWARD_COPY.test(copy);
+  return Boolean(project.award?.trim());
 }
 
 /** Client country flag, derived from the project location. */

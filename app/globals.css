@@ -118,18 +118,12 @@ h6 {
   color: var(--ink);
 }
 
+html {
+  scrollbar-width: none;
+}
+
 ::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(35, 35, 35, 0.2);
-  border: 2px solid var(--background);
-  border-radius: 999px;
+  display: none;
 }
 
 /* faint dot-grid texture used behind the services/directions section */
@@ -320,4 +314,55 @@ h6 {
 
 .page-in {
   animation: page-in 700ms ease-out backwards;
+}
+
+/* hide the site header while a full-screen layer (project popup, video, chat) is open */
+html[data-layer-open] header {
+  opacity: 0;
+  pointer-events: none;
+}
+
+header {
+  transition: opacity 250ms ease;
+}
+
+/* chat orb: slow liquid blobs inside a sphere */
+@keyframes orb-blob-a {
+  0%,
+  100% {
+    transform: translate(-18%, -12%) scale(1);
+  }
+  50% {
+    transform: translate(22%, 16%) scale(1.25);
+  }
+}
+
+@keyframes orb-blob-b {
+  0%,
+  100% {
+    transform: translate(20%, 14%) scale(1.15);
+  }
+  50% {
+    transform: translate(-22%, -10%) scale(0.9);
+  }
+}
+
+@keyframes orb-blob-c {
+  0%,
+  100% {
+    transform: translate(-6%, 24%) scale(0.9);
+  }
+  50% {
+    transform: translate(10%, -24%) scale(1.2);
+  }
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+html[data-preloading] {
+  overflow: hidden;
 }

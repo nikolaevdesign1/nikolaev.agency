@@ -5,7 +5,7 @@ import { Reveal } from "@/components/reveal";
 import { ProjectTile } from "@/components/project-tile";
 
 export function BestCases() {
-  const cases = projects.slice(0, 9);
+  const cases = projects.filter((project) => project.featured);
 
   return (
     <section className="gutter py-24 md:py-32">

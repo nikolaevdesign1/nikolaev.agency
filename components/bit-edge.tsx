@@ -154,7 +154,8 @@ function paint(
   }
 
   if (toDark) {
-    paintSquares(false, 0.04 + progress * 0.96, 0.62);
+    // 30% fewer dark cells and glyphs on the light side of this seam
+    paintSquares(false, (0.04 + progress * 0.96) * 0.7, 0.62 * 0.7);
   }
 }
 

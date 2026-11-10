@@ -28,10 +28,13 @@ function place(slot: Slot, rect: DOMRect) {
   const width = badge.offsetWidth;
   const height = badge.offsetHeight;
   const pad = 8;
-  const maxX = Math.max(pad, rect.width - width - pad);
-  const maxY = Math.max(pad, rect.height - height - pad);
-  const x = Math.min(Math.max(pad, pointer.x - rect.left + 12), maxX);
-  const y = Math.min(Math.max(pad, pointer.y - rect.top + 12), maxY);
+  // The badge may leave the tile; it only stays inside the viewport.
+  const minX = pad - rect.left;
+  const maxX = window.innerWidth - width - pad - rect.left;
+  const minY = pad - rect.top;
+  const maxY = window.innerHeight - height - pad - rect.top;
+  const x = Math.min(Math.max(minX, pointer.x - rect.left + 14), Math.max(minX, maxX));
+  const y = Math.min(Math.max(minY, pointer.y - rect.top + 14), Math.max(minY, maxY));
   badge.style.transform = `translate3d(${x}px, ${y}px, 0)`;
 }
 

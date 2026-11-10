@@ -7,7 +7,7 @@ import { PhotoBit } from "@/components/photo-bit";
 import { CursorFollowCta } from "@/components/cursor-follow-cta";
 
 const TILE_W = 480;
-const TILE_H = 340;
+const TILE_H = 360;
 const CAPTION_H = 118;
 const MIN_GAP_X = 520;
 const MIN_GAP_Y = 460;
@@ -82,28 +82,11 @@ function shortLine(summary: string) {
 
 function tagsOf(project: Project) {
   const services = project.services.filter((service) => service.trim().length > 0);
-  return [project.category, ...services];
+  return Array.from(new Set([project.category, ...services]));
 }
 
 function awardPlaque(project: Project) {
-  if (!projectIsAwarded(project)) return null;
-  const record = project as Project & {
-    award?: unknown;
-    awards?: unknown;
-    prize?: unknown;
-    prizes?: unknown;
-    winner?: unknown;
-  };
-  const values = [record.award, record.awards, record.prize, record.prizes, record.winner];
-  for (const value of values) {
-    if (typeof value === "string" && value.trim()) return value.trim();
-    if (Array.isArray(value)) {
-      for (const item of value) {
-        if (typeof item === "string" && item.trim()) return item.trim();
-      }
-    }
-  }
-  return "Award";
+  return projectIsAwarded(project) ? (project.award?.trim() ?? null) : null;
 }
 
 function buildNotes(camX: number, camY: number, width: number, height: number) {
@@ -116,12 +99,12 @@ function buildNotes(camX: number, camY: number, width: number, height: number) {
   for (let row = startRow; row < startRow + rows; row++) {
     for (let col = startCol; col < startCol + cols; col++) {
       const h = hash(col + 8191, row - 4093);
-      if (unit(h) > 0.62) continue;
+      if (unit(h) > 0.34) continue;
       notes.push({
         key: `${col}:${row}`,
         x: col * NOTE_STEP + unit(hash(col, row + 101)) * NOTE_STEP * 0.7,
         y: row * NOTE_STEP + unit(hash(col + 53, row)) * NOTE_STEP * 0.7,
-        text: NOTE_POOL[h % NOTE_POOL.length] ?? NOTE_POOL[0],
+        text: (NOTE_POOL[h % NOTE_POOL.length] ?? NOTE_POOL[0]).toLowerCase(),
       });
     }
   }
@@ -169,7 +152,7 @@ function buildCells(
         tags: tagsOf(project),
         award: awardPlaque(project),
         seed: h,
-        src: `https://picsum.photos/seed/${project.slug}-${variant}/1280/960`,
+        src: project.cover ?? `https://picsum.photos/seed/${project.slug}-${variant}/1280/960`,
       });
     }
   }
@@ -272,7 +255,7 @@ export function InfinityVision({
     [cam.x, cam.y, viewport.width, viewport.height],
   );
   const dotInk = theme === "dark" ? "rgba(240, 150, 55, 0.55)" : "rgba(35, 35, 35, 0.4)";
-  const noteInk = theme === "dark" ? "rgba(243, 241, 234, 0.32)" : "rgba(35, 35, 35, 0.32)";
+  const noteInk = theme === "dark" ? "rgba(243, 241, 234, 0.14)" : "rgba(35, 35, 35, 0.14)";
 
   return (
     <div
@@ -317,6 +300,7 @@ export function InfinityVision({
         }
         setDragging(false);
       }}
+      onDragStart={(event) => event.preventDefault()}
       onPointerCancel={() => {
         dragRef.current = null;
         setDragging(false);
@@ -336,7 +320,7 @@ export function InfinityVision({
           <pre
             key={note.key}
             data-field-note=""
-            className="absolute m-0 font-mono text-[11px] leading-[1.4] select-none"
+            className="absolute m-0 font-mono text-[10px] leading-[1.4] select-none"
             style={{
               color: noteInk,
               transform: `translate3d(${note.x - cam.x}px, ${note.y - cam.y}px, 0)`,
@@ -378,7 +362,7 @@ export function InfinityVision({
               <p className="mt-2 line-clamp-2 text-sm leading-snug text-muted">{cell.blurb}</p>
             </div>
             <div
-              className="relative overflow-hidden rounded-[6px] border border-border"
+              className="relative overflow-hidden rounded-[6px]"
               style={{ height: TILE_H }}
             >
               <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
