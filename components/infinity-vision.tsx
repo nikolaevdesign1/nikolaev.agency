@@ -28,7 +28,6 @@ type Cell = {
   tags: string[];
   award: string | null;
   project: Project;
-  number: string;
 };
 
 const GRID = 96;
@@ -157,7 +156,6 @@ function buildCells(
         tags: tagsOf(project),
         award: awardPlaque(project),
         project,
-        number: String(allProjects.findIndex((p) => p.slug === project.slug) + 1).padStart(2, "0"),
         seed: h,
         src: project.cover ?? `https://picsum.photos/seed/${project.slug}-${variant}/1280/960`,
       });
@@ -351,14 +349,6 @@ export function InfinityVision({
                 >
                   {cell.title}
                 </p>
-                {cell.award ? (
-                  <span
-                    data-award-plaque=""
-                    className="shrink-0 rounded-[2px] border border-foreground/45 px-1.5 py-0.5 font-mono text-[10px] text-foreground"
-                  >
-                    {cell.award}
-                  </span>
-                ) : null}
               </div>
               <p className="mt-2 line-clamp-2 text-sm leading-snug text-muted">{cell.blurb}</p>
             </div>
