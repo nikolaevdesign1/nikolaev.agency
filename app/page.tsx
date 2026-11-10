@@ -7,6 +7,7 @@ import { ScrambleText } from "@/components/scramble-text";
 import { ExpandableVideo } from "@/components/expandable-video";
 import { BestCases } from "@/components/best-cases";
 import { GlobeNetwork } from "@/components/globe-network";
+import { TypeOnScroll } from "@/components/type-on-scroll";
 import { GlobeSticky } from "@/components/globe-sticky";
 import { LinkButton, pillClass } from "@/components/button";
 
@@ -92,9 +93,10 @@ export default async function Home() {
                     <p className="font-mono text-[11px] text-ink-muted">
                       {point.index} / {point.title}
                     </p>
-                    <p className="text-xl leading-snug text-ink-foreground md:text-2xl">
-                      {point.body}
-                    </p>
+                    <TypeOnScroll
+                      text={point.body}
+                      className="text-xl leading-snug text-ink-foreground md:text-2xl"
+                    />
                   </li>
                 ))}
               </ol>
