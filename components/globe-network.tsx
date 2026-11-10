@@ -285,7 +285,8 @@ export function GlobeNetwork({
         ctx.stroke();
 
         // a pulse travelling hub -> project
-        const u = (t * 0.22 + arc.phase) % 1;
+        const raw = (t * 0.22 + arc.phase) % 1;
+        const u = Number.isFinite(raw) ? Math.max(0, raw) : 0;
         const idx = Math.min(arc.pts.length - 1, Math.floor(u * arc.pts.length));
         const [px, py, pz] = project(arc.pts[idx], cy, sy, cp, sp);
         if (pz > 0 || px * px + py * py > 1) {

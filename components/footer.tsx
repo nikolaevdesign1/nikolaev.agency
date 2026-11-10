@@ -40,7 +40,7 @@ export function Footer() {
             ))}
           </ul>
 
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-6 lg:-ml-16 xl:-ml-24">
             <p className="max-w-3xl font-serif text-[1.9rem] font-normal leading-[1.12] text-foreground sm:text-4xl lg:text-[2.6rem]">
               A digital-first studio.{" "}
               <span className="bg-accent px-[0.12em] text-ink box-decoration-clone">

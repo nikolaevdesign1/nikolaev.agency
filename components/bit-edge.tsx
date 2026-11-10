@@ -95,62 +95,24 @@ function paint(
     }
   }
 
-  const paintSquares = (
-    darkOnTop: boolean,
-    inked: number,
-    glyphRate: number,
-  ) => {
-    const step = 10;
-    const letter = 8;
-    const gridCols = Math.ceil(width / step);
-    const gridRows = Math.ceil(height / step);
-    const skyline = Array.from({ length: gridCols }, (_, col) => {
-      const wave =
-        Math.sin(col * 0.09 + seed) * 2.2 +
-        Math.sin(col * 0.31 + seed * 1.4) * 1.3;
-      const jitter = (hash(col * 13 + seed * 97) - 0.5) * 9;
-      const spike = hash(col * 41 + seed * 5) > 0.86 ? (hash(col * 3 + seed) - 0.5) * 22 : 0;
-      const drift = Math.sin(col * 0.021 + seed * 2.3) * 7;
-      const row = Math.round(gridRows * 0.4 + wave + jitter + spike + drift);
-      return Math.max(2, Math.min(gridRows - 3, row));
-    });
-
-    ctx.font = `500 ${letter}px ${font}`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    // Same 10px squares. Their survival chance falls across almost the
-    // whole band so the field never reads as a hard color cut.
-    const falloffSpan = Math.max(16, Math.round(gridRows * 0.94));
-
-    for (let row = 0; row < gridRows; row++) {
-      const distToBlack = darkOnTop ? row : gridRows - 1 - row;
-      const presence = smoothstep(distToBlack / falloffSpan);
-      for (let col = 0; col < gridCols; col++) {
-        const x = col * step;
-        const y = row * step;
-        const inDark = darkOnTop ? row <= skyline[col] : row >= skyline[col];
-        const clump = hash(Math.floor(col / 5) * 31 + Math.floor(row / 4) * 67 + seed);
-        const slot = (hash(col * 17 + row * 53 + seed) + clump) / 2;
-        const localInked = 1 - (1 - inked) * (inDark ? presence : 1);
-        const painted = !inDark || slot < localInked;
-        const darkColor = darkOnTop ? from : to;
-        const lightColor = darkOnTop ? to : from;
-        ctx.fillStyle = painted && inDark ? darkColor : lightColor;
-        ctx.fillRect(x, y, step, step);
-        const glyphHere = glyphRate * (inDark ? presence : 1);
-        if (!painted || hash(col * 29 + row * 7 + seed) > glyphHere) continue;
-        const index = Math.floor(hash(col * 9 + row * 3 + seed) * glyphs.length);
-        const ch = glyphs[index] ?? "";
-        if (ch === " ") continue;
-        ctx.fillStyle = inDark ? "#c9c6bc" : onFrom;
-        ctx.fillText(ch, x + step / 2, y + step / 2 + 0.5);
-      }
-    }
-  };
-
   if (fromDark) {
-    paintSquares(true, 0.04 + progress * 0.96, 0.62);
+    // Dark above, light below: the same rising effect, drawn upside down with upright letters.
+    const upright = ctx.fillText.bind(ctx);
+    ctx.save();
+    ctx.transform(1, 0, 0, -1, 0, height);
+    ctx.fillText = (text: string, x: number, y: number) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(1, -1);
+      upright(text, 0, 0);
+      ctx.restore();
+    };
+    try {
+      paintRise(ctx, width, height, to, from, glyphs, seed, progress, font);
+    } finally {
+      delete (ctx as { fillText?: unknown }).fillText;
+      ctx.restore();
+    }
   }
 
   if (toDark) {
