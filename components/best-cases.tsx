@@ -1,11 +1,11 @@
 "use client";
 
-import { projects } from "@/lib/data/projects";
+import type { Project } from "@/lib/data/projects";
 import { Reveal } from "@/components/reveal";
 import { ProjectTile } from "@/components/project-tile";
 
-export function BestCases() {
-  const cases = projects.filter((project) => project.featured);
+export function BestCases({ projects }: { projects: Project[] }) {
+  const cases = projects.filter((project) => project.featured).slice(0, 6);
 
   return (
     <section className="gutter py-24 md:py-32">
@@ -16,7 +16,11 @@ export function BestCases() {
         {cases.map((project, i) => (
           <div key={project.slug} data-scroll data-scroll-speed={[0.04, 0.09, 0.02][i % 3]}>
             <Reveal delay={i * 40}>
-              <ProjectTile project={project} index={i} />
+              <ProjectTile
+                project={project}
+                index={i}
+                number={String(projects.findIndex((p) => p.slug === project.slug) + 1).padStart(2, "0")}
+              />
             </Reveal>
           </div>
         ))}

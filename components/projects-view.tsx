@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { InfinityVision } from "@/components/infinity-vision";
-import { projectIsAwarded, projects } from "@/lib/data/projects";
+import { projectIsAwarded, type Project } from "@/lib/data/projects";
 import { ProjectTile } from "@/components/project-tile";
 import { ScrambleText } from "@/components/scramble-text";
 import { site } from "@/lib/data/site";
@@ -117,7 +117,7 @@ function LetterDensityPassage() {
   );
 }
 
-export function ProjectsView() {
+export function ProjectsView({ projects }: { projects: Project[] }) {
   const [theme, setTheme] = useState<Theme>("light");
   const [view, setView] = useState<View>("field");
   const [shown, setShown] = useState<Shown>("field");
@@ -184,16 +184,16 @@ export function ProjectsView() {
 
   const categories = useMemo(
     () => Array.from(new Set(projects.map((p) => p.category))).sort(),
-    [],
+    [projects],
   );
   const locations = useMemo(
     () => Array.from(new Set(projects.map((p) => p.location))).sort(),
-    [],
+    [projects],
   );
 
   const services = useMemo(
     () => Array.from(new Set(projects.flatMap((p) => p.services))).sort(),
-    [],
+    [projects],
   );
 
   const visible = useMemo(
@@ -205,7 +205,7 @@ export function ProjectsView() {
         if (serviceFilter && !project.services.includes(serviceFilter)) return false;
         return true;
       }),
-    [awardsOnly, categoryFilter, locationFilter, serviceFilter],
+    [projects, awardsOnly, categoryFilter, locationFilter, serviceFilter],
   );
 
   const changeTheme = (next: Theme, event: React.MouseEvent<HTMLButtonElement>) => {
@@ -266,7 +266,7 @@ export function ProjectsView() {
     >
       {shown === "field" ? (
         <div className="absolute inset-0">
-          <InfinityVision theme={theme} projects={visible} />
+          <InfinityVision theme={theme} projects={visible} allProjects={projects} />
         </div>
       ) : null}
 
@@ -346,7 +346,11 @@ export function ProjectsView() {
                     className="animate-[tile-in_420ms_ease-out_both]"
                     style={{ animationDelay: `${i * 45}ms` }}
                   >
-                    <ProjectTile project={project} index={i} />
+                    <ProjectTile
+                      project={project}
+                      index={i}
+                      number={String(projects.findIndex((p) => p.slug === project.slug) + 1).padStart(2, "0")}
+                    />
                   </div>
                 ))}
                 {visible.length === projects.length && visible.length % 3 !== 0 ? (

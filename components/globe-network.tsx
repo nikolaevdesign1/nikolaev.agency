@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { GLOBE_HUB, globeNodes } from "@/lib/data/globe";
 import { LAND_B64, LAND_H, LAND_W } from "@/lib/data/land-mask";
-import { projects } from "@/lib/data/projects";
+import type { Project } from "@/lib/data/projects";
 
 type Card = { x: number; y: number; city: string; count: number; titles: string[] };
 
@@ -39,7 +39,13 @@ function slerp(a: Vec, b: Vec, t: number): Vec {
 }
 
 /** Draggable dot globe: studio hub in Los Angeles, projects tied to it with threads. */
-export function GlobeNetwork({ className }: { className?: string }) {
+export function GlobeNetwork({
+  className,
+  projects,
+}: {
+  className?: string;
+  projects: Pick<Project, "slug" | "title" | "place">[];
+}) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [card, setCard] = useState<Card | null>(null);
@@ -73,7 +79,17 @@ export function GlobeNetwork({ className }: { className?: string }) {
     }
 
     const hub = toVec(GLOBE_HUB.lat, GLOBE_HUB.lon);
-    const nodes = globeNodes.map((node) => ({ node, v: toVec(node.lat, node.lon) }));
+    // one point per city; several projects in a city share it
+    const byCity = new Map<string, { city: string; lat: number; lon: number; titles: string[] }>();
+    for (const project of projects) {
+      const place = project.place ?? globeNodes.find((n) => n.slug === project.slug);
+      if (!place) continue;
+      const key = `${place.city}|${place.lat}|${place.lon}`;
+      const entry = byCity.get(key) ?? { city: place.city, lat: place.lat, lon: place.lon, titles: [] };
+      entry.titles.push(project.title);
+      byCity.set(key, entry);
+    }
+    const nodes = Array.from(byCity.values()).map((node) => ({ node, v: toVec(node.lat, node.lon) }));
     const arcs = nodes.map(({ v }, index) => {
       const pts: Vec[] = [];
       const angle = Math.acos(Math.min(1, Math.max(-1, hub[0] * v[0] + hub[1] * v[1] + hub[2] * v[2])));
@@ -284,7 +300,7 @@ export function GlobeNetwork({ className }: { className?: string }) {
           y: c - y * R,
           z,
           city: node.city,
-          titles: projects.filter((p) => p.slug === node.slug).map((p) => p.title),
+          titles: node.titles,
         });
         if (z <= 0.02) continue;
         const px = c + x * R;
@@ -333,7 +349,7 @@ export function GlobeNetwork({ className }: { className?: string }) {
       canvas.removeEventListener("pointerleave", onLeave);
       canvas.removeEventListener("pointercancel", onUp);
     };
-  }, []);
+  }, [projects]);
 
   return (
     <div ref={wrapRef} className={`relative ${className ?? ""}`}>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { site } from "@/lib/data/site";
+import { getProjects } from "@/lib/content/store";
 import { ProjectsView } from "@/components/projects-view";
 
 export const metadata: Metadata = {
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   description: `Selected work from ${site.name}.`,
 };
 
-export default function ProjectsPage() {
-  return <ProjectsView />;
+export default async function ProjectsPage() {
+  const projects = await getProjects();
+  return <ProjectsView projects={projects} />;
 }

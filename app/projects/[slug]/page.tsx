@@ -1,10 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { projects } from "@/lib/data/projects";
+import { getProjects } from "@/lib/content/store";
 import { ProjectModal } from "@/components/project-modal";
+import { ProjectCase } from "@/components/project-case";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const projects = await getProjects();
   return projects.map((project) => ({ slug: project.slug }));
 }
 
@@ -14,17 +16,24 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const projects = await getProjects();
   const project = projects.find((p) => p.slug === slug);
   return { title: project?.title ?? "Project" };
 }
 
 async function Content({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
-  if (!project) notFound();
+  const projects = await getProjects();
   const index = projects.findIndex((p) => p.slug === slug);
+  if (index < 0) notFound();
+  const project = projects[index];
+  const next = projects[(index + 1) % projects.length];
 
-  return <ProjectModal project={project} index={index} />;
+  return (
+    <ProjectModal title={project.title} slug={project.slug}>
+      <ProjectCase project={project} next={next.slug === project.slug ? undefined : next} />
+    </ProjectModal>
+  );
 }
 
 export default function ProjectDetailPage({

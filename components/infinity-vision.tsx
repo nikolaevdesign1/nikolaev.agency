@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { projectIsAwarded, projects as allProjects, type Project } from "@/lib/data/projects";
+import { projectIsAwarded, type Project } from "@/lib/data/projects";
 import { PhotoBit } from "@/components/photo-bit";
 import { HoverPlate } from "@/components/hover-plate";
 import { Tilt } from "@/components/tilt";
@@ -132,6 +132,7 @@ function buildCells(
   width: number,
   height: number,
   projectList: readonly Project[],
+  allProjects: readonly Project[],
 ) {
   if (!projectList?.length) return [];
   const startCol = Math.floor(camX / CELL_W) - 2;
@@ -170,9 +171,11 @@ function buildCells(
 export function InfinityVision({
   theme,
   projects,
+  allProjects,
 }: {
   theme: "light" | "dark";
   projects: readonly Project[];
+  allProjects: readonly Project[];
 }) {
   const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -246,8 +249,8 @@ export function InfinityVision({
   }, []);
 
   const cells = useMemo(
-    () => buildCells(cam.x, cam.y, viewport.width, viewport.height, projects),
-    [cam.x, cam.y, viewport.width, viewport.height, projects],
+    () => buildCells(cam.x, cam.y, viewport.width, viewport.height, projects, allProjects),
+    [cam.x, cam.y, viewport.width, viewport.height, projects, allProjects],
   );
   const notes = useMemo(
     () => buildNotes(cam.x, cam.y, viewport.width, viewport.height),

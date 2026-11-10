@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { countryFlag, projects, type Project } from "@/lib/data/projects";
+import { countryFlag, type Project } from "@/lib/data/projects";
 import { HoverPlate } from "@/components/hover-plate";
 import { ProjectCover } from "@/components/project-cover";
 import { Tilt } from "@/components/tilt";
@@ -9,14 +9,15 @@ import { Tilt } from "@/components/tilt";
 export function ProjectTile({
   project,
   index,
+  number,
   className,
 }: {
   project: Project;
   index: number;
+  number: string;
   className?: string;
 }) {
   const tags = Array.from(new Set([project.category, ...project.services]));
-  const number = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStart(2, "0");
 
   return (
     <div className={`group relative block ${className ?? ""}`}>

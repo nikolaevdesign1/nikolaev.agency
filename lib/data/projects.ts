@@ -1,3 +1,18 @@
+/** One image or one video. Everywhere a picture can stand, a video can too. */
+export type Media = {
+  type: "image" | "video";
+  src: string;
+  /** Still shown before a video plays, and as alt text for images. */
+  poster?: string;
+  alt?: string;
+};
+
+export type ProjectBlock =
+  | { type: "media"; media: Media; caption?: string }
+  | { type: "media2"; items: [Media, Media] }
+  | { type: "text"; label: string; text: string }
+  | { type: "credits"; rows: { role: string; name: string }[] };
+
 export type Project = {
   slug: string;
   title: string;
@@ -20,6 +35,14 @@ export type Project = {
   award?: string;
   /** Live site, when the project is one. Enables "Visit site". */
   url?: string;
+  /** Short line under the cover on the project page. */
+  coverCaption?: string;
+  /** Big statement on the project page. */
+  statement?: string;
+  /** Content of the project page, in order. */
+  blocks?: ProjectBlock[];
+  /** Where the project sits on the home globe. */
+  place?: { city: string; lat: number; lon: number };
 };
 
 export const projects: Project[] = [

@@ -43,6 +43,11 @@ export function Preloader() {
   }, [pathname]);
 
   useEffect(() => {
+    // The admin is a tool, not a page to show off: no loader there.
+    if (window.location.pathname.startsWith("/admin")) {
+      setGone(true);
+      return;
+    }
     const repeat = run > 0;
     const minMs = repeat ? MIN_MS_NAV : MIN_MS;
     const canvas = canvasRef.current;

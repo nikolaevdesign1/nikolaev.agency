@@ -1,3 +1,4 @@
+import { getProjects } from "@/lib/content/store";
 import { HeroVideo } from "@/components/hero-video";
 import { ServicesGrid } from "@/components/services-grid";
 import { BitEdge } from "@/components/bit-edge";
@@ -47,14 +48,15 @@ const aiPoints = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const projects = await getProjects();
   return (
     <>
       <HeroVideo src="/video/hero.mp4" />
 
       <ServicesGrid />
 
-      <BestCases />
+      <BestCases projects={projects} />
 
       <BitEdge
         from="#fcfbf9"
@@ -104,7 +106,7 @@ export default function Home() {
             </div>
 
             <GlobeSticky>
-              <GlobeNetwork className="mx-auto w-full max-w-[680px]" />
+              <GlobeNetwork projects={projects} className="mx-auto w-full max-w-[680px]" />
             </GlobeSticky>
           </div>
 
