@@ -165,8 +165,9 @@ function paintRise(
   };
 
   for (let col = 0; col < cols; col++) {
-    const lift = Math.round(rise * rows * (0.55 + 0.45 * Math.sin(col * 0.05 + seed)));
-    const edge = base[Math.floor(col / blockW)] + lift;
+    // Lift stays below the canvas height, so the edge is ragged along its whole length (no flat run).
+    const lift = Math.round(rise * rows * 0.4 * (0.55 + 0.45 * Math.sin(col * 0.05 + seed)));
+    const edge = Math.min(rows - 3, base[Math.floor(col / blockW)] + lift);
     const x = col * step;
     const travel = 0.5 + 0.5 * Math.sin(col * 0.09 - progress * 14 + seed);
 
@@ -267,9 +268,7 @@ export function BitEdge({
       aria-hidden="true"
       className={className ?? "-mb-px h-72 w-full md:h-[22rem]"}
       style={
-        isDark(to)
-          ? { maskImage: "linear-gradient(to bottom, transparent, #000 18%)" }
-          : { maskImage: "linear-gradient(to bottom, #000 72%, transparent)" }
+        isDark(to) ? { maskImage: "linear-gradient(to bottom, transparent, #000 18%)" } : undefined
       }
     >
       <canvas ref={canvasRef} className="block h-full w-full" />

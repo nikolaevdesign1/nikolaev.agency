@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { projectIsAwarded, type Project } from "@/lib/data/projects";
 import { PhotoBit } from "@/components/photo-bit";
 import { HoverPlate } from "@/components/hover-plate";
+import { AwardBadge, ProjectTags, SiteIcon } from "@/components/project-card-parts";
 
 const TILE_W = 480;
 const TILE_H = 360;
@@ -341,17 +342,6 @@ export function InfinityVision({
           }}
         >
           <div className="group relative w-full">
-            <div data-project-caption="" className="pb-3 pl-0.5">
-              <div className="flex items-baseline justify-between gap-3">
-                <p
-                  data-project-title=""
-                  className="font-serif text-3xl font-medium leading-none text-foreground"
-                >
-                  {cell.title}
-                </p>
-              </div>
-              <p className="mt-2 line-clamp-2 text-sm leading-snug text-muted">{cell.blurb}</p>
-            </div>
             <div
               className="relative overflow-hidden rounded-[6px]"
               style={{ height: TILE_H }}
@@ -359,19 +349,20 @@ export function InfinityVision({
               <div className="absolute inset-0">
                 <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
               </div>
-              <div
-                data-project-direction=""
-                className="pointer-events-none absolute inset-x-3 bottom-3 flex flex-wrap gap-1.5"
-              >
-                {cell.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-[4px] bg-white px-2 py-1 font-mono text-[10px] leading-none text-[#141414]"
-                  >
-                    {tag}
-                  </span>
-                ))}
+              <AwardBadge project={cell.project} />
+              <SiteIcon />
+              <div data-project-direction="" className="pointer-events-none absolute inset-x-4 bottom-4">
+                <ProjectTags project={cell.project} />
               </div>
+            </div>
+            <div data-project-caption="" className="flex items-baseline justify-between gap-4 pt-4">
+              <p
+                data-project-title=""
+                className="font-serif text-3xl font-medium leading-none text-foreground"
+              >
+                {cell.title}
+              </p>
+              <p className="font-mono text-[14px] text-muted">{cell.project.year}</p>
             </div>
             <HoverPlate project={cell.project} />
           </div>

@@ -9,10 +9,10 @@ export function BestCases({ projects }: { projects: Project[] }) {
 
   return (
     <section className="gutter py-24 md:py-32">
-      <p className="font-mono text-[11px] text-muted">
+      <h2 className="mx-auto max-w-3xl text-center font-serif text-4xl font-medium leading-[1.05] text-foreground md:text-6xl">
         Selected work
-      </p>
-      <div className="mt-6 grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2">
+      </h2>
+      <div className="mt-14 grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2">
         {cases.map((project, i) => (
           <div key={project.slug} data-scroll data-scroll-speed={[0.04, 0.09][i % 2]}>
             <Reveal delay={i * 40}>

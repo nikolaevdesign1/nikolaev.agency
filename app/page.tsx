@@ -108,14 +108,16 @@ export default async function Home() {
             </GlobeSticky>
           </div>
 
-          <div className="mt-16 flex flex-wrap items-center justify-center gap-3 md:mt-24">
-            <StudioChatButton className={pillClass}>Let&apos;s chat</StudioChatButton>
-            <LinkButton href="/contact">Request a project</LinkButton>
-          </div>
+          <div className="-mt-12 flex flex-col gap-12 md:-mt-20 md:gap-16">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <StudioChatButton className={pillClass}>Let&apos;s chat</StudioChatButton>
+              <LinkButton href="/contact">Request a project</LinkButton>
+            </div>
 
-          <ScrollScale>
-            <ExpandableVideo src="/video/hero.mp4" className="mx-auto w-[min(88vw,640px)]" />
-          </ScrollScale>
+            <ScrollScale>
+              <ExpandableVideo src="/video/hero.mp4" className="mx-auto w-[min(88vw,640px)]" />
+            </ScrollScale>
+          </div>
         </div>
       </section>
 

@@ -20,7 +20,9 @@ export function Footer() {
 
   return (
     <footer
-      className="bg-dot-grid relative mt-24 overflow-hidden bg-background text-foreground md:mt-36"
+      className={`bg-dot-grid relative overflow-hidden bg-background text-foreground ${
+        pathname === "/about" ? "mt-0" : "mt-24 md:mt-36"
+      }`}
     >
       <DotField />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">

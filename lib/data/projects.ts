@@ -33,6 +33,8 @@ export type Project = {
   credits?: string[];
   /** Award text shown as a plaque, e.g. "Awarded by Behance UI". */
   award?: string;
+  /** Who gave the award: "Behance", "Awwwards", "CSS Design Awards"… Shown on the badge. */
+  awardSource?: string;
   /** Live site, when the project is one. Enables "Visit site". */
   url?: string;
   /** Short line under the cover on the project page. */
@@ -177,6 +179,16 @@ export const projects: Project[] = [
 ];
 
 export const featuredProjects = projects.filter((p) => p.featured);
+
+export const awardSources = ["Behance", "Awwwards", "CSS Design Awards", "FWA", "The Webby Award", "Other"] as const;
+
+/** Badge label: the chosen source, else guessed from the award text. */
+export function awardSourceOf(project: Pick<Project, "award" | "awardSource">): string {
+  if (project.awardSource?.trim()) return project.awardSource.trim();
+  const text = (project.award ?? "").toLowerCase();
+  const hit = awardSources.find((name) => name !== "Other" && text.includes(name.toLowerCase()));
+  return hit ?? "Award";
+}
 
 /** Awarded when the record carries an award text. */
 export function projectIsAwarded(project: Project): boolean {

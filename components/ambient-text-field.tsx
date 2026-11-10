@@ -22,6 +22,31 @@ function unitFor(phrase: string) {
   return `${phrase}      ·      `;
 }
 
+function noise(n: number) {
+  let x = Math.imul(n ^ 0x9e3779b9, 0x85ebca6b);
+  x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35);
+  return ((x ^ (x >>> 16)) >>> 0) / 4294967296;
+}
+
+/** Keeps short scattered fragments of the line and blanks the rest, so the field reads as loose letters. */
+function scatter(line: string, row: number) {
+  const chars = Array.from(line);
+  let i = 0;
+  let seed = row * 131;
+  while (i < chars.length) {
+    const gap = 8 + Math.floor(noise(seed++) * 40);
+    const run = 3 + Math.floor(noise(seed++) * 9);
+    const keep = noise(seed++) < 0.55;
+    for (let k = 0; k < gap && i + k < chars.length; k++) chars[i + k] = " ";
+    i += gap;
+    if (!keep) {
+      for (let k = 0; k < run && i + k < chars.length; k++) chars[i + k] = " ";
+    }
+    i += run;
+  }
+  return chars.join("");
+}
+
 function buildLines(phrase: string, cols: number, rows: number) {
   const unit = unitFor(phrase);
   let built = "";
@@ -29,7 +54,7 @@ function buildLines(phrase: string, cols: number, rows: number) {
 
   return Array.from({ length: rows }, (_, row) => {
     const offset = Math.floor((row * unit.length * 0.37) % unit.length);
-    return built.slice(offset, offset + cols);
+    return scatter(built.slice(offset, offset + cols), row);
   });
 }
 

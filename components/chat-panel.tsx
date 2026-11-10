@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { LogoCube } from "@/components/logo-cube";
-import { WaterOrb } from "@/components/water-orb";
+import { DotOrb } from "@/components/dot-orb";
 import { site } from "@/lib/data/site";
 
 type ChatPanelProps = {
@@ -52,16 +52,13 @@ const placeholders = [
   "What does a design support plan include?",
 ];
 
-function Orb({ active }: { active: boolean }) {
+function Orb({ active, typing }: { active: boolean; typing: boolean }) {
   return (
     <div
       aria-hidden="true"
-      className={`relative size-32 shrink-0 transition-transform duration-700 md:size-40 ${
-        active ? "scale-110" : "scale-100"
-      }`}
+      className="relative aspect-square h-[clamp(130px,26vh,260px)] shrink-0"
     >
-      <div className="absolute -inset-5 rounded-full bg-[radial-gradient(circle,rgba(240,150,55,0.2),rgba(240,150,55,0)_68%)]" />
-      <WaterOrb className="relative size-full" active={active} />
+      <DotOrb className="size-full" active={active} typing={typing} />
     </div>
   );
 }
@@ -343,15 +340,15 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
       }`}
       onWheel={(event) => event.stopPropagation()}
     >
-      <aside className="absolute inset-y-0 left-0 z-10 hidden w-[280px] flex-col border-r border-ink-border bg-ink md:flex">
-        <div className="px-[var(--gutter)] pb-4 pt-5">
+      <aside className="absolute inset-y-0 left-0 z-10 hidden w-[280px] flex-col border-r border-ink-foreground/25 bg-[#111] shadow-[8px_0_24px_rgba(0,0,0,0.35)] md:flex">
+        <div className="border-b border-ink-foreground/20 px-[var(--gutter)] pb-4 pt-5">
           <LogoCube body="#f3f1ea" face="#0a0a0a" className="size-8" />
         </div>
-        <div className="px-3">
+        <div className="border-b border-ink-foreground/20 px-3 py-4">
           <button
             type="button"
             onClick={newChat}
-            className="flex w-full items-center gap-2 rounded-[6px] border border-ink-border px-3 py-2.5 text-left text-[13px] transition-colors hover:bg-ink-foreground/8"
+            className="flex w-full items-center gap-2 rounded-[6px] border border-ink-foreground/30 px-3 py-2.5 text-left text-[13px] transition-colors hover:bg-ink-foreground/10"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
               <path d="M12 5v14M5 12h14" />
@@ -399,7 +396,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
         </div>
       </aside>
 
-      <section className="relative flex min-w-0 flex-1 flex-col md:pl-[280px] min-[1180px]:pl-0">
+      <section className="relative flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between px-[var(--gutter)] pt-5">
           <LogoCube body="#f3f1ea" face="#0a0a0a" className="size-8 md:invisible" />
           <button
@@ -411,13 +408,13 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           </button>
         </div>
 
-        <div ref={scrollerRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[var(--gutter)]">
+        <div ref={scrollerRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[var(--gutter)] md:px-[296px]">
           {messages.length === 0 ? (
-            <div className="mx-auto flex min-h-full max-w-3xl flex-col items-center justify-center gap-7 pb-6 pt-12 text-center">
-              <Orb active={pending} />
+            <div className="mx-auto flex min-h-full max-w-3xl flex-col items-center justify-center gap-[clamp(0.75rem,3vh,1.75rem)] pb-4 pt-6 text-center">
+              <Orb active={pending} typing={draft.length > 0} />
               <div>
-                <p className="font-serif text-2xl text-ink-muted md:text-3xl">Hi there,</p>
-                <p className="font-serif text-4xl font-medium leading-tight md:text-6xl">
+                <p className="font-serif text-[clamp(1.25rem,3.2vh,1.875rem)] text-ink-muted">Hi there,</p>
+                <p className="font-serif text-[clamp(2rem,6.4vh,3.75rem)] font-medium leading-[1.1]">
                   How can I help today?
                 </p>
               </div>
@@ -475,7 +472,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           )}
         </div>
 
-        <div className="px-[var(--gutter)] pb-16 pt-4">
+        <div className="px-[var(--gutter)] pb-14 pt-3 md:px-[296px]">
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -515,7 +512,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
                 <textarea
                   id="studio-chat-input"
                   ref={inputRef}
-                  rows={4}
+                  rows={3}
                   value={draft}
                   onChange={(event) => setDraft(event.target.value)}
                   onKeyDown={(event) => {
@@ -524,7 +521,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
                       send(draft);
                     }
                   }}
-                  className="block h-32 max-h-64 min-h-32 w-full resize-none bg-transparent p-5 font-sans text-base leading-relaxed text-ink-foreground outline-none"
+                  className="block h-24 max-h-56 min-h-24 w-full resize-none bg-transparent p-5 font-sans text-base leading-relaxed text-ink-foreground outline-none"
                 />
               </div>
               <div className="flex items-center justify-between px-3 pb-3">
@@ -566,9 +563,9 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
                     key={item.title}
                     type="button"
                     onClick={() => send(item.title)}
-                    className="group flex flex-col gap-3 rounded-[10px] border border-ink-foreground/25 p-4 text-left transition-colors hover:border-ink-foreground/55 hover:bg-ink-foreground/5"
+                    className="group flex flex-col gap-3 rounded-[10px] bg-ink-foreground/[0.07] p-4 text-left transition-colors hover:bg-ink-foreground/[0.12]"
                   >
-                    <span className="flex size-8 items-center justify-center rounded-[6px] border border-ink-foreground/30 text-ink-foreground/80 transition-colors group-hover:border-ink-foreground/60 group-hover:text-ink-foreground">
+                    <span className="flex size-8 items-center justify-center rounded-[6px] bg-ink-foreground/10 text-ink-foreground transition-colors group-hover:bg-ink-foreground/20">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                         {item.icon}
                       </svg>

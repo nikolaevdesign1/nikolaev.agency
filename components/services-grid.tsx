@@ -142,7 +142,13 @@ export function ServicesGrid() {
       <div
         ref={cardRef}
         aria-hidden="true"
-        style={{ width: CARD_W, backgroundColor: active?.tint ?? "#dde9ae" }}
+        style={{
+          width: CARD_W,
+          backgroundColor: active?.tint ?? "#dde9ae",
+          backgroundImage: active
+            ? `radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, ${active.tint} 40%, white) 0%, transparent 60%), linear-gradient(155deg, ${active.tint} 0%, color-mix(in srgb, ${active.tint} 78%, #c4623f) 100%)`
+            : undefined,
+        }}
         className={`pointer-events-none fixed left-0 top-0 z-30 rounded-[8px] p-5 text-[#141414] shadow-[0_18px_40px_rgba(0,0,0,0.14)] transition-opacity duration-200 ${
           active ? "opacity-100" : "opacity-0"
         }`}

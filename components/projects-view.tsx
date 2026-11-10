@@ -222,7 +222,7 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
         data-projects-toolbar=""
         role="toolbar"
         aria-label="Projects"
-        className="absolute bottom-14 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
+        className="absolute bottom-16 left-1/2 z-30 flex origin-bottom -translate-x-1/2 scale-[1.2] items-center gap-1 rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
       >
         <SlidingGroup activeIndex={theme === "light" ? 0 : 1} ariaLabel="Theme">
           <BarOption pressed={theme === "light"} onClick={(e) => changeTheme("light", e)}>

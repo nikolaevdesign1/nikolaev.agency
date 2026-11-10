@@ -24,25 +24,51 @@ export function HoverPlate({ project }: { project: Pick<Project, "year" | "servi
     const show = (on: boolean) => {
       plate.style.opacity = on ? "1" : "0";
     };
-    const move = (event: PointerEvent) => {
+    const place = (x: number, y: number) => {
       const pad = 8;
       const w = plate.offsetWidth;
       const h = plate.offsetHeight;
-      const x = Math.min(Math.max(pad, event.clientX + 16), window.innerWidth - w - pad);
-      const y = Math.min(Math.max(pad, event.clientY + 16), window.innerHeight - h - pad);
-      plate.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      show(true);
+      const px = Math.min(Math.max(pad, x + 16), window.innerWidth - w - pad);
+      const py = Math.min(Math.max(pad, y + 16), window.innerHeight - h - pad);
+      plate.style.transform = `translate3d(${px}px, ${py}px, 0)`;
     };
-    const leave = () => show(false);
+    const inside = (x: number, y: number) => {
+      const rect = host.getBoundingClientRect();
+      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    };
 
-    const hide = () => show(false);
-    window.addEventListener("scroll", hide, { passive: true });
-    host.addEventListener("pointermove", move);
-    host.addEventListener("pointerleave", leave);
+    // The cursor is tracked on the window, so a card that scrolls under a still cursor picks it up too.
+    let pointer: { x: number; y: number } | null = null;
+    const onMove = (event: PointerEvent) => {
+      pointer = { x: event.clientX, y: event.clientY };
+      if (inside(pointer.x, pointer.y)) {
+        place(pointer.x, pointer.y);
+        show(true);
+      } else {
+        show(false);
+      }
+    };
+    const onScroll = () => {
+      if (!pointer) return;
+      if (inside(pointer.x, pointer.y)) {
+        place(pointer.x, pointer.y);
+        show(true);
+      } else {
+        show(false);
+      }
+    };
+    const onLeaveWindow = () => {
+      pointer = null;
+      show(false);
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true, capture: true });
+    document.addEventListener("pointerleave", onLeaveWindow);
     return () => {
-      window.removeEventListener("scroll", hide);
-      host.removeEventListener("pointermove", move);
-      host.removeEventListener("pointerleave", leave);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("scroll", onScroll, true);
+      document.removeEventListener("pointerleave", onLeaveWindow);
     };
   }, [mounted]);
 

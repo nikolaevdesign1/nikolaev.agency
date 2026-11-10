@@ -2,7 +2,7 @@
 
 import { cities } from "@/lib/data/cities";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Media, Project, ProjectBlock } from "@/lib/data/projects";
+import { awardSources, type Media, type Project, type ProjectBlock } from "@/lib/data/projects";
 import { MediaField, emptyMedia } from "@/components/admin/media-field";
 
 type Load = { projects: Project[]; stored: boolean; storage: "blob" | "file" | "none" };
@@ -316,6 +316,21 @@ export function AdminApp() {
               <div>
                 <label className={label}>Award text (empty = none)</label>
                 <input className={input} value={current.award ?? ""} onChange={(e) => patch({ award: e.target.value || undefined })} />
+              </div>
+              <div>
+                <label className={label}>Award given by (badge name)</label>
+                <select
+                  className={input}
+                  value={current.awardSource ?? ""}
+                  onChange={(e) => patch({ awardSource: e.target.value || undefined })}
+                >
+                  <option value="">Detect from the award text</option>
+                  {awardSources.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className={label}>Credits on hover (comma separated)</label>

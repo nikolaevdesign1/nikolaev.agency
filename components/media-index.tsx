@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { CursorFollowCta } from "@/components/cursor-follow-cta";
 import { ScrollStrip } from "@/components/filter-controls";
 import Link from "next/link";
-import { articleCategories, latestArticle, otherArticles } from "@/lib/data/media";
+import { articleCategories, latestArticle, otherArticles, type Article } from "@/lib/data/media";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -21,6 +21,10 @@ export function MediaIndex() {
   const categories = useMemo(() => articleCategories(), []);
   const featured = useMemo(() => latestArticle(), []);
   const rest = useMemo(() => otherArticles(), []);
+
+  const lead = useMemo(() => rest.slice(0, 3), [rest]);
+  const banner = rest[3];
+  const more = useMemo(() => rest.slice(4), [rest]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -91,62 +95,165 @@ export function MediaIndex() {
         </div>
 
         {!category && !query ? (
-          <CursorFollowCta label="More" className="mt-8 block pb-10">
-          <Link href={`/media/${featured.slug}`} className="group block">
-            <div className="aspect-[2/1] w-full overflow-hidden rounded-[6px]">
+          <>
+            <Hero article={featured} />
+            {lead.length > 0 ? <Grid articles={lead} className="mt-16 md:mt-24" /> : null}
+            <Marquee />
+            {banner ? (
+              <>
+                <Banner article={banner} />
+                {more.length > 0 ? <Grid articles={more} className="mt-14 md:mt-20" /> : null}
+              </>
+            ) : null}
+            <Cta />
+          </>
+        ) : filtered.length === 0 ? (
+          <p className="mt-16 font-mono text-sm text-muted">No articles match.</p>
+        ) : (
+          <Grid articles={filtered} className="mt-14" />
+        )}
+      </div>
+    </section>
+  );
+}
+
+function Tags({ article, center = false }: { article: Article; center?: boolean }) {
+  return (
+    <p className={`flex items-center gap-2 text-[13px] text-accent ${center ? "justify-center" : ""}`}>
+      <span>{article.category}</span>
+      <span aria-hidden="true" className="size-1 rounded-full bg-accent" />
+      <span>{article.readMinutes} min read</span>
+    </p>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 1.8" />
+    </svg>
+  );
+}
+
+function Hero({ article }: { article: Article }) {
+  return (
+    <CursorFollowCta label="More" className="mt-16 block md:mt-20">
+      <Link href={`/media/${article.slug}`} className="group block">
+        <Tags article={article} />
+        <div className="mt-4 flex items-start justify-between gap-8">
+          <h2 className="max-w-4xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:text-6xl">
+            {article.title}
+          </h2>
+          <span className="hidden size-[72px] shrink-0 place-items-center rounded-full border border-foreground/70 text-[13px] text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background md:grid">
+            Read
+          </span>
+        </div>
+        <div className="mt-10 aspect-[2.3/1] w-full overflow-hidden rounded-[12px] bg-surface">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={article.cover}
+            alt=""
+            draggable={false}
+            className="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+          />
+        </div>
+      </Link>
+    </CursorFollowCta>
+  );
+}
+
+function Grid({ articles: list, className = "" }: { articles: Article[]; className?: string }) {
+  return (
+    <div className={`grid grid-cols-1 items-start gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10 ${className}`}>
+      {list.map((article) => (
+        <CursorFollowCta key={article.slug} label="More" className="block">
+          <Link href={`/media/${article.slug}`} className="group block">
+            <div className="aspect-[3/2] overflow-hidden rounded-[10px] bg-surface">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={featured.cover}
+                src={article.cover}
                 alt=""
                 draggable={false}
-                className="h-full w-full select-none object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                className="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               />
             </div>
-            <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-10">
-              <div>
-                <p className="font-mono text-[11px] text-muted">{featured.category} · Latest</p>
-                <h2 className="mt-3 font-serif text-3xl font-medium leading-tight text-foreground md:text-5xl">
-                  {featured.title}
-                </h2>
-                <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">{featured.excerpt}</p>
-              </div>
-              <p className="shrink-0 font-mono text-[11px] text-muted">
-                {formatDate(featured.date)} · {featured.readMinutes} min read
+            <div className="mt-6">
+              <Tags article={article} />
+              <p className="mt-3 font-serif text-2xl font-medium leading-snug text-foreground">{article.title}</p>
+              <p className="mt-3 line-clamp-3 text-[15px] leading-relaxed text-muted">{article.excerpt}</p>
+              <p className="mt-4 flex items-center gap-4 font-mono text-[12px] text-muted">
+                <span>{formatDate(article.date)}</span>
+                <span className="flex items-center gap-1.5">
+                  <ClockIcon />
+                  {article.readMinutes} min
+                </span>
               </p>
             </div>
           </Link>
-          </CursorFollowCta>
-        ) : null}
+        </CursorFollowCta>
+      ))}
+    </div>
+  );
+}
 
-      {filtered.length === 0 ? (
-        <p className="mt-16 font-mono text-sm text-muted">
-          No articles match.
-        </p>
-      ) : (
-        <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-2 md:grid-cols-3 md:gap-x-12 md:gap-y-16">
-          {filtered.map((article) => (
-            <CursorFollowCta key={article.slug} label="More" className="block">
-            <Link href={`/media/${article.slug}`} className="group block">
-              <p className="font-mono text-[10px] text-muted">
-                {article.category} · {formatDate(article.date)}
-              </p>
-              <p className="mt-1.5 line-clamp-2 h-[3.1rem] font-serif text-lg font-medium leading-snug text-foreground">
-                {article.title}
-              </p>
-              <div className="mt-4 aspect-[4/3] overflow-hidden rounded-[6px]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={article.cover}
-                  alt=""
-                  className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                />
-              </div>
-            </Link>
-            </CursorFollowCta>
-          ))}
+function Banner({ article }: { article: Article }) {
+  return (
+    <CursorFollowCta label="More" className="mt-24 block md:mt-32">
+      <Link href={`/media/${article.slug}`} className="group block">
+        <div className="aspect-[2.6/1] w-full overflow-hidden rounded-[12px] bg-surface">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={article.cover}
+            alt=""
+            draggable={false}
+            className="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+          />
         </div>
-      )}
+        <div className="mx-auto mt-8 max-w-3xl text-center">
+          <Tags article={article} center />
+          <h3 className="mt-3 font-serif text-3xl font-medium leading-tight text-foreground md:text-5xl">
+            {article.title}
+          </h3>
+        </div>
+      </Link>
+    </CursorFollowCta>
+  );
+}
+
+function Marquee() {
+  const unit = Array.from({ length: 6 }, (_, i) => (
+    <span key={i} className={`shrink-0 px-6 ${i === 2 ? "text-accent" : ""}`}>
+      ( nikolaev.media )
+    </span>
+  ));
+  return (
+    <div aria-hidden="true" className="mt-24 overflow-hidden bg-ink py-4 text-ink-foreground md:mt-32">
+      <div className="flex w-max animate-marquee whitespace-nowrap font-sans text-lg font-semibold">
+        <div className="flex">{unit}</div>
+        <div className="flex">{unit}</div>
       </div>
-    </section>
+    </div>
+  );
+}
+
+function Cta() {
+  return (
+    <div className="mt-24 grid items-end gap-8 border-t border-foreground/80 pt-10 md:mt-32 md:grid-cols-[1.4fr_1fr] md:gap-16">
+      <p className="font-serif text-5xl font-medium leading-[0.98] text-foreground md:text-8xl">
+        Have a project in mind?
+      </p>
+      <div>
+        <p className="text-lg leading-snug text-foreground">
+          We write about what we build. If something here matches your problem, the people behind it can help.
+        </p>
+        <Link
+          href="/contact"
+          className="mt-6 inline-flex rounded-[6px] bg-foreground px-6 py-3 font-mono text-[13px] text-background transition-opacity hover:opacity-80"
+        >
+          Request a project
+        </Link>
+      </div>
+    </div>
   );
 }
