@@ -1,11 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /** Segmented strip that hugs its buttons; fades its right edge only when it overflows. */
 export function ScrollStrip({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
   const [fade, setFade] = useState(false);
+  const [pill, setPill] = useState<{ x: number; width: number } | null>(null);
+
+  // The dark pill slides to whichever button is pressed.
+  useLayoutEffect(() => {
+    const active = rowRef.current?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!active) {
+      setPill((prev) => (prev ? null : prev));
+      return;
+    }
+    const next = { x: active.offsetLeft, width: active.offsetWidth };
+    setPill((prev) => (prev && prev.x === next.x && prev.width === next.width ? prev : next));
+  });
 
   useEffect(() => {
     const el = ref.current;
@@ -27,7 +40,16 @@ export function ScrollStrip({ children }: { children: React.ReactNode }) {
       className="min-w-0 max-w-full overflow-x-auto rounded-[6px] bg-surface/30 p-1"
       style={fade ? { maskImage: "linear-gradient(to right, #000 calc(100% - 28px), transparent)" } : undefined}
     >
-      <div className="flex w-max">{children}</div>
+      <div ref={rowRef} className="relative flex w-max">
+        {pill ? (
+          <span
+            aria-hidden="true"
+            className="absolute inset-y-0 left-0 rounded-[4px] bg-foreground transition-[transform,width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{ width: pill.width, transform: `translateX(${pill.x}px)` }}
+          />
+        ) : null}
+        {children}
+      </div>
     </div>
   );
 }

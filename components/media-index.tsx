@@ -51,9 +51,9 @@ export function MediaIndex() {
                   type="button"
                   aria-pressed={activeTag}
                   onClick={() => setCategory(c === "All" ? null : category === c ? null : c)}
-                  className={`shrink-0 rounded-[4px] px-3 py-1.5 transition-colors duration-300 ${
+                  className={`relative z-10 shrink-0 rounded-[4px] px-3 py-1.5 transition-colors duration-300 ${
                     activeTag
-                      ? "bg-foreground text-background"
+                      ? "text-background"
                       : "text-foreground hover:bg-foreground/8"
                   }`}
                 >

@@ -301,9 +301,9 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
                       type="button"
                       aria-pressed={active}
                       onClick={() => setCategoryFilter(category === "All" ? null : category)}
-                      className={`shrink-0 rounded-[4px] px-3 py-1.5 transition-colors duration-300 ${
+                      className={`relative z-10 shrink-0 rounded-[4px] px-3 py-1.5 transition-colors duration-300 ${
                         active
-                          ? "bg-foreground text-background"
+                          ? "text-background"
                           : "text-foreground hover:bg-foreground/8"
                       }`}
                     >
