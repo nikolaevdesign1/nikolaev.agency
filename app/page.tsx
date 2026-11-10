@@ -66,7 +66,7 @@ export default async function Home() {
         seed={11}
         phrase="Best cases · brand · product · a production-ready build · direct access"
       />
-      <section className="relative flex flex-col overflow-hidden bg-ink gutter pb-36 pt-20 text-ink-foreground md:pb-48 md:pt-24">
+      <section className="relative flex flex-col overflow-clip bg-ink gutter pb-36 pt-20 text-ink-foreground md:pb-48 md:pt-24">
         <AmbientTextField phrase="Small team · direct access · no account managers" />
         <div className="relative z-[1] flex flex-col gap-24 md:gap-32">
           <div className="grid gap-14 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
