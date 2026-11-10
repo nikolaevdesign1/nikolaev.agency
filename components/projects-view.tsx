@@ -12,123 +12,16 @@ import { FilterCheckbox, FilterSelect, ScrollStrip } from "@/components/filter-c
 
 type Theme = "light" | "dark";
 type View = "field" | "list";
-type Shown = View | "clear";
 
-const PASSAGE_MS = 840;
-const GLYPHS = "abcdefghijklmnopqrstuvwxyz";
-
-function glyphHash(n: number) {
-  let x = Math.imul(n ^ 0x9e3779b9, 0x85ebca6b);
-  x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35);
-  return ((x ^ (x >>> 16)) >>> 0) / 4294967296;
-}
-
-function buildLetterField(width: number, height: number, font: string) {
-  const cell = 8;
-  const texH = Math.max(220, Math.round(height * 0.42));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.max(1, Math.floor(width));
-  canvas.height = texH;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return null;
-
-  ctx.clearRect(0, 0, canvas.width, texH);
-  ctx.font = font;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-
-  const cols = Math.ceil(width / cell);
-  const rows = Math.ceil(texH / cell);
-  for (let row = 0; row < rows; row++) {
-    const norm = Math.abs(row + 0.5 - rows / 2) / (rows / 2);
-    const density = Math.exp(-norm * norm * 1.65);
-    ctx.fillStyle = density > 0.5 ? "#141414" : "#6a6862";
-    const y = row * cell + cell / 2;
-    for (let col = 0; col < cols; col++) {
-      const roll = glyphHash(col * 17 + row * 53);
-      if (roll > density * 0.97) continue;
-      const pick = glyphHash(col * 9 + row * 3);
-      const ch = GLYPHS[Math.floor(pick * GLYPHS.length)] ?? "a";
-      ctx.fillText(ch, col * cell + cell / 2, y);
-    }
-  }
-
-  return canvas;
-}
-
-function LetterDensityPassage() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-    if (width < 1 || height < 1) return;
-
-    canvas.width = Math.floor(width);
-    canvas.height = Math.floor(height);
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const font = `500 7px ${getComputedStyle(document.body).fontFamily}`;
-    const field = buildLetterField(width, height, font);
-    if (!field) return;
-
-    let frame = 0;
-    let stopped = false;
-    const start = performance.now();
-    const strips = 16;
-
-    const tick = (now: number) => {
-      if (stopped) return;
-      const progress = Math.min(1, (now - start) / PASSAGE_MS);
-      const y = -field.height + progress * (height + field.height);
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.fillStyle = "#f7f6f2";
-      ctx.fillRect(0, 0, width, height);
-      const sw = Math.ceil(width / strips);
-      for (let i = 0; i < strips; i++) {
-        const sx = i * sw;
-        const shift = Math.sin(i * 0.62 + progress * Math.PI * 2) * 12;
-        ctx.drawImage(field, sx, 0, sw, field.height, sx, y + shift, sw, field.height);
-      }
-      if (progress < 1) frame = requestAnimationFrame(tick);
-    };
-
-    frame = requestAnimationFrame(tick);
-
-    return () => {
-      stopped = true;
-      cancelAnimationFrame(frame);
-    };
-  }, []);
-
-  return (
-    <div
-      data-letter-passage=""
-      data-state="playing"
-      data-duration={PASSAGE_MS}
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-20 bg-[#f7f6f2]"
-    >
-      <canvas ref={canvasRef} className="h-full w-full" />
-    </div>
-  );
-}
 
 export function ProjectsView({ projects }: { projects: Project[] }) {
   const [theme, setTheme] = useState<Theme>("light");
   const [view, setView] = useState<View>("field");
-  const [shown, setShown] = useState<Shown>("field");
-  const [passing, setPassing] = useState(false);
+  const [shown, setShown] = useState<View>("field");
   const [awardsOnly, setAwardsOnly] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<string | null>(null);
   const [serviceFilter, setServiceFilter] = useState<string | null>(null);
-  const destination = useRef<View>("field");
-  const timer = useRef<number | null>(null);
 
   useEffect(() => {
     const previous = document.body.style.overflow;
@@ -138,49 +31,12 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
     };
   }, []);
 
-  useEffect(() => {
-    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const finishNow = () => {
-      if (!motion.matches) return;
-      if (timer.current != null) {
-        window.clearTimeout(timer.current);
-        timer.current = null;
-      }
-      setPassing(false);
-      setShown(destination.current);
-    };
-    motion.addEventListener("change", finishNow);
-    return () => {
-      motion.removeEventListener("change", finishNow);
-      if (timer.current != null) window.clearTimeout(timer.current);
-    };
-  }, []);
-
   const selectView = (next: View) => {
-    if (next === destination.current && shown === next && !passing) return;
-    destination.current = next;
+    if (next === shown) return;
     setView(next);
-
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      if (timer.current != null) {
-        window.clearTimeout(timer.current);
-        timer.current = null;
-      }
-      setPassing(false);
-      setShown(next);
-      return;
-    }
-
-    if (passing) return;
-
-    setShown("clear");
-    setPassing(true);
-    timer.current = window.setTimeout(() => {
-      timer.current = null;
-      setPassing(false);
-      setShown(destination.current);
-    }, PASSAGE_MS);
+    // The same loader as the home page covers the swap.
+    window.dispatchEvent(new Event("studio:preload"));
+    setShown(next);
   };
 
   const categories = useMemo(
@@ -261,8 +117,6 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
       data-page-theme={theme}
       data-projects-view={view}
       data-projects-shown={shown}
-      data-projects-passage={passing ? "playing" : "idle"}
-      aria-busy={passing}
       className="fixed inset-0 z-40 bg-background text-foreground"
     >
       {shown === "field" ? (
@@ -363,8 +217,6 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
           </div>
         </div>
       ) : null}
-
-      {passing ? <LetterDensityPassage /> : null}
 
       <div
         data-projects-toolbar=""

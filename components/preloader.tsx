@@ -26,6 +26,14 @@ export function Preloader() {
   const pathname = usePathname();
   const lastTop = useRef<string | null>(null);
 
+  const restart = () => {
+    stateRef.current = { loaded: true, exitAt: 0, progress: 0 };
+    setPercent(0);
+    setStarted(false);
+    setGone(false);
+    setRun((value) => value + 1);
+  };
+
   // Run again on every route change (a popup over /projects is not a new page).
   useEffect(() => {
     const top = "/" + (pathname.split("/")[1] ?? "");
@@ -35,12 +43,15 @@ export function Preloader() {
     }
     if (lastTop.current === top) return;
     lastTop.current = top;
-    stateRef.current = { loaded: true, exitAt: 0, progress: 0 };
-    setPercent(0);
-    setStarted(false);
-    setGone(false);
-    setRun((value) => value + 1);
+    restart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  // Pages can ask for the loader too (Field / List switch on the projects page).
+  useEffect(() => {
+    window.addEventListener("studio:preload", restart);
+    return () => window.removeEventListener("studio:preload", restart);
+  }, []);
 
   useEffect(() => {
     // The admin is a tool, not a page to show off: no loader there.
