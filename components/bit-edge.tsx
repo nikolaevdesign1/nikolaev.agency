@@ -267,11 +267,13 @@ export function BitEdge({
     <div
       aria-hidden="true"
       className={className ?? "-mb-px h-72 w-full md:h-[22rem]"}
-      style={
-        isDark(to) ? { maskImage: "linear-gradient(to bottom, transparent, #000 18%)" } : undefined
-      }
+      style={{ backgroundColor: from }}
     >
-      <canvas ref={canvasRef} className="block h-full w-full" />
+      <canvas
+        ref={canvasRef}
+        className="block h-full w-full"
+        style={isDark(to) ? { maskImage: "linear-gradient(to bottom, transparent, #000 18%)" } : undefined}
+      />
     </div>
   );
 }

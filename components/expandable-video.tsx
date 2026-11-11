@@ -89,11 +89,11 @@ export function ExpandableVideo({ src, className }: { src: string; className?: s
                 type="button"
                 aria-label="Close video"
                 onClick={closeIt}
-                className={`absolute right-6 top-6 flex items-center gap-3 rounded-[8px] bg-white px-6 py-4 font-mono text-base text-black shadow-[0_8px_30px_rgba(0,0,0,0.4)] transition-[opacity,transform] duration-300 hover:scale-[1.04] ${
+                className={`absolute right-5 top-5 flex h-10 items-center gap-2 rounded-full bg-black/40 px-4 font-mono text-[12px] text-white ring-1 ring-white/20 backdrop-blur-md transition-[opacity,background-color,color] duration-300 hover:bg-white hover:text-black ${
                   open ? "opacity-100" : "opacity-0"
                 }`}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
                   <path d="M6 6l12 12M18 6 6 18" />
                 </svg>
                 Close

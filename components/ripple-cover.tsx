@@ -56,7 +56,13 @@ type Engine = {
   destroy: () => void;
 };
 
-function createEngine(canvas: HTMLCanvasElement, src: string, onReady: () => void, onFail: () => void): Engine | null {
+function createEngine(
+  canvas: HTMLCanvasElement,
+  src: string,
+  isVideo: boolean,
+  onReady: () => void,
+  onFail: () => void,
+): Engine | null {
   const gl = canvas.getContext("webgl", { antialias: false, alpha: false });
   if (!gl) return null;
 
@@ -103,32 +109,65 @@ function createEngine(canvas: HTMLCanvasElement, src: string, onReady: () => voi
   let destroyed = false;
   const start = performance.now();
 
-  const image = new Image();
-  image.crossOrigin = "anonymous";
-  image.onload = () => {
-    if (destroyed) return;
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  const upload = (source: TexImageSource, w: number, h: number) => {
     try {
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, source);
     } catch {
       onFail();
-      return;
+      return false;
     }
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.uniform2f(uImg, image.naturalWidth, image.naturalHeight);
-    loaded = true;
-    onReady();
+    gl.uniform2f(uImg, w, h);
+    return true;
   };
-  image.onerror = onFail;
-  image.src = src;
+
+  let video: HTMLVideoElement | null = null;
+  if (isVideo) {
+    video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.src = src;
+    video.addEventListener("loadeddata", () => {
+      if (destroyed || !video) return;
+      if (upload(video, video.videoWidth, video.videoHeight)) {
+        loaded = true;
+        onReady();
+      }
+    });
+    video.addEventListener("error", onFail);
+    void video.play().catch(() => undefined);
+  } else {
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.onload = () => {
+      if (destroyed) return;
+      if (upload(image, image.naturalWidth, image.naturalHeight)) {
+        loaded = true;
+        onReady();
+      }
+    };
+    image.onerror = onFail;
+    image.src = src;
+  }
 
   const draw = () => {
     frame = requestAnimationFrame(draw);
     if (!loaded) return;
+    if (video && video.readyState >= 2) {
+      try {
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
+      } catch {
+        /* a frame that cannot be read is skipped */
+      }
+    }
     const w = canvas.width;
     const h = canvas.height;
     gl.viewport(0, 0, w, h);
@@ -161,6 +200,11 @@ function createEngine(canvas: HTMLCanvasElement, src: string, onReady: () => voi
     destroy() {
       destroyed = true;
       cancelAnimationFrame(frame);
+      if (video) {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      }
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     },
   };
@@ -172,10 +216,13 @@ function createEngine(canvas: HTMLCanvasElement, src: string, onReady: () => voi
  */
 export function RippleCover({
   src,
+  video = false,
   children,
   className,
 }: {
   src?: string;
+  /** The source is a video: frames are read live, so the water moves over the playing picture. */
+  video?: boolean;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -206,6 +253,7 @@ export function RippleCover({
     const engine = createEngine(
       canvas,
       src,
+      video,
       () => setReady(true),
       () => {
         setActive(false);
@@ -223,7 +271,7 @@ export function RippleCover({
       engineRef.current = null;
       setReady(false);
     };
-  }, [active, src]);
+  }, [active, src, video]);
 
   const point = (event: React.PointerEvent) => {
     const rect = hostRef.current?.getBoundingClientRect();

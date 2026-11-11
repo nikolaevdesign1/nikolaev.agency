@@ -5,12 +5,18 @@ import { useEffect, useRef } from "react";
 const POINTS = 2600;
 const GOLDEN = Math.PI * (3 - Math.sqrt(5));
 
-/** Value-free smooth noise from a few travelling sines; cheap enough for thousands of points per frame. */
+/**
+ * Smooth, flowing field on the sphere: large slow swells with a domain warp,
+ * so the surface reads as liquid rather than ripples.
+ */
 function wave(x: number, y: number, z: number, t: number) {
+  const wx = x + Math.sin(y * 1.3 + t * 0.35) * 0.55;
+  const wy = y + Math.sin(z * 1.1 - t * 0.28) * 0.55;
+  const wz = z + Math.sin(x * 1.2 + t * 0.31) * 0.55;
   return (
-    Math.sin(x * 2.1 + t * 0.9 + Math.sin(y * 1.7 + t * 0.4)) * 0.5 +
-    Math.sin(y * 2.7 - t * 0.7 + Math.sin(z * 2.2 + t * 0.5)) * 0.3 +
-    Math.sin(z * 3.3 + t * 1.1 + x * 1.4) * 0.2
+    Math.sin(wx * 1.6 + t * 0.6) * 0.45 +
+    Math.sin(wy * 1.9 - t * 0.5 + wx * 0.7) * 0.35 +
+    Math.sin(wz * 2.4 + t * 0.8 - wy * 0.6) * 0.2
   );
 }
 
@@ -75,14 +81,25 @@ export function DotOrb({
       const t = (now - start) / 1000;
       const want = energyRef.current.active ? 1 : energyRef.current.typing ? 0.55 : 0;
       energy += (want - energy) * 0.06;
-      const amp = 0.1 + energy * 0.16;
-      const speed = 1 + energy * 1.6;
+      const amp = 0.17 + energy * 0.14;
+      const speed = 0.8 + energy * 1.4;
 
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       ctx.clearRect(0, 0, size, size);
 
       const c = size / 2;
       const R = size * 0.34;
+
+      // liquid core: two soft blobs drifting inside the sphere
+      for (let k = 0; k < 2; k++) {
+        const bx = c + Math.sin(t * (0.4 + k * 0.17) + k * 2) * R * 0.32;
+        const by = c + Math.cos(t * (0.33 + k * 0.21) + k) * R * 0.28;
+        const core = ctx.createRadialGradient(bx, by, 0, bx, by, R * 0.85);
+        core.addColorStop(0, k === 0 ? `rgba(240,150,55,${0.28 + energy * 0.12})` : "rgba(220,178,240,0.22)");
+        core.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = core;
+        ctx.fillRect(0, 0, size, size);
+      }
 
       const glow = ctx.createRadialGradient(c, c, R * 0.2, c, c, R * 1.5);
       glow.addColorStop(0, `rgba(240,150,55,${0.1 + energy * 0.08})`);
@@ -116,7 +133,8 @@ export function DotOrb({
         const persp = 1 / (1.9 - z * 0.45);
         const px = c + x * R * persp * 1.9;
         const py = c + y * R * persp * 1.9;
-        const dotSize = (0.7 + depth * 1.5) * (size / 220);
+        const crest = Math.max(0, w);
+        const dotSize = (0.7 + depth * 1.4 + crest * 0.9) * (size / 220);
 
         // warm palette: peaks go orange, troughs lavender, with a few bright sparks
         const h = (w + 1) / 2;

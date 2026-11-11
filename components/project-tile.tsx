@@ -20,7 +20,7 @@ export function ProjectTile({
     <div className={`group relative block ${className ?? ""}`}>
       <Link href={`/projects/${project.slug}`} draggable={false} className="block">
         <div className="relative aspect-[4/3] overflow-hidden rounded-[6px]">
-          <RippleCover src={project.video ? undefined : project.cover} className="absolute inset-0">
+          <RippleCover src={project.video ?? project.cover} video={Boolean(project.video)} className="absolute inset-0">
             <ProjectCover
               project={project}
               index={index}

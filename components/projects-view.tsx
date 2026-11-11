@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { InfinityVision } from "@/components/infinity-vision";
 import { projectIsAwarded, type Project } from "@/lib/data/projects";
 import { UpcomingPlaque } from "@/components/upcoming-plaque";
+import { pixelSwap } from "@/lib/pixel-swap";
 import { ProjectTile } from "@/components/project-tile";
 import { ScrambleText } from "@/components/scramble-text";
 import { site } from "@/lib/data/site";
@@ -65,51 +66,39 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
     [projects, awardsOnly, categoryFilter, locationFilter, serviceFilter],
   );
 
-  const changeTheme = (next: Theme, event: React.MouseEvent<HTMLButtonElement>) => {
-    if (next === theme) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
+  const swapping = useRef(false);
+  const listRef = useRef<HTMLDivElement>(null);
+  const listContentRef = useRef<HTMLDivElement>(null);
 
-    const apply = () => setTheme(next);
-    const doc = document as Document & {
-      startViewTransition?: (cb: () => void) => { ready: Promise<void> };
+  // The list scrolls inside its own layer, so it gets its own smooth scroll with the site's inertia.
+  useEffect(() => {
+    if (shown !== "list") return;
+    const wrapper = listRef.current;
+    const content = listContentRef.current;
+    if (!wrapper || !content) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let lenis: { destroy: () => void } | null = null;
+    let cancelled = false;
+    void import("lenis").then(({ default: Lenis }) => {
+      if (cancelled) return;
+      lenis = new Lenis({ wrapper, content, lerp: 0.075, smoothWheel: true, wheelMultiplier: 0.95, autoRaf: true });
+    });
+    return () => {
+      cancelled = true;
+      lenis?.destroy();
     };
-    if (!doc.startViewTransition || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      apply();
-      return;
-    }
-
-    const transition = doc.startViewTransition(apply);
-    transition.ready
-      .then(() => {
-        // Ragged front: a polygon around the click whose radius jitters per vertex and per frame.
-        const maxR = Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy)) * 1.25;
-        const points = 90;
-        const frames = 18;
-        const seed = Math.random() * 1000;
-        const keyframes = Array.from({ length: frames + 1 }, (_, f) => {
-          const t = f / frames;
-          const eased = 1 - Math.pow(1 - t, 2.2);
-          const poly = Array.from({ length: points }, (_, i) => {
-            const angle = (i / points) * Math.PI * 2;
-            const lobes = Math.sin(angle * 3 + seed) * 0.1 + Math.sin(angle * 7 - seed * 1.3) * 0.07;
-            const spike = Math.sin(i * 12.9898 + seed + f * 0.7) * 43758.5453;
-            const jag = (spike - Math.floor(spike) - 0.5) * 0.22;
-            const lag = Math.sin(angle * 5 + seed * 2) * 0.12;
-            const radius = Math.max(0, eased * (1 + lobes + jag) + lag * (1 - t) * eased) * maxR;
-            return `${(cx + Math.cos(angle) * radius).toFixed(1)}px ${(cy + Math.sin(angle) * radius).toFixed(1)}px`;
-          });
-          return { clipPath: `polygon(${poly.join(",")})`, offset: t };
-        });
-        document.documentElement.animate(keyframes, {
-          duration: 1000,
-          easing: "linear",
-          fill: "forwards",
-          pseudoElement: "::view-transition-new(root)",
-        });
-      })
-      .catch(() => {});
+  }, [shown]);
+  const changeTheme = (next: Theme) => {
+    if (next === theme || swapping.current) return;
+    swapping.current = true;
+    const fill = next === "dark" ? "#0a0a0a" : "#fcfbf9";
+    const ink = next === "dark" ? "#f3f1ea" : "#161616";
+    pixelSwap(fill, ink, () => {
+      setTheme(next);
+      window.setTimeout(() => {
+        swapping.current = false;
+      }, 400);
+    });
   };
 
   return (
@@ -127,11 +116,12 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
 
       {shown === "list" ? (
         <div
-          data-lenis-prevent
+          ref={listRef}
+          data-own-lenis=""
           className="absolute inset-0 z-10 overflow-y-auto"
           aria-label="Project catalog"
         >
-          <div className="relative w-full gutter pb-40 pt-36">
+          <div ref={listContentRef} className="relative w-full gutter pb-40 pt-36">
             <div className="relative mt-8 flex flex-col items-center text-center md:mt-10">
               <button
                 type="button"
@@ -225,10 +215,10 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
         className="absolute bottom-16 left-1/2 z-30 flex origin-bottom -translate-x-1/2 scale-[1.2] items-center gap-1 rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
       >
         <SlidingGroup activeIndex={theme === "light" ? 0 : 1} ariaLabel="Theme">
-          <BarOption pressed={theme === "light"} onClick={(e) => changeTheme("light", e)}>
+          <BarOption pressed={theme === "light"} onClick={() => changeTheme("light")}>
             Light
           </BarOption>
-          <BarOption pressed={theme === "dark"} onClick={(e) => changeTheme("dark", e)}>
+          <BarOption pressed={theme === "dark"} onClick={() => changeTheme("dark")}>
             Dark
           </BarOption>
         </SlidingGroup>

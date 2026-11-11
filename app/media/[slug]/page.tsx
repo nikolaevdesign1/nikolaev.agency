@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { articles } from "@/lib/data/media";
-import { RichText } from "@/components/rich-text";
-import { ServiceBanner } from "@/components/service-banner";
+import { ArticleBody } from "@/components/article-body";
+import { ArticleMeta, MediaCard } from "@/components/media-card";
 
 export function generateStaticParams() {
   return articles.map((article) => ({ slug: article.slug }));
@@ -28,14 +28,6 @@ export async function generateMetadata({
   };
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
 export default async function ArticlePage({
   params,
 }: {
@@ -46,130 +38,66 @@ export default async function ArticlePage({
   if (index === -1) notFound();
   const article = articles[index];
   const next = articles[(index + 1) % articles.length];
-  const recommended = articles.filter((a) => a.slug !== article.slug).slice(0, 3);
-  const midpoint = Math.ceil(article.content.length / 2);
+  const recommended = articles.filter((a) => a.slug !== article.slug && a.slug !== next.slug).slice(0, 3);
 
   return (
-    <article className="bg-background gutter pb-28 pt-36 text-foreground md:pt-44">
-      <p className="font-mono text-[11px] text-muted">
-        <Link href="/media" className="hover:text-foreground">
-          Media
-        </Link>{" "}
-        / {article.category}
-      </p>
-      <h1 className="mt-6 max-w-3xl font-serif text-4xl font-medium leading-[1.08] md:text-6xl">
-        {article.title}
-      </h1>
-      <p className="mt-6 font-mono text-[11px] text-muted">
-        {formatDate(article.date)} · {article.readMinutes} min read
-      </p>
-
-      <div className="mt-10 aspect-[16/9] overflow-hidden rounded-2xl">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={article.cover} alt="" className="h-full w-full object-cover" />
-      </div>
-
-      <div className="mx-auto mt-12 max-w-2xl">
-        {article.content.slice(0, midpoint).map((block, i) => (
-          <ArticleBlock key={i} block={block} />
-        ))}
-
-        <ServiceBanner />
-
-        {article.content.slice(midpoint).map((block, i) => (
-          <ArticleBlock key={midpoint + i} block={block} />
-        ))}
-
-        <div className="mt-12 border-t border-border pt-6">
-          <p className="font-mono text-[11px] text-muted">
-            Also published on
-          </p>
-          <ul className="mt-3 flex flex-wrap gap-5">
-            {article.socials.map((social) => (
-              <li key={social.label}>
-                <a
-                  href={social.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 font-mono text-[11px] text-foreground/80 transition-colors hover:text-foreground"
-                >
-                  {social.label}
-                  <span aria-hidden>→</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <ServiceBanner />
-      </div>
-
-      <Link
-        href={`/media/${next.slug}`}
-        className="mx-auto mt-16 flex max-w-2xl items-center justify-between gap-6 border-y border-border py-6 transition-colors hover:text-accent"
-      >
-        <span className="font-mono text-[11px] text-muted">
-          Next article
-        </span>
-        <span className="font-serif text-2xl font-medium">{next.title}</span>
-        <span aria-hidden className="text-2xl">
-          →
-        </span>
-      </Link>
-
-      <div className="mx-auto mt-16 max-w-5xl">
+    <article className="bg-background gutter pb-32 pt-36 text-foreground md:pt-44">
+      <div className="mx-auto max-w-[1200px]">
         <p className="font-mono text-[11px] text-muted">
-          Recommended
+          <Link href="/media" className="hover:text-foreground">
+            Media
+          </Link>{" "}
+          / {article.category}
         </p>
-        <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-14 sm:grid-cols-3">
-          {recommended.map((item) => (
-            <Link key={item.slug} href={`/media/${item.slug}`} className="group block">
-              <p className="font-mono text-[10px] text-muted">
-                {item.category}
-              </p>
-              <p className="mt-1.5 font-serif text-lg font-medium leading-snug text-foreground">
-                {item.title}
-              </p>
-              <div className="mt-4 aspect-[4/3] overflow-hidden rounded-2xl">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={item.cover}
-                  alt=""
-                  className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                />
-              </div>
-            </Link>
-          ))}
+        <h1 className="mt-6 max-w-4xl font-serif text-4xl font-medium leading-[1.06] md:text-6xl">{article.title}</h1>
+        <ArticleMeta article={article} className="mt-6" />
+
+        <div className="mt-10 aspect-[2.2/1] overflow-hidden rounded-[12px] bg-surface">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={article.cover}
+            alt=""
+            data-scroll=""
+            data-scroll-speed="-0.06"
+            className="h-full w-full scale-[1.12] object-cover"
+          />
         </div>
+
+        <ArticleBody article={article} />
+
+        <Link
+          href={`/media/${next.slug}`}
+          className="group mt-28 grid overflow-hidden rounded-[12px] bg-ink text-ink-foreground md:grid-cols-[1fr_1.2fr]"
+        >
+          <div className="aspect-[3/2] overflow-hidden md:aspect-auto">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={next.cover}
+              alt=""
+              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+            />
+          </div>
+          <div className="flex flex-col justify-between gap-10 p-8 md:p-12">
+            <p className="font-mono text-[12px] text-ink-muted">Next article</p>
+            <div>
+              <p className="font-serif text-3xl font-medium leading-tight md:text-5xl">{next.title}</p>
+              <p className="mt-4 line-clamp-2 text-[15px] leading-relaxed text-ink-foreground/70">{next.excerpt}</p>
+            </div>
+            <span aria-hidden="true" className="text-3xl transition-transform duration-300 group-hover:translate-x-3">
+              →
+            </span>
+          </div>
+        </Link>
+
+        <section className="mt-28">
+          <h2 className="font-serif text-4xl font-medium leading-none md:text-6xl">Keep reading</h2>
+          <div className="mt-12 grid grid-cols-1 items-start gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10">
+            {recommended.map((item) => (
+              <MediaCard key={item.slug} article={item} />
+            ))}
+          </div>
+        </section>
       </div>
     </article>
-  );
-}
-
-function ArticleBlock({
-  block,
-}: {
-  block: { type: "p" | "h2" | "image"; text?: string; src?: string; alt?: string };
-}) {
-  if (block.type === "h2") {
-    return (
-      <h2 className="mt-10 font-serif text-2xl font-medium text-foreground md:text-3xl">
-        {block.text}
-      </h2>
-    );
-  }
-  if (block.type === "image") {
-    return (
-      <div className="my-8 overflow-hidden rounded-2xl">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={block.src} alt={block.alt ?? ""} className="w-full object-cover" />
-      </div>
-    );
-  }
-  return (
-    <RichText
-      text={block.text ?? ""}
-      className="mt-5 leading-relaxed text-foreground/90 first:mt-0"
-    />
   );
 }

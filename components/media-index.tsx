@@ -1,18 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CursorFollowCta } from "@/components/cursor-follow-cta";
-import { ScrollStrip } from "@/components/filter-controls";
 import Link from "next/link";
+import { CursorFollowCta } from "@/components/cursor-follow-cta";
+import { ArticleMeta, MediaCard } from "@/components/media-card";
+import { SubscribeBanner } from "@/components/subscribe-banner";
 import { articleCategories, latestArticle, otherArticles, type Article } from "@/lib/data/media";
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
 
 export function MediaIndex() {
   const [category, setCategory] = useState<string | null>(null);
@@ -21,6 +14,7 @@ export function MediaIndex() {
   const categories = useMemo(() => articleCategories(), []);
   const featured = useMemo(() => latestArticle(), []);
   const rest = useMemo(() => otherArticles(), []);
+  const all = useMemo(() => [featured, ...rest], [featured, rest]);
 
   const lead = useMemo(() => rest.slice(0, 3), [rest]);
   const banner = rest[3];
@@ -28,15 +22,17 @@ export function MediaIndex() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return rest.filter((article) => {
+    return all.filter((article) => {
       if (category && article.category !== category) return false;
-      if (q && !article.title.toLowerCase().includes(q)) return false;
-      return true;
+      if (!q) return true;
+      return [article.title, article.excerpt, article.category].some((field) => field.toLowerCase().includes(q));
     });
-  }, [rest, category, query]);
+  }, [all, category, query]);
+
+  const browsing = !category && !query.trim();
 
   return (
-    <section className="bg-background gutter pb-28 pt-40 text-foreground md:pt-48">
+    <section className="bg-background gutter pb-40 pt-40 text-foreground md:pt-48">
       <div className="mx-auto max-w-[1200px]">
         <div className="flex flex-col items-center text-center">
           <p className="font-mono text-[11px] text-muted">nikolaev.media</p>
@@ -45,60 +41,40 @@ export function MediaIndex() {
           </h1>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 text-[13px] md:flex-row md:items-center">
-          <ScrollStrip>
-            {["All", ...categories].map((c) => {
-              const activeTag = c === "All" ? category === null : category === c;
-              return (
-                <button
-                  key={c}
-                  type="button"
-                  aria-pressed={activeTag}
-                  onClick={() => setCategory(c === "All" ? null : category === c ? null : c)}
-                  className={`relative z-10 shrink-0 rounded-[4px] px-3 py-1.5 transition-colors duration-300 ${
-                    activeTag
-                      ? "text-background"
-                      : "text-foreground hover:bg-foreground/8"
-                  }`}
-                >
-                  {c}
-                </button>
-              );
-            })}
-          </ScrollStrip>
-          <label className="flex shrink-0 items-center gap-2 rounded-[6px] border border-border bg-background px-3 py-2 md:ml-auto transition-colors focus-within:border-foreground/50 md:w-72">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="shrink-0 text-muted">
-              <circle cx="11" cy="11" r="6.5" />
-              <path d="m20 20-4.2-4.2" />
-            </svg>
-            <span className="sr-only">Search articles</span>
-            <input
-              type="text"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search articles"
-              className="min-w-0 flex-1 bg-transparent text-foreground outline-none placeholder:text-muted/70"
-            />
-            {query ? (
-              <button
-                type="button"
-                aria-label="Clear search"
-                onClick={() => setQuery("")}
-                className="text-muted transition-colors hover:text-foreground"
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M6 6l12 12M18 6 6 18" />
-                </svg>
-              </button>
-            ) : null}
-          </label>
-        </div>
+        <label className="mt-12 flex w-full items-center gap-4 rounded-[10px] border border-border bg-background px-5 py-4 transition-colors focus-within:border-foreground/50">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" className="shrink-0 text-muted">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m20 20-4.2-4.2" />
+          </svg>
+          <span className="sr-only">Search articles</span>
+          <input
+            type="text"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search articles, topics, categories"
+            className="min-w-0 flex-1 bg-transparent text-lg text-foreground outline-none placeholder:text-muted/70"
+          />
+          {query ? (
+            <button
+              type="button"
+              aria-label="Clear search"
+              onClick={() => setQuery("")}
+              className="text-muted transition-colors hover:text-foreground"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M6 6l12 12M18 6 6 18" />
+              </svg>
+            </button>
+          ) : null}
+        </label>
 
-        {!category && !query ? (
+        {browsing ? (
           <>
             <Hero article={featured} />
             {lead.length > 0 ? <Grid articles={lead} className="mt-16 md:mt-24" /> : null}
-            <Marquee />
+            <div id="subscribe" className="mt-24 scroll-mt-32 md:mt-32">
+              <SubscribeBanner />
+            </div>
             {banner ? (
               <>
                 <Banner article={banner} />
@@ -113,26 +89,58 @@ export function MediaIndex() {
           <Grid articles={filtered} className="mt-14" />
         )}
       </div>
+
+      <MediaNav categories={categories} category={category} onChange={setCategory} />
     </section>
   );
 }
 
-function Tags({ article, center = false }: { article: Article; center?: boolean }) {
+function MediaNav({
+  categories,
+  category,
+  onChange,
+}: {
+  categories: string[];
+  category: string | null;
+  onChange: (value: string | null) => void;
+}) {
+  const items = ["All", ...categories];
   return (
-    <p className={`flex items-center gap-2 text-[13px] text-accent ${center ? "justify-center" : ""}`}>
-      <span>{article.category}</span>
-      <span aria-hidden="true" className="size-1 rounded-full bg-accent" />
-      <span>{article.readMinutes} min read</span>
-    </p>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M12 7.5V12l3 1.8" />
-    </svg>
+    <nav
+      aria-label="Article categories"
+      className="fixed bottom-16 left-1/2 z-30 flex max-w-[calc(100vw-2rem)] origin-bottom -translate-x-1/2 scale-[1.2] items-center gap-1 overflow-x-auto rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)] max-md:scale-100"
+    >
+      {items.map((item) => {
+        const active = item === "All" ? category === null : category === item;
+        return (
+          <button
+            key={item}
+            type="button"
+            aria-pressed={active}
+            onClick={() => {
+              onChange(item === "All" ? null : item);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className={`shrink-0 rounded-[4px] px-3 py-2 transition-colors duration-300 ${
+              active ? "bg-foreground text-background" : "text-foreground hover:bg-foreground/8"
+            }`}
+          >
+            {item}
+          </button>
+        );
+      })}
+      <span aria-hidden="true" className="mx-1 h-6 w-px shrink-0 bg-border" />
+      <button
+        type="button"
+        onClick={() => {
+          onChange(null);
+          window.setTimeout(() => document.getElementById("subscribe")?.scrollIntoView({ behavior: "smooth", block: "center" }), 60);
+        }}
+        className="shrink-0 rounded-[4px] bg-foreground px-4 py-2 text-background transition-opacity duration-300 hover:opacity-80"
+      >
+        Subscribe
+      </button>
+    </nav>
   );
 }
 
@@ -140,22 +148,19 @@ function Hero({ article }: { article: Article }) {
   return (
     <CursorFollowCta label="More" className="mt-16 block md:mt-20">
       <Link href={`/media/${article.slug}`} className="group block">
-        <Tags article={article} />
-        <div className="mt-4 flex items-start justify-between gap-8">
-          <h2 className="max-w-4xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:text-6xl">
-            {article.title}
-          </h2>
-          <span className="hidden size-[72px] shrink-0 place-items-center rounded-full border border-foreground/70 text-[13px] text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background md:grid">
-            Read
-          </span>
-        </div>
+        <h2 className="max-w-4xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:text-6xl">
+          {article.title}
+        </h2>
+        <ArticleMeta article={article} className="mt-5" />
         <div className="mt-10 aspect-[2.3/1] w-full overflow-hidden rounded-[12px] bg-surface">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={article.cover}
             alt=""
             draggable={false}
-            className="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+            data-scroll=""
+            data-scroll-speed="-0.06"
+            className="h-full w-full scale-[1.12] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
           />
         </div>
       </Link>
@@ -166,31 +171,9 @@ function Hero({ article }: { article: Article }) {
 function Grid({ articles: list, className = "" }: { articles: Article[]; className?: string }) {
   return (
     <div className={`grid grid-cols-1 items-start gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10 ${className}`}>
-      {list.map((article) => (
+      {list.map((article, i) => (
         <CursorFollowCta key={article.slug} label="More" className="block">
-          <Link href={`/media/${article.slug}`} className="group block">
-            <div className="aspect-[3/2] overflow-hidden rounded-[10px] bg-surface">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={article.cover}
-                alt=""
-                draggable={false}
-                className="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-              />
-            </div>
-            <div className="mt-6">
-              <Tags article={article} />
-              <p className="mt-3 font-serif text-2xl font-medium leading-snug text-foreground">{article.title}</p>
-              <p className="mt-3 line-clamp-3 text-[15px] leading-relaxed text-muted">{article.excerpt}</p>
-              <p className="mt-4 flex items-center gap-4 font-mono text-[12px] text-muted">
-                <span>{formatDate(article.date)}</span>
-                <span className="flex items-center gap-1.5">
-                  <ClockIcon />
-                  {article.readMinutes} min
-                </span>
-              </p>
-            </div>
-          </Link>
+          <MediaCard article={article} parallax={i % 2 === 1 ? -0.04 : undefined} />
         </CursorFollowCta>
       ))}
     </div>
@@ -207,33 +190,17 @@ function Banner({ article }: { article: Article }) {
             src={article.cover}
             alt=""
             draggable={false}
-            className="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+            data-scroll=""
+            data-scroll-speed="-0.06"
+            className="h-full w-full scale-[1.12] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
           />
         </div>
-        <div className="mx-auto mt-8 max-w-3xl text-center">
-          <Tags article={article} center />
-          <h3 className="mt-3 font-serif text-3xl font-medium leading-tight text-foreground md:text-5xl">
-            {article.title}
-          </h3>
+        <div className="mt-8 max-w-[66%] max-md:max-w-none">
+          <h3 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-5xl">{article.title}</h3>
+          <ArticleMeta article={article} className="mt-4" />
         </div>
       </Link>
     </CursorFollowCta>
-  );
-}
-
-function Marquee() {
-  const unit = Array.from({ length: 6 }, (_, i) => (
-    <span key={i} className={`shrink-0 px-6 ${i === 2 ? "text-accent" : ""}`}>
-      ( nikolaev.media )
-    </span>
-  ));
-  return (
-    <div aria-hidden="true" className="mt-24 overflow-hidden bg-ink py-4 text-ink-foreground md:mt-32">
-      <div className="flex w-max animate-marquee whitespace-nowrap font-sans text-lg font-semibold">
-        <div className="flex">{unit}</div>
-        <div className="flex">{unit}</div>
-      </div>
-    </div>
   );
 }
 

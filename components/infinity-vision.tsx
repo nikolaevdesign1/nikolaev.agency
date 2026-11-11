@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { projectIsAwarded, type Project } from "@/lib/data/projects";
 import { PhotoBit } from "@/components/photo-bit";
 import { HoverPlate } from "@/components/hover-plate";
+import { InView } from "@/components/in-view";
+import { RippleCover } from "@/components/ripple-cover";
 import { AwardBadge, ProjectTags, SiteIcon } from "@/components/project-card-parts";
 
 const TILE_W = 480;
@@ -320,7 +322,7 @@ export function InfinityVision({
           <pre
             key={note.key}
             data-field-note=""
-            className="absolute m-0 font-mono text-[10px] leading-[1.4] select-none"
+            className="type-in absolute m-0 font-mono text-[10px] leading-[1.4] select-none"
             style={{
               color: noteInk,
               transform: `translate3d(${note.x - cam.x}px, ${note.y - cam.y}px, 0)`,
@@ -346,24 +348,29 @@ export function InfinityVision({
               className="relative overflow-hidden rounded-[6px]"
               style={{ height: TILE_H }}
             >
-              <div className="absolute inset-0">
+              <RippleCover
+                src={cell.project.video ?? cell.src}
+                video={Boolean(cell.project.video)}
+                className="absolute inset-0"
+              >
                 <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
-              </div>
+              </RippleCover>
               <AwardBadge project={cell.project} />
               <SiteIcon />
-              <div data-project-direction="" className="pointer-events-none absolute inset-x-4 bottom-4">
-                <ProjectTags project={cell.project} />
-              </div>
+              <InView className="pointer-events-none absolute inset-x-4 bottom-4">
+                <div data-project-direction="">
+                  <ProjectTags project={cell.project} stagger />
+                </div>
+              </InView>
             </div>
-            <div data-project-caption="" className="flex items-baseline justify-between gap-4 pt-4">
-              <p
-                data-project-title=""
-                className="font-serif text-3xl font-medium leading-none text-foreground"
-              >
-                {cell.title}
+            <InView className="flex items-baseline justify-between gap-4 pt-4">
+              <p data-project-title="" className="reveal-line font-serif text-3xl font-medium leading-none text-foreground">
+                <span>{cell.title}</span>
               </p>
-              <p className="font-mono text-[14px] text-muted">{cell.project.year}</p>
-            </div>
+              <p className="reveal-fade font-mono text-[14px] text-muted" style={{ ["--d" as string]: "180ms" }}>
+                {cell.project.year}
+              </p>
+            </InView>
             <HoverPlate project={cell.project} />
           </div>
         </div>

@@ -24,6 +24,8 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
           lerp: 0.075,
           smoothWheel: true,
           wheelMultiplier: 0.95,
+          // layers with their own smooth scroll (the projects list) keep their wheel events
+          prevent: (node: HTMLElement) => node.hasAttribute("data-own-lenis"),
         },
       });
     });
