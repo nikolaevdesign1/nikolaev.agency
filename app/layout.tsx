@@ -10,6 +10,9 @@ import { CornerSocial } from "@/components/corner-social";
 import { CookieNotice } from "@/components/cookie-notice";
 import { PageReveal } from "@/components/page-transition";
 import { Preloader } from "@/components/preloader";
+import { AutoScramble } from "@/components/auto-scramble";
+import { BottomBlur } from "@/components/bottom-blur";
+import { SoundToggle } from "@/components/sound";
 
 // next@16.4.5 exports Geist_Mono, but not Libre_Caslon_Condensed
 // (only Libre_Caslon_Display and Libre_Caslon_Text). These files are the
@@ -94,6 +97,9 @@ export default function RootLayout({ children, modal }: LayoutProps<"/">) {
             {modal}
             <CornerSocial />
             <CookieNotice />
+            <BottomBlur />
+            <SoundToggle />
+            <AutoScramble />
           </>
         </SmoothScroll>
       </body>

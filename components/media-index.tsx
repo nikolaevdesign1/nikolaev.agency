@@ -5,6 +5,10 @@ import Link from "next/link";
 import { CursorFollowCta } from "@/components/cursor-follow-cta";
 import { ArticleMeta, MediaCard } from "@/components/media-card";
 import { SubscribeBanner } from "@/components/subscribe-banner";
+import { AmbientTextField } from "@/components/ambient-text-field";
+import { ScrambleText } from "@/components/scramble-text";
+import { useFooterInView } from "@/lib/use-footer-in-view";
+import { usePreloaderDone } from "@/lib/use-preloader-done";
 import { articleCategories, latestArticle, otherArticles, type Article } from "@/lib/data/media";
 
 export function MediaIndex() {
@@ -105,12 +109,18 @@ function MediaNav({
   onChange: (value: string | null) => void;
 }) {
   const items = ["All", ...categories];
+  const ready = usePreloaderDone();
+  const footerInView = useFooterInView();
+  const label = (text: string, i: number) =>
+    ready ? <ScrambleText text={text} trigger="mount" delay={160 + i * 60} /> : text;
   return (
     <nav
       aria-label="Article categories"
-      className="fixed bottom-16 left-1/2 z-30 flex max-w-[calc(100vw-2rem)] origin-bottom -translate-x-1/2 scale-[1.2] items-center gap-1 overflow-x-auto rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)] max-md:scale-100"
+      className={`fixed bottom-4 left-1/2 z-30 flex max-w-[calc(100vw-2rem)] origin-bottom -translate-x-1/2 items-center gap-1 overflow-x-auto whitespace-nowrap rounded-[6px] border border-border bg-background p-1 font-mono text-[13px] text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)] transition-[opacity,translate] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:bottom-16 md:scale-[1.2] ${
+        ready && !footerInView ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-[160%] opacity-0"
+      }`}
     >
-      {items.map((item) => {
+      {items.map((item, i) => {
         const active = item === "All" ? category === null : category === item;
         return (
           <button
@@ -125,7 +135,7 @@ function MediaNav({
               active ? "bg-foreground text-background" : "text-foreground hover:bg-foreground/8"
             }`}
           >
-            {item}
+            {label(item, i)}
           </button>
         );
       })}
@@ -138,7 +148,7 @@ function MediaNav({
         }}
         className="shrink-0 rounded-[4px] bg-foreground px-4 py-2 text-background transition-opacity duration-300 hover:opacity-80"
       >
-        Subscribe
+        {label("Subscribe", items.length)}
       </button>
     </nav>
   );
@@ -146,13 +156,13 @@ function MediaNav({
 
 function Hero({ article }: { article: Article }) {
   return (
-    <CursorFollowCta label="More" className="mt-16 block md:mt-20">
+    <CursorFollowCta label="Read more" className="mt-16 block md:mt-20">
       <Link href={`/media/${article.slug}`} className="group block">
         <h2 className="max-w-4xl font-serif text-4xl font-medium leading-[1.05] text-foreground md:text-6xl">
           {article.title}
         </h2>
-        <ArticleMeta article={article} className="mt-5" />
-        <div className="mt-10 aspect-[2.3/1] w-full overflow-hidden rounded-[12px] bg-surface">
+        <ArticleMeta article={article} className="mt-3" />
+        <div className="mt-6 aspect-[2.3/1] w-full overflow-hidden rounded-[12px] bg-surface">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={article.cover}
@@ -172,7 +182,7 @@ function Grid({ articles: list, className = "" }: { articles: Article[]; classNa
   return (
     <div className={`grid grid-cols-1 items-start gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10 ${className}`}>
       {list.map((article, i) => (
-        <CursorFollowCta key={article.slug} label="More" className="block">
+        <CursorFollowCta key={article.slug} label="Read more" className="block">
           <MediaCard article={article} parallax={i % 2 === 1 ? -0.04 : undefined} />
         </CursorFollowCta>
       ))}
@@ -182,7 +192,7 @@ function Grid({ articles: list, className = "" }: { articles: Article[]; classNa
 
 function Banner({ article }: { article: Article }) {
   return (
-    <CursorFollowCta label="More" className="mt-24 block md:mt-32">
+    <CursorFollowCta label="Read more" className="mt-24 block md:mt-32">
       <Link href={`/media/${article.slug}`} className="group block">
         <div className="aspect-[2.6/1] w-full overflow-hidden rounded-[12px] bg-surface">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -195,9 +205,9 @@ function Banner({ article }: { article: Article }) {
             className="h-full w-full scale-[1.12] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
           />
         </div>
-        <div className="mt-8 max-w-[66%] max-md:max-w-none">
+        <div className="mt-5 max-w-[66%] max-md:max-w-none">
           <h3 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-5xl">{article.title}</h3>
-          <ArticleMeta article={article} className="mt-4" />
+          <ArticleMeta article={article} className="mt-3" />
         </div>
       </Link>
     </CursorFollowCta>
@@ -206,20 +216,21 @@ function Banner({ article }: { article: Article }) {
 
 function Cta() {
   return (
-    <div className="mt-24 grid items-end gap-8 border-t border-foreground/80 pt-10 md:mt-32 md:grid-cols-[1.4fr_1fr] md:gap-16">
-      <p className="font-serif text-5xl font-medium leading-[0.98] text-foreground md:text-8xl">
-        Have a project in mind?
-      </p>
-      <div>
-        <p className="text-lg leading-snug text-foreground">
-          We write about what we build. If something here matches your problem, the people behind it can help.
-        </p>
-        <Link
-          href="/contact"
-          className="mt-6 inline-flex rounded-[6px] bg-foreground px-6 py-3 font-mono text-[13px] text-background transition-opacity hover:opacity-80"
-        >
-          Request a project
-        </Link>
+    <div className="relative isolate mt-24 overflow-hidden rounded-[12px] bg-ink text-ink-foreground md:mt-32">
+      <AmbientTextField phrase="Small team · direct access · no account managers" className="-z-10" />
+      <div className="relative grid items-end gap-8 p-8 md:grid-cols-[1.4fr_1fr] md:gap-16 md:p-12">
+        <p className="font-serif text-5xl font-medium leading-[0.98] md:text-7xl">Have a project in mind?</p>
+        <div>
+          <p className="text-[15px] leading-relaxed text-ink-foreground/75">
+            We write about what we build. If something here matches your problem, the people behind it can help.
+          </p>
+          <Link
+            href="/contact"
+            className="mt-6 inline-flex h-12 items-center rounded-[6px] bg-white px-6 font-mono text-[13px] text-black transition-opacity hover:opacity-85"
+          >
+            Request a project
+          </Link>
+        </div>
       </div>
     </div>
   );

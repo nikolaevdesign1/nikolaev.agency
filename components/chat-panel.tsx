@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { LogoCube } from "@/components/logo-cube";
 import { DotOrb } from "@/components/dot-orb";
 import { AmbientTextField } from "@/components/ambient-text-field";
+import { ScrambleText } from "@/components/scramble-text";
 import { site } from "@/lib/data/site";
 
 type ChatPanelProps = {
@@ -529,6 +530,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
 
   if (!mounted) return null;
 
+  const empty = messages.length === 0;
   const brief = active?.brief;
   const briefRunning = Boolean(brief && !brief.done);
   const lastIndex = messages.length - 1;
@@ -648,17 +650,32 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           </button>
         </div>
 
-        <div ref={scrollerRef} className="relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain px-[var(--gutter)]">
-          {messages.length === 0 ? (
-            <div className="mx-auto flex min-h-full max-w-[760px] flex-col items-center justify-center gap-[clamp(0.5rem,2.4vh,1.5rem)] pb-4 pt-4 text-center">
-              <Orb active={pending} typing={draft.length > 0 || listening} />
+        {empty ? <div aria-hidden="true" className="min-h-0 flex-[0.55]" /> : null}
+
+        <div
+          ref={scrollerRef}
+          className={`relative z-[1] overflow-y-auto overscroll-contain px-[var(--gutter)] ${empty ? "flex-none" : "min-h-0 flex-1"}`}
+        >
+          {empty ? (
+            <div className="mx-auto flex max-w-[760px] flex-col items-center gap-[clamp(0.5rem,2.4vh,1.5rem)] pb-4 pt-4 text-center">
+              <div className="chat-rise" style={{ ["--d" as string]: "420ms" }}>
+                <Orb active={pending} typing={draft.length > 0 || listening} />
+              </div>
               <div>
-                <p className="font-serif text-[clamp(1.3rem,3.2vh,2rem)] leading-tight text-ink-muted">
-                  Hi there, we are nikolaev.agency.
-                </p>
-                <p className="mt-1 font-serif text-[clamp(1.9rem,5vh,3.2rem)] font-medium leading-[1.08]">
-                  How can I help today?
-                </p>
+                <ScrambleText
+                  as="p"
+                  trigger="mount"
+                  delay={620}
+                  text="Hi there, we are nikolaev.agency."
+                  className="font-serif text-[clamp(1.3rem,3.2vh,2rem)] leading-tight text-ink-muted"
+                />
+                <ScrambleText
+                  as="p"
+                  trigger="mount"
+                  delay={820}
+                  text="How can I help today?"
+                  className="mt-1 font-serif text-[clamp(1.9rem,5vh,3.2rem)] font-medium leading-[1.08]"
+                />
               </div>
             </div>
           ) : (
@@ -734,7 +751,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           )}
         </div>
 
-        <div className="relative z-[1] px-[var(--gutter)] pb-4 pt-3">
+        <div className="relative z-[1] px-[var(--gutter)] pb-3 pt-3">
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -755,7 +772,10 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
                 </span>
               </div>
             ) : null}
-            <div className="rounded-[14px] bg-ink-foreground/[0.06] ring-1 ring-ink-foreground/12 transition-shadow focus-within:ring-ink-foreground/35">
+            <div
+              className={`rounded-[14px] bg-[#1a1a1a] ring-1 ring-ink-foreground/12 transition-shadow focus-within:ring-ink-foreground/35 ${empty ? "chat-rise" : ""}`}
+              style={{ ["--d" as string]: "760ms" }}
+            >
               {files.length > 0 ? (
                 <div className="flex flex-wrap gap-2 px-4 pt-4">
                   {files.map((file) => (
@@ -869,14 +889,15 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
               </div>
             </div>
 
-            {messages.length === 0 ? (
+            {empty ? (
               <div className="mt-3 grid gap-3 md:grid-cols-3">
-                {suggestions.map((item) => (
+                {suggestions.map((item, i) => (
                   <button
                     key={item.title}
                     type="button"
                     onClick={() => (item.title === "I want to start a project" ? startBrief() : send(item.title))}
-                    className="group flex flex-col gap-3 rounded-[12px] bg-ink-foreground/[0.07] p-4 text-left transition-colors hover:bg-ink-foreground/[0.12]"
+                    className="chat-rise group flex flex-col gap-3 rounded-[12px] bg-[#1c1c1c] p-4 text-left ring-1 ring-ink-foreground/[0.06] transition-colors hover:bg-[#262626]"
+                    style={{ ["--d" as string]: `${900 + i * 90}ms` }}
                   >
                     <span className="flex size-8 items-center justify-center rounded-[6px] bg-ink-foreground/10 text-ink-foreground transition-colors group-hover:bg-ink-foreground/20">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -892,16 +913,19 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
               </div>
             ) : null}
           </form>
-          <p className="mt-3 text-center font-mono text-[11px] text-ink-muted">
-            Still have questions? Write to us at{" "}
-            <a
-              href={`mailto:${site.email}`}
-              className="text-ink-foreground underline underline-offset-4 transition-colors hover:text-accent"
-            >
-              {site.email}
-            </a>
-          </p>
         </div>
+
+        {empty ? <div aria-hidden="true" className="min-h-0 flex-1" /> : null}
+
+        <p className="relative z-[1] px-[var(--gutter)] pb-4 text-center font-mono text-[11px] text-ink-muted">
+          Still have questions? Write to us at{" "}
+          <a
+            href={`mailto:${site.email}`}
+            className="text-ink-foreground underline underline-offset-4 transition-colors hover:text-accent"
+          >
+            {site.email}
+          </a>
+        </p>
 
         <nav aria-label="Social" className="absolute bottom-4 right-5 z-[1] hidden gap-5 font-mono text-[11px] xl:flex">
           {site.cornerSocial.map((link) => (

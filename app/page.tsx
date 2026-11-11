@@ -7,7 +7,6 @@ import { ScrambleText } from "@/components/scramble-text";
 import { ExpandableVideo } from "@/components/expandable-video";
 import { BestCases } from "@/components/best-cases";
 import { GlobeNetwork } from "@/components/globe-network";
-import { TypeOnScroll } from "@/components/type-on-scroll";
 import { ScrollScale } from "@/components/scroll-scale";
 import { GlobeSticky } from "@/components/globe-sticky";
 import { LinkButton, pillClass } from "@/components/button";
@@ -69,46 +68,45 @@ export default async function Home() {
       <section className="relative flex flex-col overflow-clip bg-ink gutter pb-36 pt-20 text-ink-foreground md:pb-48 md:pt-24">
         <AmbientTextField phrase="Small team · direct access · no account managers" />
         <div className="relative z-[1] flex flex-col gap-24 md:gap-32">
-          <div className="grid gap-14 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
-            <div className="flex flex-col gap-16 md:gap-20">
-              <div className="flex flex-col gap-10 md:gap-14">
+          <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
+            <div className="flex min-w-0 flex-col gap-12 md:gap-20">
+              <div className="flex flex-col gap-6 md:gap-14">
                 <ScrambleText
                   as="p"
                   text="We build AI into the work itself."
-                  className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl"
+                  className="font-serif text-[2rem] font-medium leading-[1.05] md:text-6xl"
                 />
                 <ScrambleText
                   as="p"
                   text="Faster builds, lighter support, reachable from anywhere."
-                  className="font-serif text-4xl font-medium leading-[1.05] md:text-6xl"
+                  className="font-serif text-[2rem] font-medium leading-[1.05] md:text-6xl"
                 />
               </div>
 
-              <ol className="flex flex-col gap-14 md:gap-16">
+              <ol className="flex flex-col gap-8 md:gap-16">
                 {aiPoints.map((point, i) => (
                   <li
                     key={point.index}
-                    className="flex max-w-[26rem] flex-col gap-4 lg:ml-[calc(var(--step)*2rem)]"
+                    className="flex max-w-[26rem] flex-col gap-3 md:gap-4 lg:ml-[calc(var(--step)*2rem)]"
                     style={{ ["--step" as string]: i }}
                   >
                     <p className="font-mono text-[11px] text-ink-muted">
                       {point.index} / {point.title}
                     </p>
-                    <TypeOnScroll
-                      text={point.body}
-                      className="text-xl leading-snug text-ink-foreground md:text-2xl"
-                    />
+                    <p data-scramble="" className="text-lg leading-snug text-ink-foreground md:text-2xl">
+                      {point.body}
+                    </p>
                   </li>
                 ))}
               </ol>
             </div>
 
             <GlobeSticky>
-              <GlobeNetwork projects={projects} className="mx-auto w-full max-w-[680px]" />
+              <GlobeNetwork projects={projects} className="mx-auto w-full min-w-0 max-w-[680px]" />
             </GlobeSticky>
           </div>
 
-          <div className="-mt-12 flex flex-col gap-12 md:-mt-20 md:gap-16">
+          <div className="-mt-16 flex flex-col gap-12 md:-mt-20 md:gap-16">
             <div className="flex flex-wrap items-center justify-center gap-3">
               <StudioChatButton className={pillClass}>Let&apos;s chat</StudioChatButton>
               <LinkButton href="/contact">Request a project</LinkButton>

@@ -7,11 +7,21 @@ export type Media = {
   alt?: string;
 };
 
-export type ProjectBlock =
+/** Where a block sits on the project page: after About, in the main content (default) or after Results. */
+export type BlockPlace = "about" | "content" | "results";
+
+export type ProjectBlock = (
   | { type: "media"; media: Media; caption?: string }
   | { type: "media2"; items: [Media, Media] }
+  /** One wide picture on top, two below. */
+  | { type: "media3"; items: [Media, Media, Media] }
+  /** Two by two. */
+  | { type: "media4"; items: [Media, Media, Media, Media] }
   | { type: "text"; label: string; text: string }
-  | { type: "credits"; rows: { role: string; name: string }[] };
+  | { type: "credits"; rows: { role: string; name: string }[] }
+) & { place?: BlockPlace };
+
+export type ProjectLink = { label: string; url: string };
 
 export type Project = {
   slug: string;
@@ -33,7 +43,7 @@ export type Project = {
   credits?: string[];
   /** Award text shown as a plaque, e.g. "Awarded by Behance UI". */
   award?: string;
-  /** Who gave the award: "Behance", "Awwwards", "CSS Design Awards"… Shown on the badge. */
+  /** Who gave the award: "Behance", "Awwwards" or "CSS Design Awards". Shown on the badge. */
   awardSource?: string;
   /** Live site, when the project is one. Enables "Visit site". */
   url?: string;
@@ -41,6 +51,14 @@ export type Project = {
   coverCaption?: string;
   /** Big statement on the project page. */
   statement?: string;
+  /** Full description, the "About" section. Falls back to the summary. */
+  about?: string;
+  /** The task and its context. */
+  problem?: string;
+  /** What came out of it: numbers, launches, awards. */
+  results?: string;
+  /** Links shown at the top of the page: site, Awwwards, Behance… */
+  links?: ProjectLink[];
   /** Content of the project page, in order. */
   blocks?: ProjectBlock[];
   /** Where the project sits on the home globe. */
@@ -180,14 +198,17 @@ export const projects: Project[] = [
 
 export const featuredProjects = projects.filter((p) => p.featured);
 
-export const awardSources = ["Behance", "Awwwards", "CSS Design Awards", "FWA", "The Webby Award", "Other"] as const;
+export const awardSources = ["Behance", "Awwwards", "CSS Design Awards"] as const;
 
-/** Badge label: the chosen source, else guessed from the award text. */
+/** Badge label: the chosen source when it is one of ours, else guessed from the award text. */
 export function awardSourceOf(project: Pick<Project, "award" | "awardSource">): string {
-  if (project.awardSource?.trim()) return project.awardSource.trim();
-  const text = (project.award ?? "").toLowerCase();
-  const hit = awardSources.find((name) => name !== "Other" && text.includes(name.toLowerCase()));
-  return hit ?? "Award";
+  const chosen = project.awardSource?.trim();
+  if (chosen && (awardSources as readonly string[]).includes(chosen)) return chosen;
+  const text = `${chosen ?? ""} ${project.award ?? ""}`.toLowerCase();
+  const hit = awardSources.find((name) => text.includes(name.toLowerCase()));
+  if (hit) return hit;
+  if (/css ?da|cssda/.test(text)) return "CSS Design Awards";
+  return "Behance";
 }
 
 /** Awarded when the record carries an award text. */
@@ -199,4 +220,13 @@ export function projectIsAwarded(project: Project): boolean {
 export function countryFlag(location: string) {
   if (/remote/i.test(location)) return "🌐";
   return "🇺🇸";
+}
+
+/** The project's links; older records keep the site and Behance in their own fields. */
+export function linksOf(project: Pick<Project, "links" | "url" | "behance">): ProjectLink[] {
+  if (project.links && project.links.length > 0) return project.links.filter((link) => link.url.trim());
+  const list: ProjectLink[] = [];
+  if (project.url) list.push({ label: "Website", url: project.url });
+  if (project.behance) list.push({ label: "Behance", url: project.behance });
+  return list;
 }

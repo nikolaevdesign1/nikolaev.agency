@@ -13,11 +13,14 @@ function wave(x: number, y: number, z: number, t: number) {
   const wx = x + Math.sin(y * 1.3 + t * 0.35) * 0.55;
   const wy = y + Math.sin(z * 1.1 - t * 0.28) * 0.55;
   const wz = z + Math.sin(x * 1.2 + t * 0.31) * 0.55;
-  return (
-    Math.sin(wx * 1.6 + t * 0.6) * 0.45 +
-    Math.sin(wy * 1.9 - t * 0.5 + wx * 0.7) * 0.35 +
-    Math.sin(wz * 2.4 + t * 0.8 - wy * 0.6) * 0.2
-  );
+  // slow swells
+  const swell =
+    Math.sin(wx * 1.6 + t * 0.6) * 0.4 +
+    Math.sin(wy * 1.9 - t * 0.5 + wx * 0.7) * 0.3 +
+    Math.sin(wz * 2.4 + t * 0.8 - wy * 0.6) * 0.15;
+  // travelling bands, like a sound wave running over the surface
+  const band = Math.sin(wy * 5.5 - t * 2.1 + Math.sin(wx * 2 + t * 0.4) * 1.2) * 0.32;
+  return swell + band;
 }
 
 type Dot = { x: number; y: number; z: number; shade: number };
@@ -81,8 +84,11 @@ export function DotOrb({
       const t = (now - start) / 1000;
       const want = energyRef.current.active ? 1 : energyRef.current.typing ? 0.55 : 0;
       energy += (want - energy) * 0.06;
-      const amp = 0.17 + energy * 0.14;
+      const amp = 0.2 + energy * 0.16;
       const speed = 0.8 + energy * 1.4;
+      // the whole silhouette breathes and leans
+      const breath = 1 + Math.sin(t * 0.9) * 0.035;
+      const lean = Math.sin(t * 0.45) * 0.12;
 
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       ctx.clearRect(0, 0, size, size);
@@ -118,10 +124,10 @@ export function DotOrb({
       for (let i = 0; i < dots.length; i++) {
         const d = dots[i];
         const w = wave(d.x, d.y, d.z, t * speed);
-        const k = 1 + w * amp;
-        let x = d.x * k;
+        const k = (1 + w * amp) * breath;
+        let x = d.x * k + Math.sin(d.y * 2.2 + t * 0.7) * lean;
         let y = d.y * k;
-        let z = d.z * k;
+        let z = d.z * k + Math.cos(d.x * 1.8 + t * 0.6) * lean * 0.6;
         const x1 = x * cy + z * sy;
         const z1 = -x * sy + z * cy;
         x = x1;
@@ -134,14 +140,16 @@ export function DotOrb({
         const px = c + x * R * persp * 1.9;
         const py = c + y * R * persp * 1.9;
         const crest = Math.max(0, w);
-        const dotSize = (0.7 + depth * 1.4 + crest * 0.9) * (size / 220);
+        const trough = Math.max(0, -w);
+        const dotSize = (0.6 + depth * 1.3 + crest * 1.3) * (size / 220);
 
         // warm palette: peaks go orange, troughs lavender, with a few bright sparks
         const h = (w + 1) / 2;
         const r = Math.round(220 + h * 30);
         const g = Math.round(150 + (1 - h) * 40 + h * 10);
         const b = Math.round(235 - h * 150);
-        const alpha = 0.18 + depth * 0.7 * (0.55 + h * 0.45);
+        // crests gather light, troughs thin out
+        const alpha = (0.14 + depth * 0.75 * (0.45 + h * 0.55)) * (1 - trough * 0.55);
         ctx.fillStyle = d.shade > 0.985 ? `rgba(255,248,235,${alpha})` : `rgba(${r},${g},${b},${alpha})`;
         ctx.fillRect(px - dotSize / 2, py - dotSize / 2, dotSize, dotSize);
       }

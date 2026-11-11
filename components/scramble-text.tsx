@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { whenPreloaderDone } from "@/lib/use-preloader-done";
 
 const DIGITS = "0123456789";
 const START = 20; // ms before the first character
@@ -60,7 +61,7 @@ export function ScrambleText({
           }
           if (t < from + DURATION) {
             finished = false;
-            return { ch: DIGITS[Math.floor(Math.random() * 10)] ?? "0", visible: true };
+            return { ch: DIGITS[Math.floor(Math.random() * DIGITS.length)] ?? "0", visible: true };
           }
           return { ch, visible: true };
         });
@@ -71,8 +72,11 @@ export function ScrambleText({
     };
 
     if (trigger === "mount") {
-      run();
+      // Hide the text now, play it once the preloader is gone.
+      if (!reduce) setDisplay(chars.map((ch) => ({ ch, visible: ch === " " })));
+      const stop = whenPreloaderDone(run);
       return () => {
+        stop();
         cancelAnimationFrame(frameRef.current);
         ranRef.current = false;
       };
@@ -98,7 +102,7 @@ export function ScrambleText({
   }, [text, trigger, delay]);
 
   return (
-    <Tag ref={ref as never} className={cn(className)} aria-label={text}>
+    <Tag ref={ref as never} className={cn(className)} aria-label={text} data-no-scramble="">
       <span aria-hidden="true">
         {display.map((item, i) => (
           <span key={i} style={item.visible ? undefined : { visibility: "hidden" }}>

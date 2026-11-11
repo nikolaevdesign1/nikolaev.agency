@@ -49,10 +49,10 @@ export default async function ArticlePage({
           </Link>{" "}
           / {article.category}
         </p>
-        <h1 className="mt-6 max-w-4xl font-serif text-4xl font-medium leading-[1.06] md:text-6xl">{article.title}</h1>
-        <ArticleMeta article={article} className="mt-6" />
+        <h1 className="mt-3 max-w-4xl font-serif text-4xl font-medium leading-[1.06] md:text-6xl">{article.title}</h1>
+        <ArticleMeta article={article} className="mt-3" />
 
-        <div className="mt-10 aspect-[2.2/1] overflow-hidden rounded-[12px] bg-surface">
+        <div className="mt-6 aspect-[2.2/1] overflow-hidden rounded-[12px] bg-surface">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={article.cover}

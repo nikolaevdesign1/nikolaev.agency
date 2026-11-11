@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { readProjectsTheme, type ProjectsTheme } from "@/lib/projects-theme";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -30,7 +31,25 @@ export function ProjectModal({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [copied, setCopied] = useState(false);
+  const [theme, setTheme] = useState<ProjectsTheme>("light");
+  const [titleShown, setTitleShown] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setTheme(readProjectsTheme()), []);
+
+  // The small title in the bar appears once the big one has scrolled away.
+  useEffect(() => {
+    const node = scrollRef.current;
+    if (!node) return;
+    const onScroll = () => {
+      const big = node.querySelector("[data-case-title] h1");
+      const bottom = big ? big.getBoundingClientRect().bottom : 0;
+      setTitleShown(bottom < 70);
+    };
+    onScroll();
+    node.addEventListener("scroll", onScroll, { passive: true });
+    return () => node.removeEventListener("scroll", onScroll);
+  }, []);
 
   const close = () => (intercepted ? router.back() : router.push("/projects"));
 
@@ -50,19 +69,10 @@ export function ProjectModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, intercepted]);
 
-  const share = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
-    } catch {
-      /* clipboard unavailable */
-    }
-  };
-
   return (
     <div
       data-project-modal=""
+      data-page-theme={theme}
       role="dialog"
       aria-modal="true"
       aria-label={title}
@@ -72,17 +82,20 @@ export function ProjectModal({
       }}
     >
       <div
+        ref={scrollRef}
         data-lenis-prevent
-        className="relative h-full w-full animate-[modal-in_520ms_cubic-bezier(0.22,1,0.36,1)_both] overflow-y-auto rounded-t-[12px] bg-background"
+        className="relative h-full w-full animate-[modal-in_520ms_cubic-bezier(0.22,1,0.36,1)_both] overflow-y-auto rounded-t-[12px] bg-background text-foreground"
       >
         <div className="sticky top-0 z-20 flex items-center justify-between gap-6 bg-background/90 px-[var(--gutter)] py-3 backdrop-blur">
-          <p className="truncate font-serif text-xl text-foreground">{title}</p>
+          <p
+            aria-hidden={!titleShown}
+            className={`truncate font-serif text-xl text-foreground transition-[opacity,transform] duration-300 ${
+              titleShown ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"
+            }`}
+          >
+            {title}
+          </p>
           <div className="flex shrink-0 items-center gap-2">
-            <button type="button" aria-label={copied ? "Link copied" : "Copy link"} onClick={share} className={btn}>
-              <svg {...stroke}>
-                <path d="M4 12v7h16v-7M12 3v12M7.5 7.5 12 3l4.5 4.5" />
-              </svg>
-            </button>
             <Link href={`/projects/${slug}`} target="_blank" aria-label="Open in new tab" className={btn}>
               <svg {...stroke}>
                 <path d="M14 4h6v6M20 4l-9 9M18 14v5H5V6h5" />

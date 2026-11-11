@@ -7,7 +7,7 @@ import { PhotoBit } from "@/components/photo-bit";
 import { HoverPlate } from "@/components/hover-plate";
 import { InView } from "@/components/in-view";
 import { RippleCover } from "@/components/ripple-cover";
-import { AwardBadge, ProjectTags, SiteIcon } from "@/components/project-card-parts";
+import { AwardIcon, ProjectTags, SiteIcon } from "@/components/project-card-parts";
 
 const TILE_W = 480;
 const TILE_H = 360;
@@ -355,7 +355,7 @@ export function InfinityVision({
               >
                 <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
               </RippleCover>
-              <AwardBadge project={cell.project} />
+              <AwardIcon project={cell.project} />
               <SiteIcon />
               <InView className="pointer-events-none absolute inset-x-4 bottom-4">
                 <div data-project-direction="">
@@ -363,14 +363,11 @@ export function InfinityVision({
                 </div>
               </InView>
             </div>
-            <InView className="flex items-baseline justify-between gap-4 pt-4">
+            <div className="pt-4">
               <p data-project-title="" className="reveal-line font-serif text-3xl font-medium leading-none text-foreground">
                 <span>{cell.title}</span>
               </p>
-              <p className="reveal-fade font-mono text-[14px] text-muted" style={{ ["--d" as string]: "180ms" }}>
-                {cell.project.year}
-              </p>
-            </InView>
+            </div>
             <HoverPlate project={cell.project} />
           </div>
         </div>

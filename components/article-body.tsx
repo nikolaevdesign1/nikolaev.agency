@@ -36,14 +36,13 @@ function Block({ block }: { block: ArticleBlock }) {
 
 /**
  * Two-column article: a sticky side with contents, share and a call to action; the text on the right.
- * Also draws the reading progress bar on top and the blur the text rises out of at the bottom.
+ * Also draws the reading progress bar on top (the bottom blur is site-wide, see bottom-blur.tsx).
  */
 export function ArticleBody({ article }: { article: Article }) {
   const bodyRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [reading, setReading] = useState(false);
 
   const headings = useMemo(
     () => article.content.flatMap((block) => (block.type === "h2" ? [{ id: slug(block.text), text: block.text }] : [])),
@@ -62,7 +61,6 @@ export function ArticleBody({ article }: { article: Article }) {
       const total = Math.max(1, rect.height - view * 0.6);
       const p = Math.min(1, Math.max(0, (view * 0.25 - rect.top) / total));
       setProgress(p);
-      setReading(rect.top < view * 0.7 && rect.bottom > view * 0.95);
 
       let current: string | null = null;
       for (const heading of headings) {
@@ -131,26 +129,7 @@ export function ArticleBody({ article }: { article: Article }) {
         <div className="h-full bg-accent" style={{ width: `${progress * 100}%` }} />
       </div>
 
-      <div
-        aria-hidden="true"
-        className={`pointer-events-none fixed inset-x-0 bottom-0 z-[20] h-40 transition-opacity duration-500 ${reading ? "opacity-100" : "opacity-0"}`}
-      >
-        {[2, 4, 8, 14].map((blur, i) => (
-          <div
-            key={blur}
-            className="absolute inset-0"
-            style={{
-              backdropFilter: `blur(${blur}px)`,
-              WebkitBackdropFilter: `blur(${blur}px)`,
-              maskImage: `linear-gradient(to bottom, transparent ${i * 22}%, #000 ${Math.min(100, i * 22 + 40)}%)`,
-              WebkitMaskImage: `linear-gradient(to bottom, transparent ${i * 22}%, #000 ${Math.min(100, i * 22 + 40)}%)`,
-            }}
-          />
-        ))}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background/80" />
-      </div>
-
-      <div className="mt-14 grid gap-12 md:mt-20 md:grid-cols-12 md:gap-x-8">
+      <div className="mt-10 grid gap-12 md:mt-14 md:grid-cols-12 md:gap-x-8">
         <aside className="md:col-span-4">
           <div className="md:sticky md:top-28">
             {headings.length > 0 ? (
@@ -186,10 +165,13 @@ export function ArticleBody({ article }: { article: Article }) {
                 Have a project like this? Tell us what you&apos;re building.
               </p>
               <div className="mt-5 flex flex-wrap items-center gap-3">
-                <StudioChatButton className={pillClass}>Let&apos;s chat</StudioChatButton>
-                <Link href="/contact" className="font-mono text-[13px] text-foreground underline underline-offset-4 transition-colors hover:text-accent">
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2.5 rounded bg-[#0a0a0a] px-5 py-2.5 font-sans text-[11px] font-medium text-white ring-1 ring-black transition-opacity duration-200 hover:opacity-75"
+                >
                   Request a project
                 </Link>
+                <StudioChatButton className={pillClass}>Let&apos;s chat</StudioChatButton>
               </div>
             </div>
           </div>

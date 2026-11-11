@@ -2,7 +2,7 @@
 
 import { cities } from "@/lib/data/cities";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { awardSources, type Media, type Project, type ProjectBlock } from "@/lib/data/projects";
+import { awardSources, linksOf, type BlockPlace, type Media, type Project, type ProjectBlock, type ProjectLink } from "@/lib/data/projects";
 import { MediaField, emptyMedia } from "@/components/admin/media-field";
 
 type Load = { projects: Project[]; stored: boolean; storage: "blob" | "file" | "none" };
@@ -141,6 +141,8 @@ export function AdminApp() {
 
   const blocks = useMemo(() => current?.blocks ?? [], [current]);
   const setBlocks = (next: ProjectBlock[]) => patch({ blocks: next });
+  /** Links replace the old Website / Behance fields, which are cleared on the first edit. */
+  const setLinks = (next: ProjectLink[]) => patch({ links: next, url: undefined, behance: undefined });
   const patchBlock = (index: number, change: ProjectBlock) =>
     setBlocks(blocks.map((b, i) => (i === index ? change : b)));
 
@@ -347,16 +349,56 @@ export function AdminApp() {
                   }
                 />
               </div>
-              <div>
-                <label className={label}>Website URL</label>
-                <input className={input} value={current.url ?? ""} onChange={(e) => patch({ url: e.target.value || undefined })} />
-              </div>
-              <div>
-                <label className={label}>Behance URL</label>
-                <input className={input} value={current.behance ?? ""} onChange={(e) => patch({ behance: e.target.value || undefined })} />
+              <div className="rounded-[8px] border border-border p-3 md:col-span-2">
+                <p className="font-mono text-[11px] text-muted">
+                  Links at the top of the page (site, Awwwards, Behance, CSS Design Awards…). The icon is picked from the address.
+                </p>
+                <div className="mt-2 flex flex-col gap-2">
+                  {linksOf(current).map((link, k, list) => (
+                    <div key={k} className="flex gap-2">
+                      <input
+                        className={`${input} max-w-[10rem]`}
+                        placeholder="Label"
+                        value={link.label}
+                        onChange={(e) => setLinks(list.map((l, n) => (n === k ? { ...l, label: e.target.value } : l)))}
+                      />
+                      <input
+                        className={input}
+                        placeholder="https://"
+                        value={link.url}
+                        onChange={(e) => setLinks(list.map((l, n) => (n === k ? { ...l, url: e.target.value } : l)))}
+                      />
+                      <button type="button" className={smallBtn} disabled={k === 0} onClick={() => setLinks(move(list, k, k - 1))}>
+                        ↑
+                      </button>
+                      <button type="button" className={smallBtn} onClick={() => setLinks(list.filter((_, n) => n !== k))}>
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className={`${smallBtn} w-fit`}
+                    onClick={() => setLinks([...linksOf(current), { label: "", url: "" }])}
+                  >
+                    + Link
+                  </button>
+                </div>
               </div>
               <div className="md:col-span-2">
-                <label className={label}>Big statement under the cover</label>
+                <label className={label}>About (full description; empty = the summary)</label>
+                <textarea className={`${input} min-h-28`} value={current.about ?? ""} onChange={(e) => patch({ about: e.target.value || undefined })} />
+              </div>
+              <div className="md:col-span-2">
+                <label className={label}>Problem (the task and its context)</label>
+                <textarea className={`${input} min-h-28`} value={current.problem ?? ""} onChange={(e) => patch({ problem: e.target.value || undefined })} />
+              </div>
+              <div className="md:col-span-2">
+                <label className={label}>Results (what came out of it; the award is added automatically)</label>
+                <textarea className={`${input} min-h-28`} value={current.results ?? ""} onChange={(e) => patch({ results: e.target.value || undefined })} />
+              </div>
+              <div className="md:col-span-2">
+                <label className={label}>Short statement (large text after the cover, optional)</label>
                 <textarea className={`${input} min-h-16`} value={current.statement ?? ""} onChange={(e) => patch({ statement: e.target.value || undefined })} />
               </div>
               <div className="md:col-span-2">
@@ -426,14 +468,28 @@ export function AdminApp() {
                       <p className="font-mono text-[11px] text-muted">
                         {i + 1} ·{" "}
                         {block.type === "media"
-                          ? "Wide media"
+                          ? "1 photo"
                           : block.type === "media2"
-                            ? "Two media"
-                            : block.type === "text"
-                              ? "Text section"
-                              : "Credits"}
+                            ? "2 in a row"
+                            : block.type === "media3"
+                              ? "3 photos (1 + 2)"
+                              : block.type === "media4"
+                                ? "4 photos (2×2)"
+                                : block.type === "text"
+                                  ? "Text section"
+                                  : "Credits"}
                       </p>
                       <div className="flex gap-1">
+                        <select
+                          className={`${smallBtn} pr-2`}
+                          value={block.place ?? "content"}
+                          onChange={(e) => patchBlock(i, { ...block, place: e.target.value as BlockPlace })}
+                          aria-label="Where on the page"
+                        >
+                          <option value="about">After About</option>
+                          <option value="content">After Problem</option>
+                          <option value="results">After Results</option>
+                        </select>
                         <button type="button" className={smallBtn} disabled={i === 0} onClick={() => setBlocks(move(blocks, i, i - 1))}>
                           ↑
                         </button>
@@ -472,6 +528,31 @@ export function AdminApp() {
                               patchBlock(i, { ...block, items });
                             }}
                           />
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {block.type === "media3" || block.type === "media4" ? (
+                      <div className="grid gap-3 md:grid-cols-2">
+                        {block.items.map((item, k) => (
+                          <div key={k} className={block.type === "media3" && k === 0 ? "md:col-span-2" : ""}>
+                            <MediaField
+                              label={block.type === "media3" ? (k === 0 ? "Wide, on top" : k === 1 ? "Below, left" : "Below, right") : `Photo ${k + 1}`}
+                              folder={folder}
+                              value={item}
+                              onChange={(m) => {
+                                if (block.type === "media3") {
+                                  const items = [...block.items] as [Media, Media, Media];
+                                  items[k] = m;
+                                  patchBlock(i, { ...block, items });
+                                } else {
+                                  const items = [...block.items] as [Media, Media, Media, Media];
+                                  items[k] = m;
+                                  patchBlock(i, { ...block, items });
+                                }
+                              }}
+                            />
+                          </div>
                         ))}
                       </div>
                     ) : null}
@@ -536,10 +617,24 @@ export function AdminApp() {
                   + Text section
                 </button>
                 <button type="button" className={smallBtn} onClick={() => setBlocks([...blocks, { type: "media", media: emptyMedia() }])}>
-                  + Wide media
+                  + 1 photo
                 </button>
                 <button type="button" className={smallBtn} onClick={() => setBlocks([...blocks, { type: "media2", items: [emptyMedia(), emptyMedia()] }])}>
-                  + Two media
+                  + 2 in a row
+                </button>
+                <button
+                  type="button"
+                  className={smallBtn}
+                  onClick={() => setBlocks([...blocks, { type: "media3", items: [emptyMedia(), emptyMedia(), emptyMedia()] }])}
+                >
+                  + 3 photos
+                </button>
+                <button
+                  type="button"
+                  className={smallBtn}
+                  onClick={() => setBlocks([...blocks, { type: "media4", items: [emptyMedia(), emptyMedia(), emptyMedia(), emptyMedia()] }])}
+                >
+                  + 4 photos (2×2)
                 </button>
                 <button type="button" className={smallBtn} onClick={() => setBlocks([...blocks, { type: "credits", rows: [{ role: "", name: "" }] }])}>
                   + Credits

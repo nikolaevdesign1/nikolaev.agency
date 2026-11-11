@@ -10,6 +10,9 @@ import { ScrambleText } from "@/components/scramble-text";
 import { site } from "@/lib/data/site";
 import Link from "next/link";
 import { FilterCheckbox, FilterSelect, ScrollStrip } from "@/components/filter-controls";
+import { Footer } from "@/components/footer";
+import { usePreloaderDone } from "@/lib/use-preloader-done";
+import { readProjectsTheme, saveProjectsTheme } from "@/lib/projects-theme";
 
 type Theme = "light" | "dark";
 type View = "field" | "list";
@@ -24,6 +27,8 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
   const [locationFilter, setLocationFilter] = useState<string | null>(null);
   const [serviceFilter, setServiceFilter] = useState<string | null>(null);
 
+  useEffect(() => setTheme(readProjectsTheme()), []);
+
   useEffect(() => {
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -31,6 +36,39 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
       document.body.style.overflow = previous;
     };
   }, []);
+
+  // Phones get the list only: no Field, no switch.
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 767px)");
+    const apply = () => {
+      setPhone(query.matches);
+      if (query.matches) {
+        setView("list");
+        setShown("list");
+      }
+    };
+    apply();
+    query.addEventListener("change", apply);
+    return () => query.removeEventListener("change", apply);
+  }, []);
+
+  // The toolbar steps aside while the footer at the end of the list is on screen.
+  const [footerInView, setFooterInView] = useState(false);
+  const footerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    setFooterInView(false);
+    if (shown !== "list") return;
+    const node = footerRef.current;
+    if (!node) return;
+    const io = new IntersectionObserver(([entry]) => setFooterInView(Boolean(entry?.isIntersecting)), {
+      root: listRef.current,
+    });
+    io.observe(node);
+    return () => io.disconnect();
+  }, [shown]);
+
+  const ready = usePreloaderDone();
 
   const selectView = (next: View) => {
     if (next === shown) return;
@@ -95,6 +133,7 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
     const ink = next === "dark" ? "#f3f1ea" : "#161616";
     pixelSwap(fill, ink, () => {
       setTheme(next);
+      saveProjectsTheme(next);
       window.setTimeout(() => {
         swapping.current = false;
       }, 400);
@@ -121,7 +160,8 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
           className="absolute inset-0 z-10 overflow-y-auto"
           aria-label="Project catalog"
         >
-          <div ref={listContentRef} className="relative w-full gutter pb-40 pt-36">
+          <div ref={listContentRef}>
+          <div className="relative w-full gutter pb-16 pt-28 md:pt-36">
             <div className="relative mt-8 flex flex-col items-center text-center md:mt-10">
               <button
                 type="button"
@@ -139,7 +179,7 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
               </p>
             </div>
 
-            <div className="mt-10 flex flex-nowrap items-center gap-3 text-[13px]">
+            <div className="mt-10 flex flex-col gap-3 text-[13px] md:flex-row md:flex-nowrap md:items-center">
               <ScrollStrip>
                 {["All", ...categories].map((category) => {
                   const active =
@@ -161,22 +201,24 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
                   );
                 })}
               </ScrollStrip>
-              <div className="ml-auto flex shrink-0 items-center gap-3">
-              <FilterCheckbox checked={awardsOnly} onChange={setAwardsOnly}>
-                Awarded
-              </FilterCheckbox>
-              <FilterSelect
-                label="Location"
-                value={locationFilter}
-                options={locations}
-                onChange={setLocationFilter}
-              />
-              <FilterSelect
-                label="Services"
-                value={serviceFilter}
-                options={services}
-                onChange={setServiceFilter}
-              />
+              <div className="grid grid-cols-2 gap-3 md:ml-auto md:flex md:shrink-0 md:items-center">
+                <div className="col-span-2 md:col-span-1">
+                  <FilterCheckbox checked={awardsOnly} onChange={setAwardsOnly}>
+                    Awarded
+                  </FilterCheckbox>
+                </div>
+                <FilterSelect
+                  label="Location"
+                  value={locationFilter}
+                  options={locations}
+                  onChange={setLocationFilter}
+                />
+                <FilterSelect
+                  label="Services"
+                  value={serviceFilter}
+                  options={services}
+                  onChange={setServiceFilter}
+                />
               </div>
             </div>
 
@@ -205,6 +247,10 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
               </div>
             )}
           </div>
+          <div ref={footerRef}>
+            <Footer />
+          </div>
+          </div>
         </div>
       ) : null}
 
@@ -212,31 +258,37 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
         data-projects-toolbar=""
         role="toolbar"
         aria-label="Projects"
-        className="absolute bottom-16 left-1/2 z-30 flex origin-bottom -translate-x-1/2 scale-[1.2] items-center gap-1 rounded-[6px] border border-border bg-background p-1 font-serif text-base text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
+        className={`absolute bottom-4 left-1/2 z-30 flex origin-bottom -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-[6px] border border-border bg-background p-1 font-mono text-[13px] text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.16)] transition-[opacity,translate] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:bottom-16 md:scale-[1.2] ${
+          ready && !footerInView ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-[160%] opacity-0"
+        }`}
       >
-        <SlidingGroup activeIndex={theme === "light" ? 0 : 1} ariaLabel="Theme">
-          <BarOption pressed={theme === "light"} onClick={() => changeTheme("light")}>
+        <SlidingGroup activeIndex={theme === "light" ? 0 : 1} ariaLabel="Theme" ready={ready}>
+          <BarOption pressed={theme === "light"} onClick={() => changeTheme("light")} ready={ready}>
             Light
           </BarOption>
-          <BarOption pressed={theme === "dark"} onClick={() => changeTheme("dark")}>
+          <BarOption pressed={theme === "dark"} onClick={() => changeTheme("dark")} ready={ready}>
             Dark
           </BarOption>
         </SlidingGroup>
-        <span aria-hidden="true" className="mx-1 h-6 w-px bg-border" />
-        <SlidingGroup activeIndex={view === "field" ? 0 : 1} ariaLabel="Layout">
-          <BarOption pressed={view === "field"} onClick={() => selectView("field")}>
-            Field
-          </BarOption>
-          <BarOption pressed={view === "list"} onClick={() => selectView("list")}>
-            List
-          </BarOption>
-        </SlidingGroup>
+        {phone ? null : (
+          <>
+            <span aria-hidden="true" className="mx-1 h-6 w-px bg-border" />
+            <SlidingGroup activeIndex={view === "field" ? 0 : 1} ariaLabel="Layout" ready={ready}>
+              <BarOption pressed={view === "field"} onClick={() => selectView("field")} ready={ready}>
+                Field
+              </BarOption>
+              <BarOption pressed={view === "list"} onClick={() => selectView("list")} ready={ready}>
+                List
+              </BarOption>
+            </SlidingGroup>
+          </>
+        )}
         <span aria-hidden="true" className="mx-1 h-6 w-px bg-border" />
         <Link
           href="/contact"
           className="rounded-[4px] bg-foreground px-4 py-2 text-background transition-opacity duration-300 hover:opacity-80"
         >
-          Order design
+          {ready ? <ScrambleText text="Order design" trigger="mount" delay={260} /> : "Order design"}
         </Link>
       </div>
     </div>
@@ -246,10 +298,12 @@ export function ProjectsView({ projects }: { projects: Project[] }) {
 function SlidingGroup({
   activeIndex,
   ariaLabel,
+  ready,
   children,
 }: {
   activeIndex: number;
   ariaLabel: string;
+  ready: boolean;
   children: React.ReactNode;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -261,7 +315,7 @@ function SlidingGroup({
     const active = container.querySelectorAll("button")[activeIndex] as HTMLElement | undefined;
     if (!active) return;
     setRect({ x: active.offsetLeft, width: active.offsetWidth });
-  }, [activeIndex]);
+  }, [activeIndex, ready]);
 
   return (
     <div ref={containerRef} role="group" aria-label={ariaLabel} className="relative flex items-center">
@@ -280,10 +334,12 @@ function SlidingGroup({
 function BarOption({
   pressed,
   onClick,
+  ready,
   children,
 }: {
   pressed: boolean;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  ready: boolean;
   children: string;
 }) {
   return (
@@ -295,7 +351,7 @@ function BarOption({
         pressed ? "text-background" : "text-foreground hover:bg-foreground/8"
       }`}
     >
-      {children}
+      {ready ? <ScrambleText text={children} trigger="mount" delay={160} /> : children}
     </button>
   );
 }

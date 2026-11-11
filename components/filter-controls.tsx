@@ -105,11 +105,13 @@ export function FilterSelect({
   value,
   options,
   onChange,
+  className = "",
 }: {
   label: string;
   value: string | null;
   options: string[];
   onChange: (value: string | null) => void;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -136,15 +138,15 @@ export function FilterSelect({
   };
 
   return (
-    <div ref={rootRef} className="relative shrink-0">
+    <div ref={rootRef} className={`relative min-w-0 shrink-0 ${className}`}>
       <button
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="flex min-w-[150px] items-center justify-between gap-4 rounded-[6px] bg-surface/30 px-3 py-2 text-[13px] text-foreground transition-colors duration-200 hover:bg-foreground/10"
+        className="flex w-full items-center justify-between gap-4 rounded-[6px] md:min-w-[150px] bg-surface/30 px-3 py-2 text-[13px] text-foreground transition-colors duration-200 hover:bg-foreground/10"
       >
-        <span className={value ? "" : "text-foreground/80"}>{value ?? label}</span>
+        <span className={`truncate ${value ? "" : "text-foreground/80"}`}>{value ?? label}</span>
         <svg
           width="12"
           height="12"
@@ -162,7 +164,7 @@ export function FilterSelect({
       <div
         role="listbox"
         aria-label={label}
-        className={`absolute right-0 top-[calc(100%+6px)] z-50 max-h-72 min-w-full origin-top-right overflow-y-auto rounded-[8px] border border-border bg-background p-1 shadow-[0_14px_36px_rgba(0,0,0,0.18)] transition-[opacity,transform] duration-200 ${
+        className={`absolute left-0 right-0 top-[calc(100%+6px)] z-50 max-h-72 min-w-full md:left-auto origin-top-right overflow-y-auto rounded-[8px] border border-border bg-background p-1 shadow-[0_14px_36px_rgba(0,0,0,0.18)] transition-[opacity,transform] duration-200 ${
           open ? "scale-100 opacity-100" : "pointer-events-none scale-95 opacity-0"
         }`}
       >
@@ -175,7 +177,7 @@ export function FilterSelect({
               role="option"
               aria-selected={active}
               onClick={() => pick(option)}
-              className={`flex w-full items-center justify-between gap-4 whitespace-nowrap rounded-[4px] px-3 py-2 text-left text-[13px] transition-colors ${
+              className={`flex w-full items-center justify-between gap-4 rounded-[4px] md:whitespace-nowrap px-3 py-2 text-left text-[13px] transition-colors ${
                 active ? "bg-foreground text-background" : "text-foreground hover:bg-foreground/10"
               }`}
             >

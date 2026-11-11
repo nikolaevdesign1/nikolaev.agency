@@ -11,11 +11,23 @@ export function ClockIcon() {
   );
 }
 
+export function CalendarIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+      <path d="M3.5 10h17M8 3v4M16 3v4" />
+    </svg>
+  );
+}
+
 /** Date and read time, a quiet grey line. */
 export function ArticleMeta({ article, className = "" }: { article: Article; className?: string }) {
   return (
     <p className={`flex items-center gap-4 font-mono text-[12px] text-muted ${className}`}>
-      <span>{formatDate(article.date)}</span>
+      <span className="flex items-center gap-1.5">
+        <CalendarIcon />
+        {formatDate(article.date)}
+      </span>
       <span className="flex items-center gap-1.5">
         <ClockIcon />
         {article.readMinutes} min
@@ -38,10 +50,10 @@ export function MediaCard({ article, parallax }: { article: Article; parallax?: 
           className="h-full w-full scale-[1.06] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.1]"
         />
       </div>
-      <div className="mt-6">
+      <div className="mt-4">
         <p className="font-serif text-2xl font-medium leading-snug text-foreground">{article.title}</p>
-        <p className="mt-3 line-clamp-3 text-[15px] leading-relaxed text-muted">{article.excerpt}</p>
-        <ArticleMeta article={article} className="mt-4" />
+        <p className="mt-2 line-clamp-3 text-[15px] leading-relaxed text-muted">{article.excerpt}</p>
+        <ArticleMeta article={article} className="mt-3" />
       </div>
     </Link>
   );

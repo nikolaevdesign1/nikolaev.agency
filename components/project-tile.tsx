@@ -33,12 +33,9 @@ export function ProjectTile({
             <ProjectTags project={project} />
           </div>
         </div>
-        <div className="mt-4 flex items-baseline justify-between gap-4">
-          <p className="font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
-            {project.title}
-          </p>
-          <p className="font-mono text-[14px] text-muted">{project.year}</p>
-        </div>
+        <p className="mt-4 font-serif text-3xl font-medium leading-tight text-foreground md:text-4xl">
+          {project.title}
+        </p>
       </Link>
       <HoverPlate project={project} />
     </div>

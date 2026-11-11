@@ -182,7 +182,6 @@ export function AmbientTextField({ phrase, className }: AmbientTextFieldProps) {
   return (
     <div
       ref={rootRef}
-      id="studio-ambient"
       aria-hidden="true"
       className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}
     >

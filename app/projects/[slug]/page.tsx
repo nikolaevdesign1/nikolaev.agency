@@ -31,7 +31,12 @@ async function Content({ params }: { params: Promise<{ slug: string }> }) {
 
   return (
     <ProjectModal title={project.title} slug={project.slug}>
-      <ProjectCase project={project} next={next.slug === project.slug ? undefined : next} />
+      <ProjectCase
+        project={project}
+        next={next.slug === project.slug ? undefined : next}
+        index={index}
+        total={projects.length}
+      />
     </ProjectModal>
   );
 }

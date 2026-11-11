@@ -12,7 +12,7 @@ function hash(n: number) {
  * with letters on its edge (the same language as the seams and the preloader). Calls `onCovered`
  * once the screen is full, then dissolves.
  */
-export function pixelSwap(color: string, ink: string, onCovered: () => void) {
+export function pixelSwap(color: string, ink: string, onCovered: () => void, options: { zIndex?: number } = {}) {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     onCovered();
     return;
@@ -24,7 +24,7 @@ export function pixelSwap(color: string, ink: string, onCovered: () => void) {
     inset: "0",
     width: "100vw",
     height: "100vh",
-    zIndex: "95",
+    zIndex: String(options.zIndex ?? 95),
     pointerEvents: "none",
   });
   document.body.appendChild(canvas);

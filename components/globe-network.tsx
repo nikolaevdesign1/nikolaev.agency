@@ -255,16 +255,11 @@ export function GlobeNetwork({
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       ctx.clearRect(0, 0, size, size);
 
-      // soft sphere body
-      const body = ctx.createRadialGradient(c - R * 0.3, c - R * 0.3, R * 0.05, c, c, R);
-      body.addColorStop(0, "#26241f");
-      body.addColorStop(1, "#0f0e0c");
+      // glass sphere: no fill, the page shows through; only the rim is drawn
       ctx.beginPath();
       ctx.arc(c, c, R, 0, Math.PI * 2);
-      ctx.fillStyle = body;
-      ctx.fill();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = "rgba(243,241,234,0.12)";
+      ctx.strokeStyle = "rgba(243,241,234,0.16)";
       ctx.stroke();
 
       // land dots
@@ -376,7 +371,7 @@ export function GlobeNetwork({
       <canvas
         ref={canvasRef}
         aria-label="Globe with the studio in Los Angeles and projects connected to it. Drag to rotate."
-        className="block cursor-grab touch-pan-y select-none"
+        className="block max-w-full cursor-grab touch-pan-y select-none"
       />
       {card ? (
         <div
