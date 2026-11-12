@@ -14,9 +14,14 @@ export function CookieNotice() {
     } catch {
       /* storage blocked */
     }
-    if (stored) return;
+    const reopen = () => setVisible(true);
+    window.addEventListener("studio:cookies", reopen);
+    if (stored) return () => window.removeEventListener("studio:cookies", reopen);
     const timer = window.setTimeout(() => setVisible(true), 1800);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("studio:cookies", reopen);
+    };
   }, []);
 
   const choose = (value: "accepted" | "declined") => {
@@ -57,5 +62,25 @@ export function CookieNotice() {
         </button>
       </div>
     </div>
+  );
+}
+
+/** Clears the saved choice and shows the notice again (used on the Cookie policy page). */
+export function CookieReset() {
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        try {
+          window.localStorage.removeItem(KEY);
+        } catch {
+          /* storage blocked */
+        }
+        window.dispatchEvent(new Event("studio:cookies"));
+      }}
+      className="rounded-[6px] bg-foreground px-4 py-2.5 font-mono text-[12px] text-background transition-opacity hover:opacity-80"
+    >
+      Change cookie choice
+    </button>
   );
 }

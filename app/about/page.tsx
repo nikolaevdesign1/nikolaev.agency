@@ -1,27 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   siBlender,
   siClaude,
   siCursor,
-  siElevenlabs,
   siFigma,
   siFramer,
-  siGooglegemini,
-  siLottiefiles,
+  siGithub,
   siNextdotjs,
   siReact,
-  siRive,
-  siShopify,
-  siThreedotjs,
+  siVercel,
   siWebflow,
 } from "simple-icons";
+import { drawnLogos } from "@/components/tool-logos";
+import { ScrollScale } from "@/components/scroll-scale";
 import { AmbientTextField, StudioChatButton } from "@/components/ambient-text-field";
 import { BitEdge } from "@/components/bit-edge";
 import { InView } from "@/components/in-view";
 import { ExpandableVideo } from "@/components/expandable-video";
-import { FigureDots } from "@/components/figure-dots";
 import { pillClass } from "@/components/button";
 import { directions } from "@/lib/data/services";
 import { site } from "@/lib/data/site";
@@ -144,26 +141,28 @@ const faqs = [
   },
 ] as const;
 
-type Tool = { name: string; icon?: { path: string; hex: string }; mono?: string };
+type Tool = { name: string; icon?: { path: string; hex: string } };
 
-/** Sixteen tools in one compact grid. Adobe apps get a drawn monogram tile. */
+/** The tools the studio actually works in. Marks the icon library lacks are drawn in tool-logos.tsx. */
 const tools: Tool[] = [
   { name: "Figma", icon: siFigma },
   { name: "Framer", icon: siFramer },
   { name: "Webflow", icon: siWebflow },
+  { name: "Spline" },
   { name: "Blender", icon: siBlender },
-  { name: "Rive", icon: siRive },
-  { name: "Lottie", icon: siLottiefiles },
-  { name: "Photoshop", mono: "Ps" },
-  { name: "After Effects", mono: "Ae" },
+  { name: "Photoshop" },
+  { name: "Illustrator" },
+  { name: "After Effects" },
   { name: "Claude", icon: siClaude },
-  { name: "Gemini", icon: siGooglegemini },
+  { name: "ChatGPT" },
+  { name: "Grok" },
+  { name: "Midjourney" },
+  { name: "Runway" },
   { name: "Cursor", icon: siCursor },
-  { name: "ElevenLabs", icon: siElevenlabs },
   { name: "Next.js", icon: siNextdotjs },
   { name: "React", icon: siReact },
-  { name: "Three.js", icon: siThreedotjs },
-  { name: "Shopify", icon: siShopify },
+  { name: "Vercel", icon: siVercel },
+  { name: "GitHub", icon: siGithub },
 ];
 
 const toolCount = tools.length;
@@ -175,6 +174,14 @@ function hoverColor(hex: string | undefined) {
   const lum = ((n >> 16) & 255) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114;
   return lum < 60 ? "#ffffff" : `#${hex}`;
 }
+
+/** Directions that open in February 2027; listed now, shown quieter. */
+const soonDirections = [
+  { label: "Apps (iOS + Android)", items: ["Native apps", "Cross-platform", "App Store launch", "App updates"] },
+  { label: "XR design", items: ["Vision Pro interfaces", "AR experiences", "Spatial prototypes", "3D UI"] },
+  { label: "Game design", items: ["Game UI", "HUD and menus", "Onboarding", "Store assets"] },
+  { label: "Marketing", items: ["Launch campaigns", "Landing pages", "Ad creative", "Content plans"] },
+];
 
 function Hero() {
   return (
@@ -242,12 +249,23 @@ function Capabilities() {
         <div className="md:col-span-5">
           <div className="md:sticky md:top-36">
             <p className="text-[clamp(1.15rem,1.5vw,1.5rem)] leading-none">Capabilities</p>
-            <FigureDots className="mt-6 aspect-[3/4] w-[min(100%,360px)]" />
+            <div className="mt-6 aspect-[3/4] w-[min(100%,360px)] overflow-hidden rounded-[12px] bg-[#010101]">
+              <video
+                src="/video/oleg-figure.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="Oleg Nikolaev as a 3D figure: black hoodie, mustard beanie, glasses"
+                className="h-full w-full object-cover"
+              />
+            </div>
           </div>
         </div>
-        <ul className="flex flex-col gap-14 md:col-span-7 md:col-start-6 md:gap-20">
+        <ul className="border-b border-foreground/15 md:col-span-7 md:col-start-6">
           {directions.map((direction) => (
-            <InView as="li" key={direction.label} className="grid gap-3 sm:grid-cols-2 sm:gap-x-4">
+            <InView as="li" key={direction.label} className="grid gap-3 border-t border-foreground/15 py-8 sm:grid-cols-2 sm:gap-x-4 md:py-12">
               <p className="reveal-line text-[clamp(1.15rem,1.5vw,1.5rem)] leading-tight">
                 <span>{direction.label}</span>
               </p>
@@ -260,27 +278,61 @@ function Capabilities() {
               </ul>
             </InView>
           ))}
+          {soonDirections.map((direction) => (
+            <InView as="li" key={direction.label} className="grid gap-3 border-t border-foreground/15 py-8 text-foreground/45 sm:grid-cols-2 sm:gap-x-4 md:py-12">
+              <div>
+                <p className="reveal-line text-[clamp(1.15rem,1.5vw,1.5rem)] leading-tight">
+                  <span>{direction.label}</span>
+                </p>
+                <span className="mt-3 inline-flex items-center gap-2 rounded-full bg-foreground/[0.06] px-3 py-1.5 font-mono text-[11px] text-foreground/70">
+                  <span aria-hidden="true" className="size-1.5 rounded-full bg-accent" />
+                  Soon · February 2027
+                </span>
+              </div>
+              <ul className="text-[clamp(1.15rem,1.5vw,1.5rem)] leading-[1.18]">
+                {direction.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </InView>
+          ))}
         </ul>
       </div>
     </section>
   );
 }
 
-function SectionTitle({ title, count }: { title: string; count: number }) {
+function SectionTitle({ title, count, live = false }: { title: string; count: number; live?: boolean }) {
   return (
     <InView className="mb-16 flex items-baseline justify-between gap-6 md:mb-24">
-      <h2 className="reveal-line font-serif text-[clamp(2.4rem,6.4vw,6.4rem)] leading-none font-normal">
-        <span>{title}</span>
-      </h2>
+      <div className="flex flex-col gap-4">
+        <h2 className="reveal-line font-serif text-[clamp(2.4rem,6.4vw,6.4rem)] leading-none font-normal">
+          <span>{title}</span>
+        </h2>
+        {live ? <LiveBadge /> : null}
+      </div>
       <span className="reveal-fade shrink-0 font-serif text-[clamp(2rem,5.4vw,5.4rem)] leading-none">({count})</span>
     </InView>
+  );
+}
+
+/** Small "still growing" marker with a blinking dot. */
+function LiveBadge({ label = "In progress" }: { label?: string }) {
+  return (
+    <span className="inline-flex w-fit items-center gap-2 rounded-full bg-ink-foreground/[0.08] px-3 py-1.5 font-mono text-[11px] text-ink-foreground/80">
+      <span aria-hidden="true" className="relative flex size-2">
+        <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-70" />
+        <span className="relative size-2 rounded-full bg-accent" />
+      </span>
+      {label}
+    </span>
   );
 }
 
 function Awards() {
   return (
     <section id="awards" className="relative scroll-mt-24 gutter pb-24 pt-12 md:pb-32">
-      <SectionTitle title="Awards & Recognitions" count={awardCount} />
+      <SectionTitle title="Awards & Recognitions" count={awardCount} live />
       <div role="table" aria-label="Awards and recognitions" className="text-[clamp(1rem,1.35vw,1.35rem)] leading-tight">
         <div role="row" className="grid grid-cols-[1fr_3.5rem_2fr] gap-x-4 border-b border-ink-foreground/60 pb-3 font-mono text-[11px] text-ink-muted md:grid-cols-[5fr_1fr_6fr]">
           <span role="columnheader">Organization</span>
@@ -307,10 +359,21 @@ function Awards() {
             ))}
           </InView>
         ))}
+        <div role="row" className="grid grid-cols-[1fr_3.5rem_2fr] gap-x-4 border-b border-ink-foreground/20 py-4 text-ink-muted md:grid-cols-[5fr_1fr_6fr]">
+          <span role="cell">More in progress</span>
+          <span role="cell" className="flex items-center justify-end gap-2 text-ink-foreground">
+            <span aria-hidden="true" className="relative flex size-2">
+              <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-70" />
+              <span className="relative size-2 rounded-full bg-accent" />
+            </span>
+            +
+          </span>
+          <span role="cell">New submissions and results on the way</span>
+        </div>
         <div role="row" className="grid grid-cols-[1fr_3.5rem_2fr] gap-x-4 py-4 text-ink-muted md:grid-cols-[5fr_1fr_6fr]">
           <span role="cell">Total</span>
           <span role="cell" className="text-right tabular-nums text-ink-foreground">{awardCount}</span>
-          <span role="cell" />
+          <span role="cell">and counting</span>
         </div>
       </div>
     </section>
@@ -322,28 +385,26 @@ function Tools() {
     <section id="tools" className="relative scroll-mt-24 gutter pb-24 md:pb-32">
       <SectionTitle title="Tools we work with" count={toolCount} />
       <InView>
-        <ul className="grid grid-cols-4 border-l border-t border-ink-foreground/20 md:grid-cols-8">
-          {tools.map((tool, i) => (
-            <li
-              key={tool.name}
-              className="reveal-fade group/tool flex flex-col items-center justify-center gap-2.5 border-b border-r border-ink-foreground/20 px-2 py-5 text-ink-foreground/75 transition-colors duration-300 hover:bg-ink-foreground/[0.04] md:py-6"
-              style={{ ["--d" as string]: `${i * 30}ms`, ["--brand" as string]: hoverColor(tool.icon?.hex) }}
-            >
-              {tool.icon ? (
-                <svg viewBox="0 0 24 24" aria-hidden="true" className="size-7 fill-current transition-colors duration-300 group-hover/tool:text-[var(--brand)]">
-                  <path d={tool.icon.path} />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" aria-hidden="true" className="size-7 transition-colors duration-300 group-hover/tool:text-white">
-                  <rect x="1.5" y="1.5" width="21" height="21" rx="4.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
-                  <text x="12" y="16.2" textAnchor="middle" fontSize="10.5" fontWeight="600" fill="currentColor" fontFamily="var(--font-mono-display), ui-monospace, monospace">
-                    {tool.mono}
-                  </text>
-                </svg>
-              )}
-              <span className="truncate font-mono text-[10px] text-ink-muted md:text-[11px]">{tool.name}</span>
-            </li>
-          ))}
+        <ul className="grid grid-cols-3 border-l border-t border-ink-foreground/20 sm:grid-cols-6 lg:grid-cols-9">
+          {tools.map((tool, i) => {
+            const Drawn = drawnLogos[tool.name];
+            return (
+              <li
+                key={tool.name}
+                className="reveal-fade group/tool flex flex-col items-center justify-center gap-2.5 border-b border-r border-ink-foreground/20 px-2 py-5 text-ink-foreground/75 transition-colors duration-300 hover:bg-ink-foreground/[0.04] hover:text-white md:py-6"
+                style={{ ["--d" as string]: `${i * 30}ms`, ["--brand" as string]: hoverColor(tool.icon?.hex) }}
+              >
+                {tool.icon ? (
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="size-7 fill-current transition-colors duration-300 group-hover/tool:text-[var(--brand)]">
+                    <path d={tool.icon.path} />
+                  </svg>
+                ) : Drawn ? (
+                  <Drawn />
+                ) : null}
+                <span className="truncate font-mono text-[10px] text-ink-muted md:text-[11px]">{tool.name}</span>
+              </li>
+            );
+          })}
         </ul>
       </InView>
     </section>
@@ -354,30 +415,82 @@ function Support() {
   return (
     <section id="support" className="relative scroll-mt-24 gutter py-20 md:py-28">
       <h2 className="max-w-3xl font-serif text-4xl leading-[1.05] font-normal md:text-6xl">How support works</h2>
-      <div className="mt-12 md:mt-16">
+      <ScrollScale from={0.8} to={1} className="mt-12 origin-top md:mt-16">
         <SupportVideo />
-      </div>
-      <ul className="mt-14 border-t border-ink-foreground/20 md:mt-20">
-        {supportSteps.map((step, i) => (
-          <InView as="li" key={step.index} className="group/row border-b border-ink-foreground/20">
-            <div
-              className="reveal-fade grid items-baseline gap-4 py-8 md:grid-cols-[8rem_1fr_1fr] md:gap-8 md:py-10"
-              style={{ ["--d" as string]: `${i * 60}ms` }}
-            >
-              <span
-                className={`font-serif text-5xl leading-none transition-[color,transform] duration-300 group-hover/row:translate-x-2 group-hover/row:text-accent md:text-7xl ${
-                  i === 0 ? "text-accent" : "text-ink-foreground/30"
-                }`}
-              >
-                {step.index}
-              </span>
-              <h3 className="font-serif text-3xl leading-none font-normal md:text-4xl">{step.title}</h3>
-              <p className="max-w-md text-sm leading-relaxed text-ink-foreground/70">{step.body}</p>
-            </div>
-          </InView>
-        ))}
-      </ul>
+      </ScrollScale>
+      <SupportTimeline />
     </section>
+  );
+}
+
+/** The four steps on one line; the line fills with orange as you scroll through. */
+function SupportTimeline() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setProgress(1);
+      return;
+    }
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = node.getBoundingClientRect();
+      const vh = window.innerHeight;
+      setProgress(Math.min(1, Math.max(0, (vh * 0.85 - rect.top) / (vh * 0.55))));
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  const lit = (i: number) => progress >= i / (supportSteps.length - 1) - 0.001;
+
+  return (
+    <div ref={ref} className="relative mt-16 md:mt-24">
+      {/* rail: horizontal on desktop, vertical on phones */}
+      <div aria-hidden="true" className="absolute left-[5px] top-2 bottom-2 w-px bg-ink-foreground/20 md:inset-x-0 md:bottom-auto md:left-0 md:top-[5px] md:h-px md:w-auto" />
+      <div
+        aria-hidden="true"
+        className="absolute left-0 top-[5px] hidden h-px bg-accent transition-[width] duration-200 md:block"
+        style={{ width: `${progress * 100}%` }}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute left-[5px] top-2 w-px bg-accent transition-[height] duration-200 md:hidden"
+        style={{ height: `calc((100% - 1rem) * ${progress})` }}
+      />
+      <ol className="relative grid gap-10 md:grid-cols-4 md:gap-6">
+        {supportSteps.map((step, i) => (
+          <li key={step.index} className="relative pl-8 md:pl-0 md:pt-10">
+            <span
+              aria-hidden="true"
+              className={`absolute left-0 top-0.5 size-[11px] rounded-full ring-4 ring-ink transition-colors duration-500 md:top-0 ${
+                lit(i) ? "bg-accent" : "bg-ink-foreground/30"
+              }`}
+            />
+            <p
+              className={`font-serif text-5xl leading-none transition-colors duration-500 md:text-6xl ${
+                lit(i) ? "text-accent" : "text-ink-foreground/30"
+              }`}
+            >
+              {step.index}
+            </p>
+            <h3 className="mt-5 font-serif text-2xl leading-tight font-normal md:text-3xl">{step.title}</h3>
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-foreground/70">{step.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 

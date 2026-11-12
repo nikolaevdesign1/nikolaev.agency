@@ -154,7 +154,8 @@ export function SoundBars({ playing }: { playing: boolean }) {
 }
 
 /**
- * Sound switch in the bottom-left corner (desktop; on phones it lives in the menu).
+ * Sound switch in the bottom-left corner, plain text like the social links opposite
+ * (desktop; on phones it lives in the menu).
  * Off until the visitor turns it on; the choice is remembered.
  */
 export function SoundToggle() {
@@ -170,10 +171,10 @@ export function SoundToggle() {
       onClick={() => set(!playing)}
       aria-pressed={playing}
       aria-label={playing ? "Turn sound off" : "Turn sound on"}
-      className="group fixed bottom-4 left-[var(--gutter)] z-[55] hidden h-9 items-center gap-2 rounded-full bg-[#0a0a0a]/80 px-3 font-mono text-[11px] text-white ring-1 ring-white/15 backdrop-blur-md transition-[background-color,transform] duration-300 hover:bg-[#0a0a0a] active:scale-95 md:flex"
+      className="group fixed bottom-4 left-[var(--gutter)] z-[45] hidden items-center gap-2 font-mono text-[11px] leading-none text-white mix-blend-difference md:flex"
     >
       <SoundBars playing={playing} />
-      <span className="opacity-70 transition-opacity group-hover:opacity-100">{playing ? "Sound on" : "Sound off"}</span>
+      <span className="transition-opacity duration-200 group-hover:opacity-60">{playing ? "Sound on" : "Sound off"}</span>
     </button>
   );
 }

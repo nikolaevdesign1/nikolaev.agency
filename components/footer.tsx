@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { DotField } from "@/components/dot-field";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { site } from "@/lib/data/site";
+import { legalLinks } from "@/components/legal-page";
 
 const marginNotes = [
   "— Studio",
@@ -104,6 +106,19 @@ export function Footer() {
               </a>
             </span>
           </h2>
+        </div>
+
+        <div className="mt-12 flex flex-col gap-3 font-mono text-[10px] text-muted md:flex-row md:items-center md:justify-between">
+          <p>© 2026 nikolaev.agency</p>
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            {legalLinks.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="transition-colors hover:text-foreground">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </footer>

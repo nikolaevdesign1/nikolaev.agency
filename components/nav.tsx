@@ -17,7 +17,8 @@ const links = [
   { label: "Media", href: "/media" },
 ] as const;
 
-const blend = "isolate text-white mix-blend-difference";
+const BLEND = "isolate text-white mix-blend-difference";
+const PLAIN = "text-white";
 const INK = "#0a0a0a";
 const PAPER = "#f3f1ea";
 
@@ -27,28 +28,43 @@ export function Nav() {
   const [chatOpen, setChatOpen] = useState(false);
   const [tucked, setTucked] = useState(false);
   const busy = useRef(false);
+  const blendFor = (over: boolean) => (over ? PLAIN : BLEND);
   const inMedia = pathname?.startsWith("/media") ?? false;
 
-  // The header slides away while reading down and comes back on the way up.
+  // The header slides away while reading down and comes back on the way up. Small wheel
+  // jitters are ignored: the direction has to hold for a few dozen pixels first.
+  // Over the home video it stays plain white; past it, it inverts against the page.
+  const [overHero, setOverHero] = useState(false);
   useEffect(() => {
     let last = window.scrollY;
+    let travel = 0;
     let frame = 0;
     const update = () => {
       frame = 0;
       const y = window.scrollY;
-      if (Math.abs(y - last) < 6) return;
-      setTucked(y > 120 && y > last);
+      setOverHero(pathname === "/" && y < window.innerHeight * 0.85);
+      const delta = y - last;
       last = y;
+      if (y < 120) {
+        travel = 0;
+        setTucked(false);
+        return;
+      }
+      if (delta === 0) return;
+      travel = Math.sign(delta) === Math.sign(travel) ? travel + delta : delta;
+      if (travel > 40) setTucked(true);
+      else if (travel < -24) setTucked(false);
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [pathname]);
 
   useEffect(() => setTucked(false), [pathname]);
 
@@ -86,12 +102,12 @@ export function Nav() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 isolate bg-transparent gutter py-5 mix-blend-difference transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:py-6 ${
-          tucked && !open ? "-translate-y-[130%]" : "translate-y-0"
-        }`}
+        className={`fixed inset-x-0 top-0 z-50 isolate bg-transparent gutter py-5 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:py-6 ${
+          overHero ? "" : "mix-blend-difference"
+        } ${tucked && !open ? "pointer-events-none -translate-y-[130%] opacity-0" : "translate-y-0 opacity-100"}`}
       >
         <div className="grid grid-cols-[1fr_auto_1fr] items-start">
-          <Link href="/" onClick={() => setOpen(false)} className={`flex w-fit flex-col font-sans ${blend}`}>
+          <Link href="/" onClick={() => setOpen(false)} className={`flex w-fit flex-col font-sans ${blendFor(overHero)}`}>
             <span className="text-xl font-normal leading-none">{inMedia ? "nikolaev.media" : "nikolaev.agency"}</span>
             <span className="mt-1 text-[10px] font-normal leading-none">by Oleg Nikolaev</span>
             <LogoCube body="#ffffff" face="#000000" className="mt-4 size-8" />
@@ -106,7 +122,7 @@ export function Nav() {
                 key={link.href}
                 href={link.href}
                 aria-current={pathname === link.href ? "page" : undefined}
-                className={`font-normal ${blend}`}
+                className={`font-normal ${blendFor(overHero)}`}
               >
                 {link.label}
               </Link>
@@ -117,7 +133,7 @@ export function Nav() {
             <button
               type="button"
               onClick={openChat}
-              className={`hidden cursor-pointer font-sans text-xl font-normal leading-none transition-opacity hover:opacity-60 md:block ${blend}`}
+              className={`hidden cursor-pointer font-sans text-xl font-normal leading-none transition-opacity hover:opacity-60 md:block ${blendFor(overHero)}`}
             >
               Let&apos;s chat
             </button>
@@ -125,7 +141,7 @@ export function Nav() {
             <button
               type="button"
               onClick={toggleMenu}
-              className={`font-sans text-base md:hidden ${blend}`}
+              className={`font-sans text-base md:hidden ${blendFor(overHero)}`}
               aria-expanded={open}
               aria-controls="mobile-nav"
             >
