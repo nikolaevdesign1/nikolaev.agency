@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { projectIsAwarded, type Project } from "@/lib/data/projects";
+import { awardsOf, type Project } from "@/lib/data/projects";
 import { PhotoBit } from "@/components/photo-bit";
 import { HoverPlate } from "@/components/hover-plate";
 import { InView } from "@/components/in-view";
 import { RippleCover } from "@/components/ripple-cover";
-import { AwardIcon, ProjectTags, SiteIcon } from "@/components/project-card-parts";
+import { AwardIcon, ProjectTags } from "@/components/project-card-parts";
 
 const TILE_W = 480;
 const TILE_H = 360;
@@ -90,7 +90,8 @@ function tagsOf(project: Project) {
 }
 
 function awardPlaque(project: Project) {
-  return projectIsAwarded(project) ? (project.award?.trim() ?? null) : null;
+  const first = awardsOf(project)[0];
+  return first ? first.title || first.source : null;
 }
 
 function buildNotes(camX: number, camY: number, width: number, height: number) {
@@ -363,7 +364,6 @@ export function InfinityVision({
                 />
               </RippleCover>
               <AwardIcon project={cell.project} />
-              <SiteIcon />
               <InView className="pointer-events-none absolute inset-x-4 bottom-4">
                 <div data-project-direction="">
                   <ProjectTags project={cell.project} stagger />

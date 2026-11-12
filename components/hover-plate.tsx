@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { projectIsAwarded, type Project } from "@/lib/data/projects";
+import { awardsOf, type Project } from "@/lib/data/projects";
 
 /**
  * Dark info plate that follows the cursor while it is over the parent `group`
@@ -78,8 +78,9 @@ export function HoverPlate({ project }: { project: Pick<Project, "year" | "servi
       ? { label: "Credits", value: project.credits.join(" · ") }
       : { label: "Services", value: project.services.join(" · ") },
   ];
-  if (projectIsAwarded(project as Project)) {
-    rows.push({ label: "Awards", value: project.award ?? "" });
+  const awards = awardsOf(project);
+  if (awards.length > 0) {
+    rows.push({ label: "Awards", value: awards.map((a) => a.title || a.source).join(", ") });
   }
 
   // Portaled to <body> so no tile, transform or scroll layer can cover it.

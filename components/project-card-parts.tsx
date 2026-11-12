@@ -1,4 +1,4 @@
-import { awardSourceOf, projectIsAwarded, type Project } from "@/lib/data/projects";
+import { awardSources, awardsOf, type Project } from "@/lib/data/projects";
 import { siAwwwards, siBehance, siCssdesignawards } from "simple-icons";
 import { TagIcon } from "@/components/tag-icon";
 
@@ -29,13 +29,24 @@ export function ProjectTags({
 }
 
 /** Black vertical tab hanging from the top edge by a punched hole; the source name reads bottom-to-top. Drops a little on hover. */
-export function AwardBadge({ project }: { project: Pick<Project, "award" | "awardSource"> }) {
-  if (!projectIsAwarded(project as Project)) return null;
-  const source = awardSourceOf(project);
+type Awarded = Pick<Project, "awards" | "award" | "awardSource">;
+
+/** The first award's source, named the way the badge shows it. */
+function firstAward(project: Awarded) {
+  const award = awardsOf(project)[0];
+  if (!award) return null;
+  const known = awardSources.find((name) => name.toLowerCase() === award.source.trim().toLowerCase());
+  return { source: known ?? (award.source.trim() || "Award"), title: award.title };
+}
+
+export function AwardBadge({ project }: { project: Awarded }) {
+  const award = firstAward(project);
+  if (!award) return null;
+  const source = award.source;
   const hole = "radial-gradient(circle at 50% 13px, transparent 4px, #000 4.6px)";
   return (
     <div
-      title={project.award}
+      title={award.title}
       className="pointer-events-none absolute left-4 top-0 z-10 -translate-y-1.5 drop-shadow-[0_6px_10px_rgba(0,0,0,0.22)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0"
     >
       <span
@@ -55,13 +66,14 @@ const awardIcons: Record<string, { path: string; hex: string }> = {
 };
 
 /** Round brand-coloured logo of the award source, for the Field view. */
-export function AwardIcon({ project }: { project: Pick<Project, "award" | "awardSource"> }) {
-  if (!projectIsAwarded(project as Project)) return null;
-  const source = awardSourceOf(project);
+export function AwardIcon({ project }: { project: Awarded }) {
+  const award = firstAward(project);
+  if (!award) return null;
+  const source = award.source;
   const icon = awardIcons[source];
   return (
     <span
-      title={project.award ? `${project.award}` : source}
+      title={award.title || source}
       className="pointer-events-none absolute left-4 top-4 z-10 grid size-11 place-items-center rounded-full text-white shadow-[0_4px_14px_rgba(0,0,0,0.22)] ring-1 ring-white/20 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
       style={{ backgroundColor: icon ? `#${icon.hex}` : "#0a0a0a" }}
     >
@@ -74,21 +86,6 @@ export function AwardIcon({ project }: { project: Pick<Project, "award" | "award
           <path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" />
         </svg>
       )}
-    </span>
-  );
-}
-
-/** Quiet "page" icon in the top right corner. */
-export function SiteIcon() {
-  return (
-    <span
-      aria-hidden="true"
-      className="pointer-events-none absolute right-4 top-4 z-10 grid size-11 place-items-center rounded-full bg-black/45 text-white shadow-[0_4px_14px_rgba(0,0,0,0.18)] ring-1 ring-white/25 backdrop-blur-md"
-    >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
-        <path d="M3.5 9h17M7 6.8h.01M10 6.8h.01" />
-      </svg>
     </span>
   );
 }

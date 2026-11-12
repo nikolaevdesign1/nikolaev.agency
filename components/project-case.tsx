@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { siAwwwards, siBehance, siCssdesignawards, siDribbble, siGithub, siYoutube } from "simple-icons";
 import {
+  awardsOf,
   linksOf,
   type BlockPlace,
   type Media,
   type Project,
   type ProjectBlock,
+  type ProjectAward,
   type ProjectLink,
 } from "@/lib/data/projects";
 import { MediaView } from "@/components/media-view";
@@ -118,24 +120,65 @@ function LinkIcon({ url }: { url: string }) {
   );
 }
 
-function Links({ links }: { links: ProjectLink[] }) {
+/** Round icon buttons for the project's links, top right like the actions on Awwwards. */
+function LinkButtons({ links }: { links: ProjectLink[] }) {
   if (links.length === 0) return null;
   return (
-    <ul className="mt-6 flex flex-wrap justify-center gap-2">
+    <ul className="flex flex-wrap justify-end gap-2">
       {links.map((link) => (
         <li key={`${link.label}${link.url}`}>
           <a
             href={link.url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full bg-foreground/[0.06] px-4 py-2 font-mono text-[12px] text-foreground ring-1 ring-border transition-colors duration-300 hover:bg-foreground hover:text-background"
+            title={link.label}
+            aria-label={`${link.label} (opens in a new tab)`}
+            className="group flex h-11 items-center gap-2 rounded-full px-3.5 text-foreground ring-1 ring-border transition-colors duration-300 hover:bg-foreground hover:text-background"
           >
             <LinkIcon url={link.url} />
-            {link.label}
-            <span aria-hidden="true">↗</span>
+            <span className="hidden font-mono text-[12px] md:inline">{link.label}</span>
+            <span aria-hidden="true" className="text-[12px]">
+              ↗
+            </span>
           </a>
         </li>
       ))}
+    </ul>
+  );
+}
+
+/** Award plaques in the spot where Awwwards shows the score: source on top, the award below. */
+function AwardPlaques({ awards }: { awards: ProjectAward[] }) {
+  if (awards.length === 0) return null;
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {awards.map((award, i) => {
+        const inner = (
+          <>
+            <span className="block border-b border-foreground/25 px-3 py-1.5 font-mono text-[11px] leading-none">{award.source}</span>
+            <span className="block px-3 py-2 font-serif text-[17px] leading-tight">{award.title || "Award"}</span>
+          </>
+        );
+        const box =
+          "block min-w-[7.5rem] overflow-hidden rounded-[8px] text-center text-foreground ring-1 ring-foreground/70 transition-colors duration-300";
+        return (
+          <li key={`${award.source}${award.title}${i}`}>
+            {award.url ? (
+              <a
+                href={award.url}
+                target="_blank"
+                rel="noreferrer"
+                title={`${award.source}: ${award.title} (opens in a new tab)`}
+                className={`${box} hover:bg-foreground hover:text-background`}
+              >
+                {inner}
+              </a>
+            ) : (
+              <span className={box}>{inner}</span>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -174,13 +217,7 @@ export function ProjectCase({
   const cover = coverOf(project);
   const blocks = project.blocks ?? [];
   const at = (place: BlockPlace) => blocks.filter((block) => (block.place ?? "content") === place);
-  const details = [
-    project.category,
-    ...project.services.filter((service) => service !== project.category),
-    project.year,
-    project.client !== project.title ? project.client : null,
-    project.place?.city ?? project.location,
-  ].filter(Boolean);
+  const categories = Array.from(new Set([project.category, ...project.services])).filter(Boolean);
   const hasCredits = blocks.some((block) => block.type === "credits");
 
   return (
@@ -188,18 +225,25 @@ export function ProjectCase({
       <Decor project={project} index={index} total={total} />
 
       <div className="relative gutter">
-        <header data-case-title="" className="mx-auto flex max-w-5xl flex-col items-center pt-16 text-center md:pt-24">
-          <h1 className="font-serif text-6xl font-normal leading-[0.95] text-foreground md:text-8xl">{project.title}</h1>
-          <p className="mt-5 max-w-2xl text-lg leading-snug text-muted md:text-xl">{project.summary}</p>
-          <p className="mt-6 font-mono text-[12px] text-foreground/80">{details.join("  ·  ")}</p>
-          <Links links={linksOf(project)} />
-        </header>
+        <div data-case-title="" className="pt-6 md:pt-10">
+          <div className="flex items-start justify-between gap-6">
+            <AwardPlaques awards={awardsOf(project)} />
+            <LinkButtons links={linksOf(project)} />
+          </div>
+          <div className="mx-auto mt-10 flex max-w-6xl flex-col items-center text-center md:mt-14">
+            <p className="font-mono text-[13px] text-muted">{categories.join("  ·  ")}</p>
+            <h1 className="mt-4 font-serif text-[clamp(3.4rem,10vw,9.5rem)] font-medium leading-[0.9] text-foreground">
+              {project.title}
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-snug text-muted md:text-xl">{project.summary}</p>
+          </div>
+        </div>
 
         {cover ? (
-          <figure className="mt-12 md:mt-16">
-            <MediaView media={cover} className="rounded-[10px]" />
+          <figure className="mt-12 overflow-hidden rounded-[16px] bg-[#1c1c1c] px-3 pt-8 md:mt-16 md:px-[6%] md:pt-[5%]">
+            <MediaView media={cover} className="rounded-t-[10px]" />
             {project.coverCaption ? (
-              <figcaption className="mt-3 font-mono text-[12px] text-muted">{project.coverCaption}</figcaption>
+              <figcaption className="py-3 font-mono text-[12px] text-white/60">{project.coverCaption}</figcaption>
             ) : null}
           </figure>
         ) : null}
@@ -215,10 +259,17 @@ export function ProjectCase({
           <Block key={`c${i}`} block={block} />
         ))}
 
-        {project.results?.trim() || project.award ? (
+        {project.results?.trim() || awardsOf(project).length > 0 ? (
           <TextSection
             label="Results"
-            text={[project.results?.trim(), project.award ? `Recognition: ${project.award}.` : null].filter(Boolean).join("\n\n")}
+            text={[
+              project.results?.trim(),
+              awardsOf(project).length > 0
+                ? `Recognition: ${awardsOf(project).map((a) => [a.source, a.title].filter(Boolean).join(", ")).join("; ")}.`
+                : null,
+            ]
+              .filter(Boolean)
+              .join("\n\n")}
           />
         ) : null}
         {at("results").map((block, i) => (

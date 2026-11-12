@@ -317,12 +317,12 @@ html {
 }
 
 /* hide the site header while a full-screen layer (project popup, video, chat) is open */
-html[data-layer-open] header {
+html[data-layer-open] [data-site-header] {
   opacity: 0;
   pointer-events: none;
 }
 
-header {
+[data-site-header] {
   transition: opacity 250ms ease;
 }
 
@@ -369,7 +369,7 @@ html[data-preloading] {
 
 /* Text reveal: headings and marked text assemble from digits (components/auto-scramble.tsx).
    Until their turn comes they keep their space but stay invisible. */
-html[data-scr] :is(h1, h2, h3, .reveal-line, .reveal-type, .type-in, [data-scramble]):not([data-scr-done]):not([data-no-scramble]):not(header *):not([data-no-scramble] *) {
+html[data-scr] :is(h1, h2, h3, .reveal-line, .reveal-type, .type-in, [data-scramble]):not([data-scr-done]):not([data-no-scramble]):not([data-site-header] *):not([data-no-scramble] *) {
   visibility: hidden;
 }
 .reveal-line {

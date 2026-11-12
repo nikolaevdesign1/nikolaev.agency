@@ -102,6 +102,7 @@ export function Nav() {
   return (
     <>
       <header
+        data-site-header=""
         className={`fixed inset-x-0 top-0 z-50 isolate bg-transparent gutter py-5 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:py-6 ${
           overHero ? "" : "mix-blend-difference"
         } ${tucked && !open ? "pointer-events-none -translate-y-[130%] opacity-0" : "translate-y-0 opacity-100"}`}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Project } from "@/lib/data/projects";
-import { AwardBadge, ProjectTags, SiteIcon } from "@/components/project-card-parts";
+import { AwardBadge, ProjectTags } from "@/components/project-card-parts";
 import { HoverPlate } from "@/components/hover-plate";
 import { ProjectCover } from "@/components/project-cover";
 import { RippleCover } from "@/components/ripple-cover";
@@ -28,7 +28,6 @@ export function ProjectTile({
             />
           </RippleCover>
           <AwardBadge project={project} />
-          <SiteIcon />
           <div className="pointer-events-none absolute inset-x-4 bottom-4 z-10">
             <ProjectTags project={project} />
           </div>

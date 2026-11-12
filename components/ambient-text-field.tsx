@@ -77,7 +77,7 @@ function swapInPlace(line: string) {
 }
 
 function openExistingChat() {
-  const header = document.querySelector("header");
+  const header = document.querySelector("[data-site-header]");
   if (!header) return;
   const opener = Array.from(header.querySelectorAll("button")).find(
     (node) => node.textContent?.replace(/\s+/g, " ").trim() === "Let's chat",

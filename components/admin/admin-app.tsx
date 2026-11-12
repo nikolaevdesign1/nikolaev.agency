@@ -2,7 +2,7 @@
 
 import { cities } from "@/lib/data/cities";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { awardSources, linksOf, type BlockPlace, type Media, type Project, type ProjectBlock, type ProjectLink } from "@/lib/data/projects";
+import { awardSources, awardsOf, linksOf, type ProjectAward, type BlockPlace, type Media, type Project, type ProjectBlock, type ProjectLink } from "@/lib/data/projects";
 import { MediaField, emptyMedia } from "@/components/admin/media-field";
 
 type Load = { projects: Project[]; stored: boolean; storage: "blob" | "file" | "none" };
@@ -142,6 +142,8 @@ export function AdminApp() {
   const blocks = useMemo(() => current?.blocks ?? [], [current]);
   const setBlocks = (next: ProjectBlock[]) => patch({ blocks: next });
   /** Links replace the old Website / Behance fields, which are cleared on the first edit. */
+  /** The award list replaces the old single award fields on the first edit. */
+  const setAwards = (next: ProjectAward[]) => patch({ awards: next, award: undefined, awardSource: undefined });
   const setLinks = (next: ProjectLink[]) => patch({ links: next, url: undefined, behance: undefined });
   const patchBlock = (index: number, change: ProjectBlock) =>
     setBlocks(blocks.map((b, i) => (i === index ? change : b)));
@@ -315,24 +317,49 @@ export function AdminApp() {
                 <label className={label}>Short summary (cards, chat, fallback text)</label>
                 <textarea className={`${input} min-h-20`} value={current.summary} onChange={(e) => patch({ summary: e.target.value })} />
               </div>
-              <div>
-                <label className={label}>Award text (empty = none)</label>
-                <input className={input} value={current.award ?? ""} onChange={(e) => patch({ award: e.target.value || undefined })} />
-              </div>
-              <div>
-                <label className={label}>Award given by (badge name)</label>
-                <select
-                  className={input}
-                  value={current.awardSource ?? ""}
-                  onChange={(e) => patch({ awardSource: e.target.value || undefined })}
-                >
-                  <option value="">Detect from the award text</option>
-                  {awardSources.map((name) => (
-                    <option key={name} value={name}>
-                      {name}
-                    </option>
+              <div className="rounded-[8px] border border-border p-3 md:col-span-2">
+                <p className="font-mono text-[11px] text-muted">
+                  Awards: shown as plaques at the top of the project page; the first one is the badge on cards. The link opens where the award is listed.
+                </p>
+                <div className="mt-2 flex flex-col gap-2">
+                  {awardsOf(current).map((award, k, list) => (
+                    <div key={k} className="grid gap-2 md:grid-cols-[11rem_1fr_1.4fr_auto]">
+                      <select
+                        className={input}
+                        value={award.source}
+                        onChange={(e) => setAwards(list.map((a, n) => (n === k ? { ...a, source: e.target.value } : a)))}
+                      >
+                        {awardSources.map((name) => (
+                          <option key={name} value={name}>
+                            {name}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        className={input}
+                        placeholder="Site of the Day, Best of Behance…"
+                        value={award.title}
+                        onChange={(e) => setAwards(list.map((a, n) => (n === k ? { ...a, title: e.target.value } : a)))}
+                      />
+                      <input
+                        className={input}
+                        placeholder="https:// (where the award is listed)"
+                        value={award.url ?? ""}
+                        onChange={(e) => setAwards(list.map((a, n) => (n === k ? { ...a, url: e.target.value || undefined } : a)))}
+                      />
+                      <button type="button" className={smallBtn} onClick={() => setAwards(list.filter((_, n) => n !== k))}>
+                        ×
+                      </button>
+                    </div>
                   ))}
-                </select>
+                  <button
+                    type="button"
+                    className={`${smallBtn} w-fit`}
+                    onClick={() => setAwards([...awardsOf(current), { source: "Behance", title: "" }])}
+                  >
+                    + Award
+                  </button>
+                </div>
               </div>
               <div>
                 <label className={label}>Credits on hover (comma separated)</label>

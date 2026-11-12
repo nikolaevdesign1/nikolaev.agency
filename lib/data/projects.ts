@@ -23,6 +23,9 @@ export type ProjectBlock = (
 
 export type ProjectLink = { label: string; url: string };
 
+/** One award: who gave it, what it is called, and where it can be seen. */
+export type ProjectAward = { source: string; title: string; url?: string };
+
 export type Project = {
   slug: string;
   title: string;
@@ -41,7 +44,9 @@ export type Project = {
   behance?: string;
   /** People credited on the project; shown on hover and on the project page. */
   credits?: string[];
-  /** Award text shown as a plaque, e.g. "Awarded by Behance UI". */
+  /** Awards, shown as plaques on the project page and as the badge on cards. */
+  awards?: ProjectAward[];
+  /** Older single-award fields; `awardsOf` reads them when `awards` is empty. */
   award?: string;
   /** Who gave the award: "Behance", "Awwwards" or "CSS Design Awards". Shown on the badge. */
   awardSource?: string;
@@ -211,9 +216,17 @@ export function awardSourceOf(project: Pick<Project, "award" | "awardSource">): 
   return "Behance";
 }
 
-/** Awarded when the record carries an award text. */
-export function projectIsAwarded(project: Project): boolean {
-  return Boolean(project.award?.trim());
+/** The project's awards, including the older single award text. */
+export function awardsOf(project: Pick<Project, "awards" | "award" | "awardSource">): ProjectAward[] {
+  const list = (project.awards ?? []).filter((a) => a.title.trim() || a.source.trim());
+  if (list.length > 0) return list;
+  if (project.award?.trim()) return [{ source: awardSourceOf(project), title: project.award.trim() }];
+  return [];
+}
+
+/** Awarded when the record carries at least one award. */
+export function projectIsAwarded(project: Pick<Project, "awards" | "award" | "awardSource">): boolean {
+  return awardsOf(project).length > 0;
 }
 
 /** Client country flag, derived from the project location. */

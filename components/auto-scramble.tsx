@@ -39,7 +39,7 @@ export function AutoScramble() {
     );
 
     const skip = (el: Element) =>
-      el.closest("header, [data-no-scramble], [contenteditable]") !== null ||
+      el.closest("[data-site-header], [data-no-scramble], [contenteditable]") !== null ||
       (el.parentElement?.closest(SCRAMBLE_SELECTOR) ?? null) !== null;
 
     const collect = (scope: ParentNode) => {
