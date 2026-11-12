@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AlphaVideo } from "@/components/alpha-video";
+import { Figure3D } from "@/components/figure-3d";
 import {
   siBlender,
   siClaude,
@@ -251,16 +251,16 @@ function Capabilities() {
           <div className="md:sticky md:top-36">
             <p className="text-[clamp(1.15rem,1.5vw,1.5rem)] leading-none">Capabilities</p>
             <div className="relative mt-6 aspect-[3/4] w-[min(100%,360px)]">
-              {/* Soft floor shadow drawn by the page, so the transparent video has no edge to cut it. */}
+              {/* Soft floor shadow drawn by the page, under the transparent canvas. */}
               <div
                 aria-hidden="true"
                 className="absolute bottom-[1.5%] left-[27%] h-[5%] w-[46%] rounded-[50%] bg-[radial-gradient(closest-side,rgba(0,0,0,0.22),rgba(0,0,0,0.08)_55%,transparent)]"
               />
-              <AlphaVideo
-                hevc="/video/oleg-figure.mov"
-                webm="/video/oleg-figure.webm"
-                label="Oleg Nikolaev as a 3D figure: black hoodie, mustard beanie, glasses, beard"
-                className="relative h-full w-full object-contain"
+              <Figure3D
+                model="/models/oleg-figure.glb"
+                poster="/images/oleg-figure.png"
+                label="Oleg Nikolaev as a low-poly 3D figure: long black coat over a T-shirt, mustard beanie, round glasses, beard"
+                className="relative h-full w-full"
               />
             </div>
           </div>
