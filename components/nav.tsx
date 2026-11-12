@@ -26,34 +26,18 @@ export function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
-  const [tucked, setTucked] = useState(false);
   const busy = useRef(false);
   const blendFor = (over: boolean) => (over ? PLAIN : BLEND);
   const inMedia = pathname?.startsWith("/media") ?? false;
 
-  // The header slides away while reading down and comes back on the way up. Small wheel
-  // jitters are ignored: the direction has to hold for a few dozen pixels first.
-  // Over the home video it stays plain white; past it, it inverts against the page.
+  // The header stays pinned. Over the home video it is plain white; past it, it inverts against the page.
   const [overHero, setOverHero] = useState(false);
   useEffect(() => {
-    let last = window.scrollY;
-    let travel = 0;
     let frame = 0;
     const update = () => {
       frame = 0;
       const y = window.scrollY;
       setOverHero(pathname === "/" && y < window.innerHeight * 0.85);
-      const delta = y - last;
-      last = y;
-      if (y < 120) {
-        travel = 0;
-        setTucked(false);
-        return;
-      }
-      if (delta === 0) return;
-      travel = Math.sign(delta) === Math.sign(travel) ? travel + delta : delta;
-      if (travel > 40) setTucked(true);
-      else if (travel < -24) setTucked(false);
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -66,7 +50,6 @@ export function Nav() {
     };
   }, [pathname]);
 
-  useEffect(() => setTucked(false), [pathname]);
 
   // The page under the open menu stays put.
   useEffect(() => {
@@ -105,7 +88,7 @@ export function Nav() {
         data-site-header=""
         className={`fixed inset-x-0 top-0 z-50 isolate bg-transparent gutter py-5 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:py-6 ${
           overHero ? "" : "mix-blend-difference"
-        } ${tucked && !open ? "pointer-events-none -translate-y-[130%] opacity-0" : "translate-y-0 opacity-100"}`}
+        }`}
       >
         <div className="grid grid-cols-[1fr_auto_1fr] items-start">
           <Link href="/" onClick={() => setOpen(false)} className={`flex w-fit flex-col font-sans ${blendFor(overHero)}`}>
