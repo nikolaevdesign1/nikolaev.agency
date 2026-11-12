@@ -249,7 +249,7 @@ function Capabilities() {
         <div className="md:col-span-5">
           <div className="md:sticky md:top-36">
             <p className="text-[clamp(1.15rem,1.5vw,1.5rem)] leading-none">Capabilities</p>
-            <div className="mt-6 aspect-[3/4] w-[min(100%,360px)] overflow-hidden rounded-[12px] bg-[#010101]">
+            <div className="mt-6 aspect-[3/4] w-[min(100%,360px)]">
               <video
                 src="/video/oleg-figure.mp4"
                 autoPlay
@@ -257,7 +257,7 @@ function Capabilities() {
                 loop
                 playsInline
                 preload="metadata"
-                aria-label="Oleg Nikolaev as a 3D figure: black hoodie, mustard beanie, glasses"
+                aria-label="Oleg Nikolaev as a 3D figure: black hoodie, mustard beanie, glasses, beard"
                 className="h-full w-full object-cover"
               />
             </div>
