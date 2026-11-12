@@ -353,7 +353,14 @@ export function InfinityVision({
                 video={Boolean(cell.project.video)}
                 className="absolute inset-0"
               >
-                <PhotoBit src={cell.src} title={cell.title} seed={cell.seed} theme={theme} />
+                <PhotoBit
+                  src={cell.src}
+                  title={cell.title}
+                  seed={cell.seed}
+                  theme={theme}
+                  video={cell.project.video}
+                  hasPoster={Boolean(cell.project.cover)}
+                />
               </RippleCover>
               <AwardIcon project={cell.project} />
               <SiteIcon />

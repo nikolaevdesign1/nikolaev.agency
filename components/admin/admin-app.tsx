@@ -412,7 +412,8 @@ export function AdminApp() {
                   value={coverMedia(current)}
                   onChange={(m) =>
                     m.type === "video"
-                      ? patch({ video: m.src || undefined, cover: m.poster })
+                      ? // the picture stays as the poster unless a new poster is set
+                        patch({ video: m.src || undefined, cover: m.poster ?? current.cover })
                       : patch({ video: undefined, cover: m.src || undefined })
                   }
                 />

@@ -38,10 +38,13 @@ export function MediaField({
         multipart: file.size > 20 * 1024 * 1024,
         onUploadProgress: ({ percentage }) => setBusy(Math.round(percentage)),
       });
+      const type = file.type.startsWith("video/") ? "video" : "image";
       onChange({
         ...media,
-        type: file.type.startsWith("video/") ? "video" : "image",
+        type,
         src: result.url,
+        // swapping a picture for a video keeps the picture as its poster
+        poster: type === "video" && media.type === "image" && media.src ? media.src : media.poster,
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed. Is a Blob store connected?");
