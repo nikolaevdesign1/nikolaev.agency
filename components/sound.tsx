@@ -57,20 +57,25 @@ function createEngine(): Engine | null {
     osc.start();
   }
 
+  // a low, soft "tuk": a short sine drop through a lowpass, no sharp attack
   const blip = () => {
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
+    const body = ctx.createBiquadFilter();
     const gain = ctx.createGain();
     osc.type = "sine";
-    osc.frequency.setValueAtTime(1320, now);
-    osc.frequency.exponentialRampToValueAtTime(880, now + 0.06);
+    osc.frequency.setValueAtTime(260, now);
+    osc.frequency.exponentialRampToValueAtTime(170, now + 0.08);
+    body.type = "lowpass";
+    body.frequency.value = 900;
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.09, now + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
-    osc.connect(gain);
+    gain.gain.exponentialRampToValueAtTime(0.06, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
+    osc.connect(body);
+    body.connect(gain);
     gain.connect(master);
     osc.start(now);
-    osc.stop(now + 0.1);
+    osc.stop(now + 0.12);
   };
 
   return { ctx, master, blip };

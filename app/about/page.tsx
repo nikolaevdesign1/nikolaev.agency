@@ -258,7 +258,7 @@ function Capabilities() {
                 playsInline
                 preload="metadata"
                 aria-label="Oleg Nikolaev as a 3D figure: black hoodie, mustard beanie, glasses, beard"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover mix-blend-multiply"
               />
             </div>
           </div>
