@@ -52,5 +52,12 @@ export async function PUT(request: Request) {
     );
   }
   revalidateTag("projects", { expire: 0 });
+  // Pages refresh stale-while-revalidate: the first visit after a change still gets the old copy.
+  // Make that first visit here, so the owner sees the change on the next reload.
+  const origin = new URL(request.url).origin;
+  const slugs = list.map((project) => `/projects/${project.slug}`);
+  await Promise.allSettled(
+    ["/", "/projects", ...slugs].map((path) => fetch(`${origin}${path}`, { cache: "no-store" })),
+  );
   return NextResponse.json({ ok: true });
 }
