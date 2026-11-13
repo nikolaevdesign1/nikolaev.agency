@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 type Figure3DProps = {
-  /** Low-poly model with a "Figure" root and a "Head" pivot node. */
+  /** Low-poly model with a "Figure" root, a "Head" pivot and an "ArmL" shoulder pivot. */
   model: string;
   /** Still image shown until WebGL has drawn the first frame, and kept when it cannot. */
   poster: string;
@@ -84,6 +84,7 @@ export function Figure3D({ model, poster, label, className }: Figure3DProps) {
       });
       scene.add(figure);
       const head = figure.getObjectByName("Head");
+      const arm = figure.getObjectByName("ArmL");
 
       const resize = () => {
         const { clientWidth, clientHeight } = canvas;
@@ -103,6 +104,11 @@ export function Figure3D({ model, poster, label, className }: Figure3DProps) {
           if (head) {
             head.rotation.y = headYaw(t);
             head.rotation.x = 0.025 * Math.sin(t * 0.9);
+          }
+          if (arm) {
+            // The free arm drifts a little forward and back, out of step with the body sway.
+            arm.rotation.x = 0.045 * Math.sin(t * 0.8 + 1.2);
+            arm.rotation.z = 0.012 * Math.sin(t * 0.55);
           }
           figure.rotation.y = 0.05 * Math.sin(t * 0.5);
         }

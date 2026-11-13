@@ -259,7 +259,7 @@ function Capabilities() {
               <Figure3D
                 model="/models/oleg-figure.glb"
                 poster="/images/oleg-figure.png"
-                label="Oleg Nikolaev as a low-poly 3D figure: long black coat over a T-shirt, mustard beanie, round glasses, beard"
+                label="Oleg Nikolaev as a low-poly 3D figure: long black coat over a T-shirt, mustard beanie, round glasses, beard, neck chain, one hand in a pocket"
                 className="relative h-full w-full"
               />
             </div>
