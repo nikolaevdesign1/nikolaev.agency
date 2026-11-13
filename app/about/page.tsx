@@ -23,12 +23,7 @@ import { ExpandableVideo } from "@/components/expandable-video";
 import { pillClass } from "@/components/button";
 import { directions } from "@/lib/data/services";
 import { site } from "@/lib/data/site";
-
-const awardGroups: { org: string; entries: { count: number; label: string }[] }[] = [
-  { org: "Behance", entries: [{ count: 2, label: "UX/UI" }] },
-  { org: "CSS Design Awards", entries: [{ count: 1, label: "Nominee" }] },
-  { org: "Awwwards", entries: [{ count: 1, label: "Nominee" }] },
-];
+import { awardGroups } from "@/lib/data/awards";
 
 const awardCount = awardGroups.reduce(
   (total, group) => total + group.entries.reduce((sum, entry) => sum + entry.count, 0),

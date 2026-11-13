@@ -37,18 +37,18 @@ export function ArticleMeta({ article, className = "" }: { article: Article; cla
 }
 
 /** Article card: 3:2 picture, title, excerpt, date. Same everywhere a list of articles appears. */
-export function MediaCard({ article, parallax }: { article: Article; parallax?: number }) {
+/** `parallax` is kept for callers; the cover is shown whole, so it no longer moves. */
+export function MediaCard({ article }: { article: Article; parallax?: number }) {
   return (
     <Link href={`/media/${article.slug}`} className="group block">
-      <div className="aspect-[3/2] overflow-hidden rounded-[10px] bg-surface">
+      <div className="aspect-video overflow-hidden rounded-[10px] bg-surface ring-1 ring-border">
         {article.cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={article.cover}
             alt=""
             draggable={false}
-            {...(parallax ? { "data-scroll": "", "data-scroll-speed": String(parallax) } : {})}
-            className="h-full w-full scale-[1.06] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.1]"
+            className="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           />
         ) : null}
       </div>

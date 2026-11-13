@@ -74,15 +74,9 @@ export default async function ArticlePage({
         <ArticleMeta article={article} className="mt-3" />
 
         {article.cover ? (
-          <div className="mt-6 aspect-[2.2/1] overflow-hidden rounded-[12px] bg-surface">
+          <div className="mt-6 overflow-hidden rounded-[12px] bg-surface ring-1 ring-border">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={article.cover}
-              alt=""
-              data-scroll=""
-              data-scroll-speed="-0.06"
-              className="h-full w-full scale-[1.12] object-cover"
-            />
+            <img src={article.cover} alt="" className="block h-auto w-full" />
           </div>
         ) : null}
 
@@ -93,7 +87,7 @@ export default async function ArticlePage({
             href={`/media/${next.slug}`}
             className="group mt-28 grid overflow-hidden rounded-[12px] bg-ink text-ink-foreground md:grid-cols-[1fr_1.2fr]"
           >
-            <div className="aspect-[3/2] overflow-hidden bg-[#1c1c1c] md:aspect-auto">
+            <div className="aspect-video w-full self-center overflow-hidden bg-[#1c1c1c]">
               {next.cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

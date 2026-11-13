@@ -164,16 +164,14 @@ function Hero({ article }: { article: Article }) {
           {article.title}
         </h2>
         <ArticleMeta article={article} className="mt-3" />
-        <div className="mt-6 aspect-[2.3/1] w-full overflow-hidden rounded-[12px] bg-surface">
+        <div className="mt-6 aspect-video w-full overflow-hidden rounded-[12px] bg-surface ring-1 ring-border">
           {article.cover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={article.cover}
               alt=""
               draggable={false}
-              data-scroll=""
-              data-scroll-speed="-0.06"
-              className="h-full w-full scale-[1.12] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
+              className="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
             />
           ) : null}
         </div>
@@ -198,16 +196,14 @@ function Banner({ article }: { article: Article }) {
   return (
     <CursorFollowCta label="Read more" className="mt-24 block md:mt-32">
       <Link href={`/media/${article.slug}`} className="group block">
-        <div className="aspect-[2.6/1] w-full overflow-hidden rounded-[12px] bg-surface">
+        <div className="aspect-video w-full overflow-hidden rounded-[12px] bg-surface ring-1 ring-border">
           {article.cover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={article.cover}
               alt=""
               draggable={false}
-              data-scroll=""
-              data-scroll-speed="-0.06"
-              className="h-full w-full scale-[1.12] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
+              className="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
             />
           ) : null}
         </div>

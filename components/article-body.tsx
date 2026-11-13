@@ -48,10 +48,13 @@ function Block({ block }: { block: ArticleBlock }) {
   if (block.type === "divider") return <hr className="my-12 border-border" />;
   if (block.type === "image") {
     return (
-      <div className="my-10 overflow-hidden rounded-[12px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={block.src} alt={block.alt} className="w-full object-cover" />
-      </div>
+      <figure className="my-10">
+        <div className="overflow-hidden rounded-[12px] bg-surface ring-1 ring-border">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={block.src} alt={block.alt} loading="lazy" decoding="async" className="block h-auto w-full" />
+        </div>
+        {block.alt ? <figcaption className="mt-2 font-mono text-[12px] text-muted">{block.alt}</figcaption> : null}
+      </figure>
     );
   }
   return <RichText text={block.text} className="mt-6 text-[17px] leading-[1.75] text-foreground/85 first:mt-0" />;
