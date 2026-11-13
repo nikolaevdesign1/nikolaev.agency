@@ -11,8 +11,8 @@ type Figure3DProps = {
   className?: string;
 };
 
-/** Camera framing in model units (metres): the figure is 1.93 tall and stands on y = 0. */
-const VIEW = { fov: 17.4, distance: 6.3, eye: 1.02, target: 0.975 };
+/** Camera framing in model units (metres): the figure is 1.89 tall and stands on y = 0. */
+const VIEW = { fov: 19, distance: 6.3, eye: 1.0, target: 0.94 };
 
 /** Eases the head between glances so it settles instead of swinging like a pendulum. */
 function headYaw(t: number) {
