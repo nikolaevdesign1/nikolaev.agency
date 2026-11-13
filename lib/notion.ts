@@ -205,8 +205,12 @@ function shorten(text: string, max = 170) {
   return `${clean.slice(0, max).replace(/\s+\S*$/, "")}…`;
 }
 
+/** One-off: the articles dated up to this day are released early. Harmless once the day has passed. */
+const EARLY_RELEASE_UNTIL = "2026-11-16";
+
 async function loadArticles(): Promise<Article[]> {
-  const today = new Date().toISOString().slice(0, 10);
+  const realToday = new Date().toISOString().slice(0, 10);
+  const today = realToday > EARLY_RELEASE_UNTIL ? realToday : EARLY_RELEASE_UNTIL;
   const pages = await articlePages(site.notionArticlesPage);
   const articles: Article[] = [];
   const used = new Set<string>();
