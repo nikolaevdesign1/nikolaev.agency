@@ -222,7 +222,7 @@ function MobileMenu({
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[11px] text-ink-foreground/60">
           {site.cornerSocial.map((link) => (
-            <a key={link.label} href={link.href}>
+            <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer">
               {link.label}
             </a>
           ))}

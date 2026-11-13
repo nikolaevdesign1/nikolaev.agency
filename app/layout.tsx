@@ -86,6 +86,7 @@ const organization = {
       email: site.email,
       foundingDate: site.founded,
       areaServed: "Worldwide",
+      sameAs: site.social.map((link) => link.href),
     },
     {
       "@type": "WebSite",

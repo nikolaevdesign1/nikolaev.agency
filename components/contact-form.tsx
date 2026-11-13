@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { track } from "@/lib/analytics";
+import { ThankYouDialog } from "@/components/thank-you-dialog";
 type Status = "idle" | "submitting" | "success" | "error";
 
 const reasons = [
@@ -40,7 +41,10 @@ export function ContactForm() {
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Something went wrong. Try again.");
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(data?.error ?? "Something went wrong. Try again.");
+      }
 
       setStatus("success");
       track("generate_lead", { form: "contact", ...(reason ? { reason } : {}) });
@@ -54,16 +58,9 @@ export function ContactForm() {
     }
   }
 
-  if (status === "success") {
-    return (
-      <p className="max-w-md font-serif text-3xl font-medium leading-snug text-foreground">
-        Thanks — your message is in. We reply to every inquiry within two
-        business days.
-      </p>
-    );
-  }
-
   return (
+    <>
+    <ThankYouDialog open={status === "success"} onClose={() => setStatus("idle")} />
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <div className="grid gap-x-5 gap-y-6 md:grid-cols-2">
         <Field
@@ -183,6 +180,7 @@ export function ContactForm() {
         )}
       </div>
     </form>
+    </>
   );
 }
 

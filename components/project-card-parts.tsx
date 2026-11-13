@@ -47,7 +47,7 @@ export function AwardBadge({ project }: { project: Awarded }) {
   return (
     <div
       title={award.title}
-      className="pointer-events-none absolute left-4 top-0 z-10 -translate-y-1.5 drop-shadow-[0_6px_10px_rgba(0,0,0,0.22)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0"
+      className="pointer-events-none absolute left-4 top-0 z-10 drop-shadow-[0_6px_10px_rgba(0,0,0,0.22)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:-translate-y-1.5 md:group-hover:translate-y-0"
     >
       <span
         className="block rounded-b-[6px] bg-[#0a0a0a] px-2.5 pb-3.5 pt-8 text-[14px] leading-none text-white"

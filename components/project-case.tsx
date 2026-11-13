@@ -133,7 +133,7 @@ function LinkButtons({ links }: { links: ProjectLink[] }) {
             rel="noreferrer"
             title={link.label}
             aria-label={`${link.label} (opens in a new tab)`}
-            className="group flex h-11 items-center gap-2 rounded-full px-3.5 text-foreground ring-1 ring-border transition-colors duration-300 hover:bg-foreground hover:text-background"
+            className="group flex h-11 items-center gap-2 rounded-full bg-background px-3.5 text-foreground ring-1 ring-border transition-colors duration-300 hover:bg-foreground hover:text-background"
           >
             <LinkIcon url={link.url} />
             <span className="hidden font-mono text-[12px] md:inline">{link.label}</span>
@@ -160,7 +160,7 @@ function AwardPlaques({ awards }: { awards: ProjectAward[] }) {
           </>
         );
         const box =
-          "block min-w-[7.5rem] overflow-hidden rounded-[8px] text-center text-foreground ring-1 ring-foreground/70 transition-colors duration-300";
+          "block min-w-[7.5rem] overflow-hidden rounded-[8px] bg-background text-center text-foreground ring-1 ring-foreground/70 transition-colors duration-300";
         return (
           <li key={`${award.source}${award.title}${i}`}>
             {award.url ? (
@@ -240,10 +240,12 @@ export function ProjectCase({
         </div>
 
         {cover ? (
-          <figure className="mt-12 overflow-hidden rounded-[16px] bg-[#1c1c1c] px-3 pt-8 md:mt-16 md:px-[6%] md:pt-[5%]">
-            <MediaView media={cover} className="rounded-t-[10px]" />
+          <figure className="mt-12 overflow-hidden rounded-[16px] bg-[#1c1c1c] md:mt-16">
+            <div className="aspect-[4/3] bg-[#1c1c1c] sm:aspect-[16/9] md:aspect-[2.4/1] [&>*]:h-full [&>*]:object-cover">
+              <MediaView media={cover} />
+            </div>
             {project.coverCaption ? (
-              <figcaption className="py-3 font-mono text-[12px] text-white/60">{project.coverCaption}</figcaption>
+              <figcaption className="px-4 py-3 font-mono text-[12px] text-white/60 md:px-6">{project.coverCaption}</figcaption>
             ) : null}
           </figure>
         ) : null}
@@ -287,12 +289,33 @@ export function ProjectCase({
           <Link
             href={`/projects/${next.slug}`}
             replace
-            className="group mt-24 grid gap-4 border-t border-foreground/70 pt-3 md:mt-32 md:grid-cols-12 md:gap-x-6"
+            className="group mt-24 grid overflow-hidden rounded-[12px] bg-ink text-ink-foreground md:mt-32 md:grid-cols-[1fr_1.2fr]"
           >
-            <p className="font-mono text-[12px] text-muted md:col-span-4">Next project</p>
-            <p className="font-serif text-4xl leading-none text-foreground transition-transform duration-300 group-hover:translate-x-2 md:col-span-8 md:text-6xl">
-              {next.title}
-            </p>
+            <div className="aspect-[3/2] overflow-hidden bg-[#1c1c1c] md:aspect-auto md:min-h-[22rem]">
+              {next.cover ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={next.cover}
+                  alt=""
+                  loading="lazy"
+                  draggable={false}
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                />
+              ) : null}
+            </div>
+            <div className="flex flex-col justify-between gap-10 p-8 md:p-12">
+              <p className="font-mono text-[12px] text-ink-muted">Next project</p>
+              <div>
+                <p className="font-mono text-[12px] text-ink-muted">
+                  {[next.category, next.year, next.place?.city ?? next.location].filter(Boolean).join("  ·  ")}
+                </p>
+                <p className="mt-3 font-serif text-3xl font-medium leading-tight md:text-5xl">{next.title}</p>
+                <p className="mt-4 line-clamp-2 text-[15px] leading-relaxed text-ink-foreground/70">{next.summary}</p>
+              </div>
+              <span aria-hidden="true" className="text-3xl transition-transform duration-300 group-hover:translate-x-3">
+                →
+              </span>
+            </div>
           </Link>
         ) : null}
       </div>

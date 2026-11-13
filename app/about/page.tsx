@@ -25,34 +25,9 @@ import { directions } from "@/lib/data/services";
 import { site } from "@/lib/data/site";
 
 const awardGroups: { org: string; entries: { count: number; label: string }[] }[] = [
-  {
-    org: "The Webby Award",
-    entries: [
-      { count: 1, label: "Best Visual Design — Function" },
-      { count: 1, label: "Websites & Mobile Sites — Professional Services" },
-      { count: 1, label: "Best Home Page" },
-    ],
-  },
-  {
-    org: "Awwwards",
-    entries: [
-      { count: 4, label: "Site of the Day" },
-      { count: 2, label: "Developer Award" },
-      { count: 1, label: "Honorable Mention" },
-    ],
-  },
-  {
-    org: "CSS Design Awards",
-    entries: [
-      { count: 3, label: "Website of the Day" },
-      { count: 1, label: "UI Design" },
-      { count: 1, label: "UX Design" },
-    ],
-  },
-  {
-    org: "FWA",
-    entries: [{ count: 2, label: "FWA of the Day" }],
-  },
+  { org: "Behance", entries: [{ count: 2, label: "UX/UI" }] },
+  { org: "CSS Design Awards", entries: [{ count: 1, label: "Nominee" }] },
+  { org: "Awwwards", entries: [{ count: 1, label: "Nominee" }] },
 ];
 
 const awardCount = awardGroups.reduce(
@@ -103,7 +78,7 @@ const faqs = [
   {
     id: "Q.003",
     q: "How do I reach the studio?",
-    a: `Email ${site.email}, or use the contact form. It asks for a name, an email, an optional reason — new project, existing product, ongoing design support, job opportunity, or something else — and what you have in mind. The confirmation says every inquiry gets a reply within two business days.`,
+    a: `Email ${site.email}, or use the contact form. It asks for a name, an email, an optional reason — new project, existing product, ongoing design support, job opportunity, or something else — and what you have in mind. Every inquiry gets a reply within two business days.`,
   },
   {
     id: "Q.004",
@@ -250,7 +225,7 @@ function Capabilities() {
         <div className="md:col-span-5">
           <div className="md:sticky md:top-36">
             <p className="text-[clamp(1.15rem,1.5vw,1.5rem)] leading-none">Capabilities</p>
-            <div className="relative mt-6 aspect-[3/4] w-[min(100%,360px)]">
+            <div className="relative mt-6 aspect-[3/4] w-[min(100%,432px)]">
               {/* Soft floor shadow drawn by the page, under the transparent canvas. */}
               <div
                 aria-hidden="true"
@@ -460,11 +435,11 @@ function SupportTimeline() {
   return (
     <div ref={ref} className="relative mt-16 md:mt-24">
       {/* rail: horizontal on desktop, vertical on phones */}
-      <div aria-hidden="true" className="absolute left-[5px] top-2 bottom-2 w-px bg-ink-foreground/20 md:inset-x-0 md:bottom-auto md:left-0 md:top-[5px] md:h-px md:w-auto" />
+      <div aria-hidden="true" className="absolute left-[5px] top-2 bottom-2 w-px bg-ink-foreground/20 md:bottom-auto md:left-0 md:top-[5px] md:h-px md:w-[calc(75%+1.125rem+5px)]" />
       <div
         aria-hidden="true"
         className="absolute left-0 top-[5px] hidden h-px bg-accent transition-[width] duration-200 md:block"
-        style={{ width: `${progress * 100}%` }}
+        style={{ width: `calc((75% + 1.125rem + 5px) * ${progress})` }}
       />
       <div
         aria-hidden="true"

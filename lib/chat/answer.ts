@@ -227,7 +227,7 @@ function contactAnswer() {
   const social = site.social
     .map((item) => `${item.label} (${item.href})`)
     .join(", ");
-  return `Email ${site.email}. The site doesn't list a phone number or a street address. The contact form asks for a name, an email, an optional reason (new project, existing product, ongoing design support, job opportunity, or something else), and what you have in mind. Its confirmation says the studio replies to every inquiry within two business days. Social links: ${social}.`;
+  return `Email ${site.email}. The site doesn't list a phone number or a street address. The contact form asks for a name, an email, an optional reason (new project, existing product, ongoing design support, job opportunity, or something else), and what you have in mind. The site says the studio replies to every inquiry within two business days. Social links: ${social}.`;
 }
 
 function factualReply(text: string, inBrief: boolean) {
@@ -257,7 +257,9 @@ function factualReply(text: string, inBrief: boolean) {
     );
   }
   if (/\b(award|awards|prize|prizes|winner|recognition)\b/.test(lower)) {
-    bits.push("The site doesn't list awards.");
+    bits.push(
+      "The Agency page lists four recognitions: two Behance UI/UX features, one CSS Design Awards nomination and one Awwwards nomination.",
+    );
   }
   if (/\b(team|founder|who (?:runs|founded|works)|oleg|biography|bio)\b/.test(lower)) {
     bits.push(
@@ -269,7 +271,7 @@ function factualReply(text: string, inBrief: boolean) {
     !/\b(timing|deadline)\b/.test(lower)
   ) {
     bits.push(
-      "The site doesn't publish project timelines or a process schedule. The about page says that page is coming soon. The contact form's confirmation says the studio replies to every inquiry within two business days.",
+      "The site doesn't publish project timelines or a process schedule. The about page says that page is coming soon. The site says the studio replies to every inquiry within two business days.",
     );
   }
   if (/\b(job|jobs|hiring|career|work here|open role)\b/.test(lower)) {

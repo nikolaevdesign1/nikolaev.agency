@@ -50,7 +50,7 @@ export function BottomBlur() {
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none fixed inset-x-0 bottom-0 z-[20] h-32 transition-opacity duration-500 md:h-40 ${
+      className={`pointer-events-none fixed inset-x-0 bottom-0 z-[20] h-32 transition-opacity duration-500 max-md:hidden md:h-40 ${
         on ? "opacity-100" : "opacity-0"
       }`}
     >

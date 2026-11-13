@@ -15,7 +15,7 @@ export const directions: Direction[] = [
   {
     label: "Brand Identity",
     description: "Naming, logo, and a visual system that holds up at scale.",
-    popular: ["Logo and mark", "Visual guidelines", "Naming", "Packaging"],
+    popular: ["Wordmark and logo system", "Brand character and mascot", "Colour, type and shape rules", "Packaging and labels"],
     bullets: [
       "Naming, logo, and visual systems built to hold up at scale.",
       "One language across every touchpoint, physical or digital.",
@@ -25,7 +25,7 @@ export const directions: Direction[] = [
   {
     label: "Product Design",
     description: "Interfaces shaped around the job the user came to do.",
-    popular: ["Web apps", "Mobile apps", "Dashboards", "MVP design"],
+    popular: ["Mobile app flows", "Web app screens", "Marketplace and store design", "AI features inside live products"],
     bullets: [
       "Interfaces shaped around the job the user actually came to do.",
       "Design decisions backed by a reason, not a trend.",
@@ -35,7 +35,7 @@ export const directions: Direction[] = [
   {
     label: "UI / UX",
     description: "Flows that remove friction before adding polish.",
-    popular: ["User flows", "Interface design", "Prototypes", "Usability review"],
+    popular: ["Responsive interface design", "Clickable prototypes", "Usability test rounds", "Layouts ready for developers"],
     bullets: [
       "Flows that remove friction before adding polish.",
       "Accessible by default, not bolted on at the end.",
@@ -45,7 +45,7 @@ export const directions: Direction[] = [
   {
     label: "Functional Research",
     description: "Talking to real users before committing pixels.",
-    popular: ["User interviews", "Competitor audit", "Problem framing", "Concept testing"],
+    popular: ["Competitor teardown", "Interview scripts and findings", "Problem statements", "Concept checks before design"],
     bullets: [
       "Talking to real users before committing pixels.",
       "Validating the problem before designing the solution.",
@@ -55,7 +55,7 @@ export const directions: Direction[] = [
   {
     label: "Wireframing",
     description: "Structure first: layout decided before visuals.",
-    popular: ["Low-fi wireframes", "Clickable flows", "Page structure", "Handoff specs"],
+    popular: ["Page maps and structure", "Rough layouts for testing", "Click-through flows", "Annotated specs for build"],
     bullets: [
       "Structure first — layout decisions made before visual ones.",
       "Fast enough to test, precise enough to build from.",
@@ -65,7 +65,7 @@ export const directions: Direction[] = [
   {
     label: "Motion & Dynamics",
     description: "Micro-interactions that explain state, not just decorate.",
-    popular: ["Page transitions", "Hover states", "Product motion", "Intro animation"],
+    popular: ["Page and route transitions", "Scroll and hover behaviour", "Product walkthrough motion", "Intro and loading sequences"],
     bullets: [
       "Micro-interactions that explain state, not just decorate it.",
       "Timing and easing tuned by hand, not default curves.",
@@ -75,7 +75,7 @@ export const directions: Direction[] = [
   {
     label: "Front-end Development",
     description: "Production code by the team that designed it.",
-    popular: ["Next.js builds", "Animations", "CMS setup", "Performance"],
+    popular: ["Next.js and React builds", "Animated interfaces", "Content management setup", "Speed and Core Web Vitals"],
     bullets: [
       "Production code, shipped by the same team that designed it.",
       "Fast, accessible, and built to be maintained.",
@@ -85,7 +85,7 @@ export const directions: Direction[] = [
   {
     label: "Design Systems",
     description: "Tokens, components, and patterns that keep teams aligned.",
-    popular: ["Component library", "Tokens", "Documentation", "Figma kit"],
+    popular: ["Shared component library", "Colour, type and spacing tokens", "Usage documentation", "Figma kit kept in sync"],
     bullets: [
       "Shared foundations: tokens, components, reusable patterns.",
       "Keeps design and development aligned as products grow.",
@@ -95,7 +95,7 @@ export const directions: Direction[] = [
   {
     label: "AI Integration",
     description: "Agent-native workflows built into the product.",
-    popular: ["Chat assistants", "Support automation", "AI search", "Content tooling"],
+    popular: ["Voice and text assistants", "Agents that plan routes and tasks", "Search over your own content", "Prompts and guardrails"],
     bullets: [
       "Agent-native workflows built into the product, not bolted on.",
       "Interfaces designed for both human and model users.",
@@ -105,7 +105,7 @@ export const directions: Direction[] = [
   {
     label: "Art Direction",
     description: "One visual direction carried through every asset.",
-    popular: ["Visual concept", "Photo direction", "Typography", "Campaign look"],
+    popular: ["Visual concept and mood", "Image and 3D direction", "Type pairing and layout", "Look for launches and campaigns"],
     bullets: [
       "A distinctive visual direction, carried through every asset.",
       "Typography, imagery, and motion as one language.",
@@ -115,7 +115,7 @@ export const directions: Direction[] = [
   {
     label: "Accessibility",
     description: "Designed for varied abilities, contexts, and input.",
-    popular: ["Contrast audit", "Keyboard flows", "Screen reader pass", "WCAG fixes"],
+    popular: ["Contrast and colour checks", "Keyboard and focus paths", "Screen reader pass", "Fixes to WCAG 2.2 AA"],
     bullets: [
       "Designed for varied abilities, contexts, and input methods.",
       "Contrast, focus states, and keyboard use — not an afterthought.",
@@ -125,7 +125,7 @@ export const directions: Direction[] = [
   {
     label: "Content Architecture",
     description: "Content structured so it scales without a redesign.",
-    popular: ["Site structure", "Schemas", "Navigation", "Editorial model"],
+    popular: ["Site maps and navigation", "Content models and fields", "Editorial structure for journals", "URL and metadata planning"],
     bullets: [
       "Structuring content so it scales without a redesign.",
       "Schema and hierarchy decided before a single page is built.",

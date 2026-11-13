@@ -10,6 +10,7 @@ export function CornerSocial() {
         <a
           key={link.label}
           href={link.href}
+          target="_blank" rel="noopener noreferrer"
           className="pointer-events-auto text-white transition-opacity hover:opacity-60"
         >
           {link.label}

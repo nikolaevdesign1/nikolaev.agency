@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
+import { ATTACHMENT_MAX_BYTES, sendContactMail } from "@/lib/mail";
+import { site } from "@/lib/data/site";
 
 type ContactPayload = {
   name?: string;
   email?: string;
-  company?: string;
-  budget?: string;
+  reason?: string;
   message?: string;
 };
 
@@ -19,6 +20,7 @@ export async function POST(request: Request) {
       body = {
         name: form.get("name")?.toString(),
         email: form.get("email")?.toString(),
+        reason: form.get("reason")?.toString(),
         message: form.get("message")?.toString(),
       };
       const file = form.get("attachment");
@@ -44,9 +46,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Enter a valid email." }, { status: 422 });
   }
 
-  // Delivery isn't wired up yet — wire an email provider (e.g. Resend) here
-  // and point it at hello@nikolaev.agency, or persist to a CRM/table instead.
-  console.log("New contact inquiry", body, attachment ? { attachment: attachment.name } : {});
+  if (message.length > 1000 || name.length > 200 || email.length > 320) {
+    return NextResponse.json({ error: "The message is too long." }, { status: 422 });
+  }
+  if (attachment && attachment.size > ATTACHMENT_MAX_BYTES) {
+    return NextResponse.json({ error: "The file is larger than 10 MB." }, { status: 413 });
+  }
+
+  try {
+    await sendContactMail({
+      name,
+      email,
+      reason: body.reason,
+      message,
+      attachment: attachment
+        ? { filename: attachment.name, content: Buffer.from(await attachment.arrayBuffer()) }
+        : undefined,
+    });
+  } catch (error) {
+    console.error("Contact message was not delivered", error);
+    return NextResponse.json(
+      { error: `We could not send the message. Please write to ${site.email}.` },
+      { status: 502 },
+    );
+  }
 
   return NextResponse.json({ ok: true });
 }

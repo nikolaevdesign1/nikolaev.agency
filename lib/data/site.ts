@@ -12,22 +12,22 @@ export const site = {
   /** Google Analytics 4 measurement ID (public). */
   analyticsId: "G-PBNJNW5B7B",
   email: "info@nikolaev.agency",
+  /** Where contact-form messages are delivered. */
+  inbox: "nikolaev.design1@gmail.com",
   location: "Los Angeles, CA",
   founded: "2021",
   social: [
-    { label: "X (Twitter)", href: "#" },
-    { label: "Behance", href: "#" },
-    { label: "Dribbble", href: "#" },
-    { label: "Threads", href: "#" },
-    { label: "TikTok", href: "#" },
-    { label: "Awwwards", href: "#" },
+    { label: "X (Twitter)", href: "https://x.com/oleg_nikolaev1" },
+    { label: "Behance", href: "https://www.behance.net/oleg_nikolaev1" },
+    { label: "Dribbble", href: "https://dribbble.com/nikolaev_design1" },
+    { label: "Threads", href: "https://www.threads.com/@nikolaev_design1" },
+    { label: "TikTok", href: "https://www.tiktok.com/@nikolaev_design1" },
+    { label: "Awwwards", href: "https://www.awwwards.com/nikolaev_design/" },
   ],
   upcoming: { count: 7, month: "December" },
   cornerSocial: [
-    { label: "Instagram", href: "#" },
-    { label: "X (Twitter)", href: "#" },
-    { label: "Behance", href: "#" },
-    { label: "LinkedIn", href: "#" },
+    { label: "X (Twitter)", href: "https://x.com/oleg_nikolaev1" },
+    { label: "Behance", href: "https://www.behance.net/oleg_nikolaev1" },
   ],
 } as const;
 

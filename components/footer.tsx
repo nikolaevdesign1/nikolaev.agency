@@ -73,6 +73,7 @@ export function Footer() {
                 <li key={link.label}>
                   <a
                     href={link.href}
+                    target="_blank" rel="noopener noreferrer"
                     className="font-mono text-[10px] text-foreground transition-opacity hover:opacity-60"
                   >
                     {link.label}

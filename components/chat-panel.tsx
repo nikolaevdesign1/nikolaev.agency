@@ -541,7 +541,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
       onClick={toggleSidebar}
       aria-label={collapsed ? "Show chats" : "Hide chats"}
       aria-expanded={!collapsed}
-      className="grid size-9 place-items-center rounded-[8px] text-ink-foreground/70 transition-colors hover:bg-ink-foreground/10 hover:text-ink-foreground"
+      className="grid size-9 place-items-center rounded-[8px] text-ink-foreground/70 transition-colors hover:bg-ink-foreground/10 hover:text-ink-foreground [&>svg]:block"
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
@@ -650,11 +650,11 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           </button>
         </div>
 
-        {empty ? <div aria-hidden="true" className="min-h-0 flex-[0.55]" /> : null}
+        {empty ? <div aria-hidden="true" className="hidden min-h-0 flex-[0.55] md:block" /> : null}
 
         <div
           ref={scrollerRef}
-          className={`relative z-[1] overflow-y-auto overscroll-contain px-[var(--gutter)] ${empty ? "flex-none" : "min-h-0 flex-1"}`}
+          className={`relative z-[1] overflow-y-auto overscroll-contain px-[var(--gutter)] ${empty ? "min-h-0 flex-1 md:flex-none" : "min-h-0 flex-1"}`}
         >
           {empty ? (
             <div className="mx-auto flex max-w-[760px] flex-col items-center gap-[clamp(0.5rem,2.4vh,1.5rem)] pb-4 pt-4 text-center">
@@ -840,7 +840,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
                       onClick={toggleVoice}
                       aria-label={listening ? "Stop voice input" : "Voice input"}
                       aria-pressed={listening}
-                      className={`grid size-9 place-items-center rounded-[8px] transition-colors ${
+                      className={`grid size-9 place-items-center rounded-[8px] transition-colors [&>svg]:block ${
                         listening
                           ? "animate-pulse bg-red-500/20 text-red-400"
                           : "text-ink-foreground/70 hover:bg-ink-foreground/10 hover:text-ink-foreground"
@@ -857,7 +857,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
                   type="submit"
                   aria-label="Send"
                   disabled={pending || (!draft.trim() && files.length === 0)}
-                  className="grid size-10 place-items-center rounded-full bg-white text-black transition-opacity hover:opacity-85 disabled:opacity-30"
+                  className="grid size-10 place-items-center rounded-full bg-white text-black transition-opacity hover:opacity-85 disabled:opacity-30 [&>svg]:block"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 19V5M6 11l6-6 6 6" />
@@ -899,7 +899,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
                     className="chat-rise group flex flex-col gap-3 rounded-[12px] bg-[#1c1c1c] p-4 text-left ring-1 ring-ink-foreground/[0.06] transition-colors hover:bg-[#262626]"
                     style={{ ["--d" as string]: `${900 + i * 90}ms` }}
                   >
-                    <span className="flex size-8 items-center justify-center rounded-[6px] bg-ink-foreground/10 text-ink-foreground transition-colors group-hover:bg-ink-foreground/20">
+                    <span className="flex size-8 items-center justify-center rounded-[6px] bg-ink-foreground/10 text-ink-foreground transition-colors group-hover:bg-ink-foreground/20 [&>svg]:block">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                         {item.icon}
                       </svg>
@@ -915,7 +915,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           </form>
         </div>
 
-        {empty ? <div aria-hidden="true" className="min-h-0 flex-1" /> : null}
+        {empty ? <div aria-hidden="true" className="hidden min-h-0 flex-1 md:block" /> : null}
 
         <p className="relative z-[1] px-[var(--gutter)] pb-4 text-center font-mono text-[11px] text-ink-muted">
           Still have questions? Write to us at{" "}
@@ -929,7 +929,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
 
         <nav aria-label="Social" className="absolute bottom-4 right-5 z-[1] hidden gap-5 font-mono text-[11px] xl:flex">
           {site.cornerSocial.map((link) => (
-            <a key={link.label} href={link.href} className="text-ink-foreground/70 transition-opacity hover:opacity-60">
+            <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="text-ink-foreground/70 transition-opacity hover:opacity-60">
               {link.label}
             </a>
           ))}
