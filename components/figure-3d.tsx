@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 type Figure3DProps = {
-  /** Low-poly model with a "Figure" root, a "Head" pivot and an "ArmL" shoulder pivot. */
+  /** Low-poly model: "Figure" root with the legs, a "Torso" pivot at the waist carrying "Head" and "ArmL" pivots. */
   model: string;
   /** Still image shown until WebGL has drawn the first frame, and kept when it cannot. */
   poster: string;
@@ -24,6 +24,18 @@ function headYaw(t: number) {
   if (cycle < 6.4) return 0.42 - 0.74 * ease((cycle - 5) / 1.4);
   if (cycle < 7.8) return -0.32;
   return -0.32 * (1 - ease((cycle - 7.8) / 1.2));
+}
+
+/** 0 at rest, 1 at the top of a breath; the exhale is slower than the inhale. */
+function breath(t: number) {
+  const phase = (t % 4.4) / 4.4;
+  const x = phase < 0.42 ? phase / 0.42 : 1 - (phase - 0.42) / 0.58;
+  return x * x * (3 - 2 * x);
+}
+
+/** -1..1: which leg carries the weight. Holds on one side, then drifts to the other. */
+function weight(t: number) {
+  return Math.tanh(2.6 * Math.sin((t * 2 * Math.PI) / 23 + 0.6));
 }
 
 /**
@@ -85,6 +97,7 @@ export function Figure3D({ model, poster, label, className }: Figure3DProps) {
       scene.add(figure);
       const head = figure.getObjectByName("Head");
       const arm = figure.getObjectByName("ArmL");
+      const torso = figure.getObjectByName("Torso");
 
       const resize = () => {
         const { clientWidth, clientHeight } = canvas;
@@ -101,15 +114,25 @@ export function Figure3D({ model, poster, label, className }: Figure3DProps) {
       const draw = (ms: number) => {
         const t = ms / 1000;
         if (!still) {
+          const lean = 0.018 * weight(t);
           if (head) {
             head.rotation.y = headYaw(t);
-            head.rotation.x = 0.025 * Math.sin(t * 0.9);
+            head.rotation.x = 0.025 * Math.sin(t * 0.9) + 0.02 * Math.sin(t * 0.23 + 2);
+            head.rotation.z = 0.035 * Math.sin(t * 0.31 + 1) + 0.7 * lean;
           }
           if (arm) {
             // The free arm drifts a little forward and back, out of step with the body sway.
             arm.rotation.x = 0.045 * Math.sin(t * 0.8 + 1.2);
             arm.rotation.z = 0.012 * Math.sin(t * 0.55);
           }
+          if (torso) {
+            // Chest grows forward more than sideways; shoulders rise with it. The torso leans against the hips.
+            const air = breath(t);
+            torso.scale.set(1 + 0.012 * air, 1 + 0.007 * air, 1 + 0.024 * air);
+            torso.rotation.z = -1.7 * lean;
+          }
+          // Legs tip from the floor, so the hips travel sideways while the soles stay put.
+          figure.rotation.z = lean;
           figure.rotation.y = 0.05 * Math.sin(t * 0.5);
         }
         renderer.render(scene, camera);
