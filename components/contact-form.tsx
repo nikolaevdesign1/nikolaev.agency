@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@/lib/analytics";
 type Status = "idle" | "submitting" | "success" | "error";
 
 const reasons = [
@@ -42,6 +43,7 @@ export function ContactForm() {
       if (!res.ok) throw new Error("Something went wrong. Try again.");
 
       setStatus("success");
+      track("generate_lead", { form: "contact", ...(reason ? { reason } : {}) });
       form.reset();
       setReason(null);
       setMessage("");

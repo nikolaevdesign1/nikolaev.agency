@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const KEY = "cookie-choice";
+import { CONSENT_KEY as KEY, setAnalyticsConsent } from "@/lib/analytics";
 
 export function CookieNotice() {
   const [visible, setVisible] = useState(false);
@@ -30,6 +29,7 @@ export function CookieNotice() {
     } catch {
       /* storage blocked */
     }
+    setAnalyticsConsent(value === "accepted");
     setVisible(false);
   };
 
@@ -76,6 +76,7 @@ export function CookieReset() {
         } catch {
           /* storage blocked */
         }
+        setAnalyticsConsent(false);
         window.dispatchEvent(new Event("studio:cookies"));
       }}
       className="rounded-[6px] bg-foreground px-4 py-2.5 font-mono text-[12px] text-background transition-opacity hover:opacity-80"

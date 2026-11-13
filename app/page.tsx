@@ -10,6 +10,9 @@ import { GlobeNetwork } from "@/components/globe-network";
 import { ScrollScale } from "@/components/scroll-scale";
 import { GlobeSticky } from "@/components/globe-sticky";
 import { LinkButton, pillClass } from "@/components/button";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata = pageMeta({ path: "/" });
 
 const aiPoints = [
   {

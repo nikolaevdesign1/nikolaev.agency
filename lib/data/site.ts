@@ -1,10 +1,16 @@
 export const site = {
   name: "Nikolaev",
+  domain: "nikolaev.agency",
+  /** Browser title of the home page and the default share title. */
+  title: "nikolaev.agency | Premium design agency",
   legalName: "Nikolaev Design Studio",
   tagline: "A design studio building digital presence for ambitious brands.",
   description:
-    "Nikolaev is a Los Angeles design studio working at the intersection of brand, product, and motion.",
-  url: "https://nikolaev.agency",
+    "nikolaev.agency is a premium design agency working at the intersection of brand, product, and motion.",
+  /** Canonical host: the bare domain redirects here. */
+  url: "https://www.nikolaev.agency",
+  /** Google Analytics 4 measurement ID (public). */
+  analyticsId: "G-PBNJNW5B7B",
   email: "info@nikolaev.agency",
   location: "Los Angeles, CA",
   founded: "2021",

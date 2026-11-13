@@ -13,6 +13,9 @@ import { Preloader } from "@/components/preloader";
 import { AutoScramble } from "@/components/auto-scramble";
 import { BottomBlur } from "@/components/bottom-blur";
 import { SoundToggle } from "@/components/sound";
+import { Analytics } from "@/components/analytics";
+import { JsonLd } from "@/components/json-ld";
+import { absoluteUrl, shareImage } from "@/lib/seo";
 
 // next@16.4.5 exports Geist_Mono, but not Libre_Caslon_Condensed
 // (only Libre_Caslon_Display and Libre_Caslon_Text). These files are the
@@ -53,30 +56,47 @@ const mono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: {
-    default: `${site.name} — Design Studio, Los Angeles`,
-    template: `%s — ${site.name}`,
-  },
+  title: { default: site.title, template: `%s | ${site.domain}` },
   description: site.description,
   icons: {
     icon: [
       { url: "/icon-light.svg", type: "image/svg+xml", media: "(prefers-color-scheme: light)" },
       { url: "/icon-dark.svg", type: "image/svg+xml", media: "(prefers-color-scheme: dark)" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
     ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
   },
-  openGraph: {
-    title: `${site.name} — Design Studio, Los Angeles`,
-    description: site.description,
-    url: site.url,
-    siteName: site.name,
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${site.name} — Design Studio, Los Angeles`,
-    description: site.description,
-  },
+  // Canonical links and share tags are set per page with `pageMeta`; these are the fallback.
+  openGraph: { title: site.title, description: site.description, siteName: site.domain, locale: "en_US", type: "website", images: [shareImage] },
+  twitter: { card: "summary_large_image", title: site.title, description: site.description, images: [shareImage] },
+};
+
+const organization = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${site.url}/#organization`,
+      name: site.domain,
+      alternateName: [site.name, site.legalName],
+      url: site.url,
+      logo: absoluteUrl("/icon-192.png"),
+      image: absoluteUrl(shareImage.url),
+      description: site.description,
+      email: site.email,
+      foundingDate: site.founded,
+      areaServed: "Worldwide",
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${site.url}/#website`,
+      name: site.domain,
+      url: site.url,
+      description: site.description,
+      inLanguage: "en",
+      publisher: { "@id": `${site.url}/#organization` },
+    },
+  ],
 };
 
 export default function RootLayout({ children, modal }: LayoutProps<"/">) {
@@ -100,6 +120,8 @@ export default function RootLayout({ children, modal }: LayoutProps<"/">) {
             <BottomBlur />
             <SoundToggle />
             <AutoScramble />
+            <JsonLd data={organization} />
+            <Analytics id={site.analyticsId} />
           </>
         </SmoothScroll>
       </body>

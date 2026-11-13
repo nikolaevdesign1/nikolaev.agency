@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
 import { site } from "@/lib/data/site";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Privacy policy", description: `How ${site.name} handles personal data.` };
+export const metadata: Metadata = pageMeta({ title: "Privacy policy", description: `How ${site.name} handles personal data.`, path: "/privacy" });
 
 export default function PrivacyPage() {
   return (
     <LegalPage
       title="Privacy policy"
-      updated="November 12, 2026"
+      updated="November 13, 2026"
       intro={`This page explains what nikolaev.agency collects when you use this site, why, and what you can ask us to do with it. The site is run by Oleg Nikolaev, ${site.location}. Questions go to ${site.email}.`}
       sections={[
         {
@@ -38,6 +39,7 @@ export default function PrivacyPage() {
         {
           title: "Who else sees it",
           body: [
+            "Google Analytics measures visits: pages viewed, the referring site, approximate location by country and city, device and browser. It sets cookies only if you accept the cookie notice; the Cookie policy has the details. We do not send it your name, email or form messages.",
             "Vercel hosts the site and processes requests on our behalf. If we connect an email service to deliver form messages and newsletters, it will be named here before it is used.",
             "We do not sell or share personal information for money or for cross-context advertising, as those terms are used in California law.",
           ],

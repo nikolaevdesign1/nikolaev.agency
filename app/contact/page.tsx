@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import { site } from "@/lib/data/site";
+import { pageMeta } from "@/lib/seo";
 import { ContactForm } from "@/components/contact-form";
 import { CoordinateTracker } from "@/components/coordinate-tracker";
 import { ScrambleText } from "@/components/scramble-text";
 import { DotField } from "@/components/dot-field";
 import { TerminalNotes } from "@/components/terminal-notes";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Contact",
   description: `Get in touch with ${site.name}.`,
-};
+  path: "/contact",
+});
 
 const studioNotes = [
   "--STUDIO:",

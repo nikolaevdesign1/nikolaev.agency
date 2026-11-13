@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@/lib/analytics";
 import { AmbientTextField } from "@/components/ambient-text-field";
 
 /** Dark subscribe block for nikolaev.media, with the letter field behind it like every dark block. */
@@ -25,6 +26,7 @@ export function SubscribeBanner() {
         throw new Error(data?.error ?? "Something went wrong. Try again.");
       }
       setStatus("done");
+      track("sign_up", { method: "newsletter" });
     } catch (err) {
       setStatus("error");
       setError(err instanceof Error ? err.message : "Something went wrong.");

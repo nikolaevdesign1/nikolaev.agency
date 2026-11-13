@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { articles } from "@/lib/data/media";
 import { ArticleBody } from "@/components/article-body";
 import { ArticleMeta, MediaCard } from "@/components/media-card";
+import { JsonLd } from "@/components/json-ld";
+import { absoluteUrl, pageMeta } from "@/lib/seo";
+import { site } from "@/lib/data/site";
 
 export function generateStaticParams() {
   return articles.map((article) => ({ slug: article.slug }));
@@ -17,15 +20,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = articles.find((a) => a.slug === slug);
   if (!article) return { title: "Article" };
-  return {
+  return pageMeta({
     title: article.title,
     description: article.description,
-    openGraph: {
-      title: article.title,
-      description: article.description,
-      images: [article.cover],
-    },
-  };
+    path: `/media/${article.slug}`,
+    image: article.cover,
+    type: "article",
+    publishedTime: article.date,
+  });
 }
 
 export default async function ArticlePage({
@@ -42,6 +44,21 @@ export default async function ArticlePage({
 
   return (
     <article className="bg-background gutter pb-32 pt-36 text-foreground md:pt-44">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: article.title,
+          description: article.description,
+          image: absoluteUrl(article.cover),
+          datePublished: article.date,
+          dateModified: article.date,
+          articleSection: article.category,
+          mainEntityOfPage: absoluteUrl(`/media/${article.slug}`),
+          author: { "@id": `${site.url}/#organization` },
+          publisher: { "@id": `${site.url}/#organization` },
+        }}
+      />
       <div className="mx-auto max-w-[1200px]">
         <p className="font-mono text-[11px] text-muted">
           <Link href="/media" className="hover:text-foreground">
