@@ -21,7 +21,6 @@ async function notion<T>(path: string, attempt = 0): Promise<T> {
   if (!token) throw new Error("NOTION_TOKEN is not set.");
   const res = await fetch(`${API}${path}`, {
     headers: { Authorization: `Bearer ${token}`, "Notion-Version": "2022-06-28" },
-    cache: "no-store",
   });
   if (res.status === 429 && attempt < 4) {
     const wait = Number(res.headers.get("retry-after") ?? "1");
@@ -256,7 +255,7 @@ async function loadArticles(): Promise<Article[]> {
 
 /**
  * Released articles from Notion, newest first. Refreshed every 15 minutes; an article appears
- * once its date has come. A failure returns an empty list and is retried within seconds.
+ * once its date has come. A failure returns an empty list and is retried after two minutes.
  */
 export async function getArticles(): Promise<Article[]> {
   "use cache";
@@ -267,7 +266,8 @@ export async function getArticles(): Promise<Article[]> {
     return articles;
   } catch (error) {
     console.error("Could not load articles from Notion", error);
-    cacheLife("seconds");
+    // Not shorter than 5 minutes of expiry: a shorter cache cannot be prerendered and fails the build.
+    cacheLife({ stale: 60, revalidate: 120, expire: 600 });
     return [];
   }
 }
