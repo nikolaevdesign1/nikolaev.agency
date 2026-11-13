@@ -1,6 +1,7 @@
 "use client";
 
 import { cities } from "@/lib/data/cities";
+import { applyCaseTexts } from "@/lib/data/case-texts";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { awardSources, awardsOf, linksOf, type ProjectAward, type BlockPlace, type Media, type Project, type ProjectBlock, type ProjectLink } from "@/lib/data/projects";
 import { MediaField, emptyMedia } from "@/components/admin/media-field";
@@ -72,6 +73,15 @@ export function AdminApp() {
   const patch = (change: Partial<Project>) => {
     setProjects((list) => list.map((p, i) => (i === selected ? { ...p, ...change } : p)));
     setDirty(true);
+  };
+
+  /** Fills the text fields of the ten cases from the supplied document. Nothing is saved until Save. */
+  const fillCaseTexts = () => {
+    if (!window.confirm("Fill the text fields of the cases (title, summary, About, Problem, Results, awards, links, credits, addresses) from the supplied document? Covers, page blocks and the home page choice stay as they are. You can check the result and press Save.")) return;
+    const { projects: next, applied } = applyCaseTexts(projects);
+    setProjects(next);
+    setDirty(true);
+    setNotice(`Texts filled for ${applied} projects. Check them and press Save.`);
   };
 
   const save = async () => {
@@ -198,6 +208,9 @@ export function AdminApp() {
           {storage === "none" ? (
             <span className="font-mono text-[11px] text-accent-red">No storage connected</span>
           ) : null}
+          <button type="button" onClick={fillCaseTexts} className={smallBtn}>
+            Fill case texts
+          </button>
           <a href="/projects" target="_blank" rel="noreferrer" className={smallBtn}>
             View site
           </a>

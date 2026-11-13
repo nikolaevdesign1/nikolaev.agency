@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
+import { legacySlugs } from "@/lib/data/case-texts";
 import { getProjects } from "@/lib/content/store";
 import { ProjectModal } from "@/components/project-modal";
 import { ProjectCase } from "@/components/project-case";
@@ -34,7 +35,12 @@ async function Content({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const projects = await getProjects();
   const index = projects.findIndex((p) => p.slug === slug);
-  if (index < 0) notFound();
+  if (index < 0) {
+    // An address a project had before its case text was added keeps working.
+    const moved = legacySlugs[slug];
+    if (moved && projects.some((p) => p.slug === moved)) permanentRedirect(`/projects/${moved}`);
+    notFound();
+  }
   const project = projects[index];
   const next = projects[(index + 1) % projects.length];
 
