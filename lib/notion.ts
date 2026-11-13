@@ -16,16 +16,22 @@ type Block = {
   [key: string]: unknown;
 };
 
-async function notion<T>(path: string, attempt = 0): Promise<T> {
+async function notion<T>(path: string, body?: unknown, attempt = 0): Promise<T> {
   const token = process.env.NOTION_TOKEN;
   if (!token) throw new Error("NOTION_TOKEN is not set.");
   const res = await fetch(`${API}${path}`, {
-    headers: { Authorization: `Bearer ${token}`, "Notion-Version": "2022-06-28" },
+    method: body === undefined ? "GET" : "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Notion-Version": "2022-06-28",
+      ...(body === undefined ? {} : { "Content-Type": "application/json" }),
+    },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
   if (res.status === 429 && attempt < 4) {
     const wait = Number(res.headers.get("retry-after") ?? "1");
     await new Promise((resolve) => setTimeout(resolve, Math.min(10, Math.max(1, wait)) * 1000));
-    return notion<T>(path, attempt + 1);
+    return notion<T>(path, body, attempt + 1);
   }
   if (!res.ok) throw new Error(`Notion ${res.status} on ${path}`);
   return (await res.json()) as T;
@@ -65,20 +71,44 @@ function textOf(block: Block): RichText[] | undefined {
   return data?.rich_text;
 }
 
-/** Pages that hang under the articles page: sub-pages and page links, also inside toggles and columns. */
-async function articlePages(parent: string, depth = 0): Promise<{ id: string; title: string; created: string }[]> {
-  const found: { id: string; title: string; created: string }[] = [];
+type PageRef = { id: string; title: string; created: string };
+
+/** Rows of an inline database: each row is a page. */
+async function databasePages(id: string): Promise<PageRef[]> {
+  const rows: PageRef[] = [];
+  let cursor: string | undefined;
+  do {
+    const page = await notion<{
+      results: { id: string; created_time: string; properties: Record<string, { type: string; title?: RichText[] }> }[];
+      has_more: boolean;
+      next_cursor: string | null;
+    }>(`/databases/${id}/query`, { page_size: 100, ...(cursor ? { start_cursor: cursor } : {}) });
+    for (const row of page.results) {
+      const title = Object.values(row.properties).find((p) => p.type === "title")?.title;
+      rows.push({ id: row.id, title: plain(title), created: row.created_time });
+    }
+    cursor = page.has_more ? (page.next_cursor ?? undefined) : undefined;
+  } while (cursor);
+  return rows;
+}
+
+/** Pages under the articles page: sub-pages, page links and database rows, also inside toggles, columns and lists. */
+async function articlePages(parent: string, seen: Set<string>, depth = 0): Promise<PageRef[]> {
+  const found: PageRef[] = [];
   for (const block of await children(parent)) {
+    seen.add(block.type);
     if (block.type === "child_page" && block.child_page) {
       found.push({ id: block.id, title: block.child_page.title, created: block.created_time });
+    } else if (block.type === "child_database") {
+      found.push(...(await databasePages(block.id)));
     } else if (block.type === "link_to_page" && block.link_to_page?.page_id) {
       const page = await notion<{ created_time: string; properties: Record<string, { type: string; title?: RichText[] }> }>(
         `/pages/${block.link_to_page.page_id}`,
       );
       const title = Object.values(page.properties).find((p) => p.type === "title")?.title;
       found.push({ id: block.link_to_page.page_id, title: plain(title), created: page.created_time });
-    } else if (block.has_children && depth < 3 && ["toggle", "column_list", "column", "heading_1", "heading_2", "heading_3"].includes(block.type)) {
-      found.push(...(await articlePages(block.id, depth + 1)));
+    } else if (block.has_children && depth < 3) {
+      found.push(...(await articlePages(block.id, seen, depth + 1)));
     }
   }
   return found;
@@ -210,7 +240,9 @@ const EARLY_RELEASE_UNTIL = "2026-11-16";
 async function loadArticles(): Promise<Article[]> {
   const realToday = new Date().toISOString().slice(0, 10);
   const today = realToday > EARLY_RELEASE_UNTIL ? realToday : EARLY_RELEASE_UNTIL;
-  const pages = await articlePages(site.notionArticlesPage);
+  const seen = new Set<string>();
+  const pages = await articlePages(site.notionArticlesPage, seen);
+  if (pages.length === 0) console.error("Notion: no article pages found; block types seen:", [...seen].join(", ") || "none");
   const articles: Article[] = [];
   const used = new Set<string>();
 
