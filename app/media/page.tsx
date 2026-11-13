@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { site } from "@/lib/data/site";
 import { pageMeta } from "@/lib/seo";
 import { MediaIndex } from "@/components/media-index";
+import { getArticles } from "@/lib/notion";
 
 export const metadata: Metadata = pageMeta({
   title: "Media",
@@ -9,6 +10,6 @@ export const metadata: Metadata = pageMeta({
   path: "/media",
 });
 
-export default function MediaPage() {
-  return <MediaIndex />;
+export default async function MediaPage() {
+  return <MediaIndex articles={await getArticles()} />;
 }

@@ -1,8 +1,16 @@
-/** Splits on **bold** and *italic* markers. No HTML — the input is our own copy, never user data. */
+/** Splits on **bold**, *italic* and [text](https://link) markers. No HTML: only these three shapes are ever drawn. */
 function inline(text: string, keyPrefix: string) {
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean);
+  const parts = text.split(/(\[[^\]]+\]\(https?:\/\/[^)\s]+\)|\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean);
   return parts.map((part, i) => {
     const key = `${keyPrefix}-${i}`;
+    const link = part.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/);
+    if (link) {
+      return (
+        <a key={key} href={link[2]} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 transition-colors hover:text-accent">
+          {link[1]}
+        </a>
+      );
+    }
     if (part.startsWith("**") && part.endsWith("**")) {
       return <strong key={key}>{part.slice(2, -2)}</strong>;
     }
@@ -13,6 +21,6 @@ function inline(text: string, keyPrefix: string) {
   });
 }
 
-export function RichText({ text, className }: { text: string; className?: string }) {
-  return <p className={className}>{inline(text, "t")}</p>;
+export function RichText({ text, className, as: Tag = "p" }: { text: string; className?: string; as?: "p" | "span" }) {
+  return <Tag className={className}>{inline(text, "t")}</Tag>;
 }

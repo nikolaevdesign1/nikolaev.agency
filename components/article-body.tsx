@@ -23,6 +23,29 @@ function Block({ block }: { block: ArticleBlock }) {
       </h2>
     );
   }
+  if (block.type === "h3") {
+    return <h3 className="mt-10 font-serif text-2xl font-medium leading-tight text-foreground md:text-3xl">{block.text}</h3>;
+  }
+  if (block.type === "list") {
+    const Tag = block.ordered ? "ol" : "ul";
+    return (
+      <Tag className={`mt-6 flex flex-col gap-2 pl-6 text-[17px] leading-[1.7] text-foreground/85 ${block.ordered ? "list-decimal" : "list-disc"}`}>
+        {block.items.map((item, i) => (
+          <li key={i}>
+            <RichText as="span" text={item} />
+          </li>
+        ))}
+      </Tag>
+    );
+  }
+  if (block.type === "quote") {
+    return (
+      <blockquote className="mt-8 border-l-2 border-foreground/70 pl-5 font-serif text-2xl leading-snug text-foreground">
+        <RichText as="span" text={block.text} />
+      </blockquote>
+    );
+  }
+  if (block.type === "divider") return <hr className="my-12 border-border" />;
   if (block.type === "image") {
     return (
       <div className="my-10 overflow-hidden rounded-[12px]">
@@ -187,6 +210,7 @@ export function ArticleBody({ article }: { article: Article }) {
               <Block key={midpoint + i} block={block} />
             ))}
 
+            {article.socials.length > 0 ? (
             <div className="mt-12 border-t border-border pt-6">
               <p className="font-mono text-[11px] text-muted">Also published on</p>
               <ul className="mt-3 flex flex-wrap gap-5">
@@ -205,6 +229,7 @@ export function ArticleBody({ article }: { article: Article }) {
                 ))}
               </ul>
             </div>
+            ) : null}
           </div>
         </div>
       </div>

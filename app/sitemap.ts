@@ -1,12 +1,12 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/data/site";
-import { articles } from "@/lib/data/media";
+import { getArticles } from "@/lib/notion";
 import { getProjects } from "@/lib/content/store";
 
 const pages = ["", "/about", "/projects", "/contact", "/media", "/privacy", "/terms", "/cookies", "/accessibility"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const projects = await getProjects();
+  const [projects, articles] = await Promise.all([getProjects(), getArticles()]);
   return [
     ...pages.map((route) => ({ url: `${site.url}${route}` })),
     ...projects.map((project) => ({ url: `${site.url}/projects/${project.slug}` })),

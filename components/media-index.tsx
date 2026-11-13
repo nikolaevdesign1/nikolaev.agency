@@ -11,14 +11,14 @@ import { useFooterInView } from "@/lib/use-footer-in-view";
 import { usePreloaderDone } from "@/lib/use-preloader-done";
 import { articleCategories, latestArticle, otherArticles, type Article } from "@/lib/data/media";
 
-export function MediaIndex() {
+export function MediaIndex({ articles }: { articles: Article[] }) {
   const [category, setCategory] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
-  const categories = useMemo(() => articleCategories(), []);
-  const featured = useMemo(() => latestArticle(), []);
-  const rest = useMemo(() => otherArticles(), []);
-  const all = useMemo(() => [featured, ...rest], [featured, rest]);
+  const categories = useMemo(() => articleCategories(articles), [articles]);
+  const featured = useMemo(() => latestArticle(articles), [articles]);
+  const rest = useMemo(() => otherArticles(articles), [articles]);
+  const all = useMemo(() => (featured ? [featured, ...rest] : []), [featured, rest]);
 
   const lead = useMemo(() => rest.slice(0, 3), [rest]);
   const banner = rest[3];
@@ -72,7 +72,9 @@ export function MediaIndex() {
           ) : null}
         </label>
 
-        {browsing ? (
+        {!featured ? (
+          <p className="mt-16 text-center font-mono text-sm text-muted">The first articles are coming soon.</p>
+        ) : browsing ? (
           <>
             <Hero article={featured} />
             {lead.length > 0 ? <Grid articles={lead} className="mt-16 md:mt-24" /> : null}
@@ -163,15 +165,17 @@ function Hero({ article }: { article: Article }) {
         </h2>
         <ArticleMeta article={article} className="mt-3" />
         <div className="mt-6 aspect-[2.3/1] w-full overflow-hidden rounded-[12px] bg-surface">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={article.cover}
-            alt=""
-            draggable={false}
-            data-scroll=""
-            data-scroll-speed="-0.06"
-            className="h-full w-full scale-[1.12] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
-          />
+          {article.cover ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={article.cover}
+              alt=""
+              draggable={false}
+              data-scroll=""
+              data-scroll-speed="-0.06"
+              className="h-full w-full scale-[1.12] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
+            />
+          ) : null}
         </div>
       </Link>
     </CursorFollowCta>
@@ -195,15 +199,17 @@ function Banner({ article }: { article: Article }) {
     <CursorFollowCta label="Read more" className="mt-24 block md:mt-32">
       <Link href={`/media/${article.slug}`} className="group block">
         <div className="aspect-[2.6/1] w-full overflow-hidden rounded-[12px] bg-surface">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={article.cover}
-            alt=""
-            draggable={false}
-            data-scroll=""
-            data-scroll-speed="-0.06"
-            className="h-full w-full scale-[1.12] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
-          />
+          {article.cover ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={article.cover}
+              alt=""
+              draggable={false}
+              data-scroll=""
+              data-scroll-speed="-0.06"
+              className="h-full w-full scale-[1.12] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.15]"
+            />
+          ) : null}
         </div>
         <div className="mt-5 max-w-[66%] max-md:max-w-none">
           <h3 className="font-serif text-3xl font-medium leading-tight text-foreground md:text-5xl">{article.title}</h3>

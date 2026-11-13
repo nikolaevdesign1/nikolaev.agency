@@ -41,14 +41,16 @@ export function MediaCard({ article, parallax }: { article: Article; parallax?: 
   return (
     <Link href={`/media/${article.slug}`} className="group block">
       <div className="aspect-[3/2] overflow-hidden rounded-[10px] bg-surface">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={article.cover}
-          alt=""
-          draggable={false}
-          {...(parallax ? { "data-scroll": "", "data-scroll-speed": String(parallax) } : {})}
-          className="h-full w-full scale-[1.06] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.1]"
-        />
+        {article.cover ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={article.cover}
+            alt=""
+            draggable={false}
+            {...(parallax ? { "data-scroll": "", "data-scroll-speed": String(parallax) } : {})}
+            className="h-full w-full scale-[1.06] select-none object-cover transition-transform duration-700 ease-out group-hover:scale-[1.1]"
+          />
+        ) : null}
       </div>
       <div className="mt-4">
         <p className="font-serif text-2xl font-medium leading-snug text-foreground">{article.title}</p>

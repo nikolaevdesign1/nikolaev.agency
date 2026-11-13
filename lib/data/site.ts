@@ -9,6 +9,8 @@ export const site = {
     "nikolaev.agency is a premium design agency working at the intersection of brand, product, and motion.",
   /** Canonical host: the bare domain redirects here. */
   url: "https://www.nikolaev.agency",
+  /** Notion page whose sub-pages are the Media articles (not a secret; the integration token is). */
+  notionArticlesPage: "a3026fd3-15d1-4e7c-9dab-c3e55e428edc",
   /** Google Analytics 4 measurement ID (public). */
   analyticsId: "G-PBNJNW5B7B",
   email: "info@nikolaev.agency",
