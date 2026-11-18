@@ -26,12 +26,6 @@ export default function TermsPage() {
           ],
         },
         {
-          title: "The chat assistant",
-          body: [
-            "The chat gives general answers about the studio. It can be wrong and it does not make offers or commitments. Prices, timelines and scope are only agreed in writing with a person from the studio.",
-          ],
-        },
-        {
           title: "Links to other sites",
           body: ["Links to Behance, Awwwards, client sites and others are there for reference. We are not responsible for their content or their privacy practices."],
         },

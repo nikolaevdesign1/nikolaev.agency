@@ -4,18 +4,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LogoCube } from "@/components/logo-cube";
-import { ChatPanel } from "@/components/chat-panel";
+import dynamic from "next/dynamic";
 import { AmbientTextField } from "@/components/ambient-text-field";
 import { SoundBars, useSound } from "@/components/sound";
 import { pixelSwap } from "@/lib/pixel-swap";
-import { site } from "@/lib/data/site";
+import { site, whatsappUrl } from "@/lib/data/site";
+
+// The chat panel is only downloaded when the chat is switched on.
+const ChatPanel = dynamic(() => import("@/components/chat-panel").then((mod) => mod.ChatPanel), { ssr: false });
 
 const links = [
   { label: "Work", href: "/projects" },
   { label: "Agency", href: "/about" },
   { label: "Contact", href: "/contact" },
-  { label: "Media", href: "/media" },
-] as const;
+  ...(site.features.media ? [{ label: "Media", href: "/media" }] : []),
+];
 
 const BLEND = "isolate text-white mix-blend-difference";
 const PLAIN = "text-white";
@@ -114,13 +117,24 @@ export function Nav() {
           </nav>
 
           <div className="col-start-3 justify-self-end">
-            <button
-              type="button"
-              onClick={openChat}
-              className={`hidden cursor-pointer font-sans text-xl font-normal leading-none transition-opacity hover:opacity-60 md:block ${blendFor(overHero)}`}
-            >
-              Let&apos;s chat
-            </button>
+            {site.features.chat ? (
+              <button
+                type="button"
+                onClick={openChat}
+                className={`hidden cursor-pointer font-sans text-xl font-normal leading-none transition-opacity hover:opacity-60 md:block ${blendFor(overHero)}`}
+              >
+                Let&apos;s chat
+              </button>
+            ) : (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`hidden cursor-pointer font-sans text-xl font-normal leading-none transition-opacity hover:opacity-60 md:block ${blendFor(overHero)}`}
+              >
+                Let&apos;s chat
+              </a>
+            )}
 
             <button
               type="button"
@@ -147,7 +161,7 @@ export function Nav() {
         />
       ) : null}
 
-      <ChatPanel open={chatOpen} onClose={closeChat} />
+      {site.features.chat ? <ChatPanel open={chatOpen} onClose={closeChat} /> : null}
     </>
   );
 }
@@ -199,13 +213,24 @@ function MobileMenu({
       </nav>
 
       <div className="relative mt-auto flex flex-col gap-6 gutter pb-8 pt-12">
-        <button
-          type="button"
-          onClick={onChat}
-          className="h-12 w-full rounded-[6px] bg-white font-mono text-[13px] text-black transition-opacity active:opacity-80"
-        >
-          Let&apos;s chat
-        </button>
+        {site.features.chat ? (
+          <button
+            type="button"
+            onClick={onChat}
+            className="h-12 w-full rounded-[6px] bg-white font-mono text-[13px] text-black transition-opacity active:opacity-80"
+          >
+            Let&apos;s chat
+          </button>
+        ) : (
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-12 w-full items-center justify-center rounded-[6px] bg-white font-mono text-[13px] text-black transition-opacity active:opacity-80"
+          >
+            Let&apos;s chat
+          </a>
+        )}
         <div className="flex items-center justify-between font-mono text-[12px]">
           <a href={`mailto:${site.email}`} className="text-ink-foreground/80">
             {site.email}

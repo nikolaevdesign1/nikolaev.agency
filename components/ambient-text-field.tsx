@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { site, whatsappUrl } from "@/lib/data/site";
 
 const FONT_SIZE = 12;
 const LINE = 28;
@@ -86,6 +87,13 @@ function openExistingChat() {
 }
 
 export function StudioChatButton({ className, children }: StudioChatButtonProps) {
+  if (!site.features.chat) {
+    return (
+      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className={className}>
+        {children}
+      </a>
+    );
+  }
   return (
     <button type="button" className={className} onClick={openExistingChat}>
       {children}

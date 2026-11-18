@@ -3,10 +3,10 @@ import { site } from "@/lib/data/site";
 import { getArticles } from "@/lib/notion";
 import { getProjects } from "@/lib/content/store";
 
-const pages = ["", "/about", "/projects", "/contact", "/media", "/privacy", "/terms", "/cookies", "/accessibility"];
+const pages = ["", "/about", "/projects", "/contact", ...(site.features.media ? ["/media"] : []), "/privacy", "/terms", "/cookies", "/accessibility"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [projects, articles] = await Promise.all([getProjects(), getArticles()]);
+  const [projects, articles] = await Promise.all([getProjects(), site.features.media ? getArticles() : Promise.resolve([])]);
   return [
     ...pages.map((route) => ({ url: `${site.url}${route}` })),
     ...projects.map((project) => ({ url: `${site.url}/projects/${project.slug}` })),

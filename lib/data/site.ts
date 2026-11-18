@@ -14,6 +14,15 @@ export const site = {
   /** Google Analytics 4 measurement ID (public). */
   analyticsId: "G-PBNJNW5B7B",
   email: "info@nikolaev.agency",
+  /** Sections that can be switched off without removing their code. */
+  features: {
+    /** The Media section (articles from Notion). */
+    media: true,
+    /** The chat assistant; when off, every "Let's chat" button opens WhatsApp. */
+    chat: false,
+  },
+  /** WhatsApp number in international format without "+" or spaces. */
+  whatsapp: { phone: "40747283995", message: "Hello! I'm writing from nikolaev.agency." },
   /** Where contact-form messages are delivered. */
   inbox: "nikolaev.design1@gmail.com",
   location: "Los Angeles, CA",
@@ -32,6 +41,9 @@ export const site = {
     { label: "Behance", href: "https://www.behance.net/oleg_nikolaev1" },
   ],
 } as const;
+
+/** Opens a WhatsApp conversation with the studio, with the first message filled in. */
+export const whatsappUrl = `https://wa.me/${site.whatsapp.phone}?text=${encodeURIComponent(site.whatsapp.message)}`;
 
 export const navLinks = [
   { label: "Home", href: "/" },

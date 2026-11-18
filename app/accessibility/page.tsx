@@ -15,7 +15,7 @@ export default function AccessibilityPage() {
         {
           title: "What we do",
           body: [
-            "Text alternatives for images, readable contrast for body text, keyboard access to navigation, forms and the chat, and visible focus states.",
+            "Text alternatives for images, readable contrast for body text, keyboard access to navigation and forms, and visible focus states.",
             "If your system asks for reduced motion, the scrolling effects, text animations and loaders are turned off.",
             "Sound is off until you switch it on.",
           ],

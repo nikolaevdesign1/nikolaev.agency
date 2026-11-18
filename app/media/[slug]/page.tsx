@@ -9,6 +9,7 @@ import { absoluteUrl, pageMeta, shareImage } from "@/lib/seo";
 import { site } from "@/lib/data/site";
 
 export async function generateStaticParams() {
+  if (!site.features.media) return [{ slug: "not-published" }];
   const articles = await getArticles();
   // The build needs at least one address; with no articles released this one renders the 404 page.
   return articles.length > 0 ? articles.map((article) => ({ slug: article.slug })) : [{ slug: "not-published" }];
@@ -19,6 +20,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
+  if (!site.features.media) return { title: "Article" };
   const { slug } = await params;
   const article = (await getArticles()).find((a) => a.slug === slug);
   if (!article) return { title: "Article" };
@@ -37,6 +39,7 @@ export default async function ArticlePage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  if (!site.features.media) notFound();
   const { slug } = await params;
   const articles = await getArticles();
   const index = articles.findIndex((a) => a.slug === slug);

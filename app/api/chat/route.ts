@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { answerFromSite, type ChatTurn } from "@/lib/chat/answer";
 import { askGrok } from "@/lib/chat/grok";
 import { addSpend, budgetAvailable } from "@/lib/chat/budget";
+import { site } from "@/lib/data/site";
 
 const MAX_MESSAGES = 30;
 const MAX_LENGTH = 2000;
@@ -32,6 +33,7 @@ function normalizeMessages(input: unknown): ChatTurn[] | null {
 }
 
 export async function POST(request: Request) {
+  if (!site.features.chat) return NextResponse.json({ error: "Not found." }, { status: 404 });
   let body: unknown;
   try {
     body = await request.json();

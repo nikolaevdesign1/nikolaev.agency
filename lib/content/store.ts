@@ -15,10 +15,23 @@ export function storageKind(): StorageKind {
   return "none";
 }
 
+/** Public address of the saved list, built from the store id inside the token: vercel_blob_rw_<id>_<secret>. */
+function publicUrl() {
+  const id = process.env.BLOB_READ_WRITE_TOKEN?.split("_")[3];
+  return id ? `https://${id.toLowerCase()}.public.blob.vercel-storage.com/${BLOB_PATH}` : null;
+}
+
 async function readStored(): Promise<Project[] | null> {
   const kind = storageKind();
   try {
     if (kind === "blob") {
+      // Direct public URL first: it costs no store operation and still answers while the store is blocked for writing.
+      const direct = publicUrl();
+      if (direct) {
+        const res = await fetch(`${direct}?t=${Date.now()}`, { cache: "no-store" });
+        if (res.ok) return (await res.json()) as Project[];
+        if (res.status !== 404) return null;
+      }
       const { list } = await import("@vercel/blob");
       const { blobs } = await list({ prefix: BLOB_PATH });
       const hit = blobs.find((b) => b.pathname === BLOB_PATH);

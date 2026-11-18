@@ -7,7 +7,7 @@ export default function ErrorPage({ reset }: { error: Error & { digest?: string 
     <StatusPage
       code="500"
       title="Something broke on our side."
-      text="Try again in a moment. If it keeps happening, tell us in the chat and we will fix it."
+      text="Try again in a moment. If it keeps happening, write to us on WhatsApp or by email and we will fix it."
       action={
         <button
           type="button"

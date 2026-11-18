@@ -34,7 +34,7 @@ const supportSteps = [
   {
     index: "01",
     title: "Send a request",
-    body: "You write what needs to change, in the chat or by email.",
+    body: "You write what needs to change, on WhatsApp or by email.",
   },
   {
     index: "02",
@@ -98,7 +98,7 @@ const faqs = [
   {
     id: "Q.008",
     q: "Do you work with AI?",
-    a: "Yes. AI shortens the distance between a brief and a shipped build, and AI Integration is one of the directions. The assistant in the chat on this site is trained on the studio; a person picks up anything it can't settle.",
+    a: "Yes. AI shortens the distance between a brief and a shipped build, and AI Integration is one of the directions.",
   },
   {
     id: "Q.009",
@@ -511,7 +511,7 @@ function Faq() {
           <div className="md:sticky md:top-28">
             <h2 className="font-serif text-5xl leading-none font-normal md:text-7xl">Before we start</h2>
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-ink-foreground/70">
-              Didn&apos;t find your question? Ask it in the chat. The reply comes from the people doing the work.
+              Didn&apos;t find your question? Ask it on WhatsApp. The reply comes from the people doing the work.
             </p>
             <StudioChatButton className={`${pillClass} mt-8`}>Let&apos;s chat</StudioChatButton>
           </div>

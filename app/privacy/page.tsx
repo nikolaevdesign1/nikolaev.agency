@@ -16,7 +16,7 @@ export default function PrivacyPage() {
           title: "What we collect",
           body: [
             "Contact form: your name, email, the reason you picked and your message.",
-            "Chat and brief: the messages you type in the chat on this site, and the answers you give in a brief (company, goal, timeline, budget range, contact details). Names of files you attach are shown in the chat; we do not store the files.",
+            "WhatsApp: if you message us on WhatsApp, we see your phone number, your profile name and what you write. WhatsApp itself is run by Meta under its own terms.",
             "Subscription: the email you leave for new notes or upcoming projects.",
             "Technical data: our host, Vercel, keeps standard server logs (IP address, browser, pages requested, time) to run and protect the site.",
           ],
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
         {
           title: "What stays in your browser",
           body: [
-            "Your chat history, the sound setting, the light or dark choice on the projects page and your cookie choice are saved in your own browser (local storage). They never leave your device unless you send a message. The Cookie policy lists each one.",
+            "The sound setting, the light or dark choice on the projects page and your cookie choice are saved in your own browser (local storage). They never leave your device unless you send a message. The Cookie policy lists each one.",
           ],
         },
         {

@@ -19,7 +19,6 @@ export default function CookiesPage() {
             "cookie-choice: whether you accepted or declined the cookie notice.",
             "studio-sound: whether sound is on or off.",
             "studio-projects-theme: light or dark on the projects page and project pages.",
-            "studio-chats and studio-chat-sidebar: your chat history on this device and whether the chat list is open.",
             "An admin session cookie exists only for the site owner when signed in to edit content. Visitors never get it.",
           ],
         },
@@ -39,7 +38,7 @@ export default function CookiesPage() {
         {
           title: "How to remove them",
           body: [
-            "Clear the site data for nikolaev.agency in your browser settings, or use the button above to reset your cookie choice. Clearing the data also removes your chat history on this device.",
+            "Clear the site data for nikolaev.agency in your browser settings, or use the button above to reset your cookie choice.",
           ],
         },
       ]}

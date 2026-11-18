@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { site } from "@/lib/data/site";
 import { pageMeta } from "@/lib/seo";
 import { MediaIndex } from "@/components/media-index";
+import { notFound } from "next/navigation";
 import { getArticles } from "@/lib/notion";
 
 export const metadata: Metadata = pageMeta({
@@ -11,5 +12,6 @@ export const metadata: Metadata = pageMeta({
 });
 
 export default async function MediaPage() {
+  if (!site.features.media) notFound();
   return <MediaIndex articles={await getArticles()} />;
 }
