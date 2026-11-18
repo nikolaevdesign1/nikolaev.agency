@@ -5,7 +5,13 @@ import type { Article, ArticleBlock } from "@/lib/data/media";
 
 const API = "https://api.notion.com/v1";
 
-type RichText = { plain_text: string; href: string | null; annotations: { bold: boolean; italic: boolean } };
+type RichText = {
+  plain_text: string;
+  href: string | null;
+  annotations: { bold: boolean; italic: boolean };
+  type?: string;
+  mention?: { type: string; page?: { id: string } };
+};
 type Block = {
   id: string;
   type: string;
@@ -92,11 +98,33 @@ async function databasePages(id: string): Promise<PageRef[]> {
   return rows;
 }
 
-/** Pages under the articles page: sub-pages, page links and database rows, also inside toggles, columns and lists. */
-async function articlePages(parent: string, seen: Set<string>, depth = 0): Promise<PageRef[]> {
+const bareId = (id: string) => id.replace(/-/g, "").toLowerCase();
+
+/** Pages a to-do item points at, by page mention or by a Notion link. */
+function pagesIn(parts: RichText[] | undefined) {
+  const ids: string[] = [];
+  for (const part of parts ?? []) {
+    if (part.type === "mention" && part.mention?.type === "page" && part.mention.page?.id) ids.push(bareId(part.mention.page.id));
+    else if (part.href && /notion\.(so|site|com)/.test(part.href)) {
+      const match = part.href.match(/([0-9a-f]{32})(?:[?#]|$)/i) ?? part.href.match(/([0-9a-f-]{36})(?:[?#]|$)/i);
+      if (match) ids.push(bareId(match[1]));
+    }
+  }
+  return ids;
+}
+
+/**
+ * Pages under the articles page: sub-pages, page links and database rows, also inside toggles, columns and lists.
+ * To-do items that mention an article page are collected into `ticks` (page id -> checked).
+ */
+async function articlePages(parent: string, seen: Set<string>, ticks: Map<string, boolean>, depth = 0): Promise<PageRef[]> {
   const found: PageRef[] = [];
   for (const block of await children(parent)) {
     seen.add(block.type);
+    if (block.type === "to_do") {
+      const todo = block.to_do as { rich_text?: RichText[]; checked?: boolean } | undefined;
+      for (const id of pagesIn(todo?.rich_text)) ticks.set(id, Boolean(todo?.checked) || ticks.get(id) === true);
+    }
     if (block.type === "child_page" && block.child_page) {
       found.push({ id: block.id, title: block.child_page.title, created: block.created_time });
     } else if (block.type === "child_database") {
@@ -108,7 +136,7 @@ async function articlePages(parent: string, seen: Set<string>, depth = 0): Promi
       const title = Object.values(page.properties).find((p) => p.type === "title")?.title;
       found.push({ id: block.link_to_page.page_id, title: plain(title), created: page.created_time });
     } else if (block.has_children && depth < 3) {
-      found.push(...(await articlePages(block.id, seen, depth + 1)));
+      found.push(...(await articlePages(block.id, seen, ticks, depth + 1)));
     }
   }
   return found;
@@ -147,31 +175,20 @@ function categoryOf(title: string) {
   return "Design";
 }
 
-/** Copies a Notion-hosted picture into the project's blob store: Notion links stop working after an hour. */
-async function stableImage(blockId: string, url: string, external: boolean) {
-  if (external || !process.env.BLOB_READ_WRITE_TOKEN) return url;
-  try {
-    const { list, put } = await import("@vercel/blob");
-    const res = await fetch(url);
-    if (!res.ok) return url;
-    const type = res.headers.get("content-type") ?? "image/jpeg";
-    const ext = type.includes("png") ? "png" : type.includes("webp") ? "webp" : type.includes("gif") ? "gif" : type.includes("svg") ? "svg" : "jpg";
-    const path = `notion/${blockId}.${ext}`;
-    const { blobs } = await list({ prefix: path, limit: 1 });
-    const hit = blobs.find((blob) => blob.pathname === path);
-    if (hit) return hit.url;
-    const stored = await put(path, await res.arrayBuffer(), {
-      access: "public",
-      addRandomSuffix: false,
-      allowOverwrite: true,
-      contentType: type,
-      cacheControlMaxAge: 31536000,
-    });
-    return stored.url;
-  } catch (error) {
-    console.error("Could not copy a Notion picture", error);
-    return url;
-  }
+/**
+ * Notion-hosted pictures are served through /media-image/<block id>: Notion links stop working after an hour,
+ * so the route asks Notion for a fresh link on each (CDN-cached) request. External pictures are used as they are.
+ */
+function stableImage(blockId: string, url: string, external: boolean) {
+  return external ? url : `/media-image/${blockId}`;
+}
+
+/** Fresh download link for a Notion image block, or null when the block is not a Notion-hosted image. */
+export async function notionImageUrl(blockId: string): Promise<string | null> {
+  const block = await notion<Block>(`/blocks/${blockId}`);
+  if (block.type !== "image") return null;
+  const image = block.image as { type: "file" | "external"; file?: { url: string }; external?: { url: string } };
+  return image.type === "file" ? (image.file?.url ?? null) : (image.external?.url ?? null);
 }
 
 async function toBlocks(blocks: Block[]): Promise<ArticleBlock[]> {
@@ -214,7 +231,7 @@ async function toBlocks(blocks: Block[]): Promise<ArticleBlock[]> {
       case "image": {
         const image = block.image as { type: "file" | "external"; file?: { url: string }; external?: { url: string }; caption?: RichText[] };
         const url = image.type === "file" ? image.file?.url : image.external?.url;
-        if (url) out.push({ type: "image", src: await stableImage(block.id, url, image.type === "external"), alt: plain(image.caption) });
+        if (url) out.push({ type: "image", src: stableImage(block.id, url, image.type === "external"), alt: plain(image.caption) });
         break;
       }
     }
@@ -241,14 +258,18 @@ async function loadArticles(): Promise<Article[]> {
   const realToday = new Date().toISOString().slice(0, 10);
   const today = realToday > EARLY_RELEASE_UNTIL ? realToday : EARLY_RELEASE_UNTIL;
   const seen = new Set<string>();
-  const pages = await articlePages(site.notionArticlesPage, seen);
+  const ticks = new Map<string, boolean>();
+  const pages = await articlePages(site.notionArticlesPage, seen, ticks);
   if (pages.length === 0) console.error("Notion: no article pages found; block types seen:", [...seen].join(", ") || "none");
+  // Only articles ticked in the to-do list on the articles page are published. Without any such list, fall back to dates alone.
+  if (ticks.size === 0) console.error("Notion: no to-do list of articles found; publishing by date alone.");
   const articles: Article[] = [];
   const used = new Set<string>();
 
   for (const page of pages) {
     const { title, date } = splitTitle(page.title, page.created);
     if (!title || date > today) continue; // not released yet
+    if (ticks.size > 0 && ticks.get(bareId(page.id)) !== true) continue; // not ticked as published
 
     let slug = slugify(title) || page.id.slice(0, 8);
     if (used.has(slug)) slug = `${slug}-${page.id.slice(0, 4)}`;
