@@ -8,8 +8,8 @@ import type { NextRequest } from "next/server";
  *
  * To look at the real site meanwhile, open any address with ?preview=1; a cookie remembers it.
  */
-const BACK_AT = "2026-11-20T00:00:00+02:00";
-const BACK_ON = "November 20";
+const BACK_AT = "2026-11-27T00:00:00+02:00";
+const BACK_ON = "November 27";
 const MAIL = "info@nikolaev.agency";
 const PREVIEW_COOKIE = "site-preview";
 
